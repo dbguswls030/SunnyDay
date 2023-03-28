@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--게시판-->
+        <scene sceneID="nmN-qW-Kdp">
+            <objects>
+                <viewController id="U98-nl-LNn" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="W0m-mf-3wO">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="tkY-U7-zMw"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="게시판" image="bubble.left.and.bubble.right.fill" catalog="system" id="qxL-LB-79P"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fEO-WS-J9F" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3019" y="389"/>
+        </scene>
+        <!--가드닝-->
+        <scene sceneID="h6y-5W-EPG">
+            <objects>
+                <viewController id="UuP-tA-fcb" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="6s8-F7-Uim">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="Tsc-K5-hk3"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="가드닝" image="sun.haze.fill" catalog="system" id="OT6-N9-Tao"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Tb7-b1-RPe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3996" y="389"/>
+        </scene>
+        <!--쇼핑-->
+        <scene sceneID="mMq-Pp-WPS">
+            <objects>
+                <viewController id="Mw4-7J-RNL" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PVZ-iP-Vb1">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="hvz-In-4EV"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="쇼핑" image="bag.fill" catalog="system" id="3z4-7g-fcg"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MEf-oW-SHc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-837" y="389"/>
+        </scene>
+        <!--내 정보-->
+        <scene sceneID="UjY-gZ-CRa">
+            <objects>
+                <viewController id="Pd6-hA-1e4" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Afc-iz-i6G">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="xOD-rP-YID"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="내 정보" image="person.circle.fill" catalog="system" id="jzo-aC-33e"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lmN-93-bb2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="271" y="389"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="1Wf-ch-ACL">
+            <objects>
+                <tabBarController id="6TH-D3-lAg" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="L3n-h5-asx">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="UuP-tA-fcb" kind="relationship" relationship="viewControllers" id="Way-4i-NaB"/>
+                        <segue destination="U98-nl-LNn" kind="relationship" relationship="viewControllers" id="ESx-zH-NVW"/>
+                        <segue destination="Pw5-e2-QLX" kind="relationship" relationship="viewControllers" id="Yca-MM-HtH"/>
+                        <segue destination="Mw4-7J-RNL" kind="relationship" relationship="viewControllers" id="Xee-Nd-cNt"/>
+                        <segue destination="Pd6-hA-1e4" kind="relationship" relationship="viewControllers" id="DFx-4k-e6S"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kuo-Qu-9Kx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1935" y="-583"/>
+        </scene>
+        <!--홈-->
+        <scene sceneID="iO1-iw-15X">
+            <objects>
+                <viewController id="Pw5-e2-QLX" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="PAi-OS-XSx">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="KOg-Ey-xac"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="홈" id="XMg-hB-rbf">
+                        <imageReference key="image" image="house.fill" catalog="system" symbolScale="large"/>
+                    </tabBarItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IRb-fe-uW9" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1935" y="389"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="EI6-qN-EhI">
+            <objects>
+                <viewController id="QFh-rv-30K" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qhf-wU-Fbg">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tabBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8ee-rd-AsX">
+                                <rect key="frame" x="0.0" y="769" width="392" height="48"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <items>
+                                    <tabBarItem title="가드닝" image="sun.haze" catalog="system" id="P0H-8T-FGi"/>
+                                    <tabBarItem title="게시판" image="bubble.left.and.bubble.right" catalog="system" id="Fvd-NA-NTi"/>
+                                    <tabBarItem title="홈" image="house.fill" catalog="system" id="O7j-oH-E4A"/>
+                                    <tabBarItem title="쇼핑" image="bag.fill" catalog="system" id="7k5-Vl-l62"/>
+                                    <tabBarItem title="내 정보" image="person.circle.fill" catalog="system" id="5GF-is-KqG"/>
+                                </items>
+                            </tabBar>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="GBw-3K-Tqy"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Aeo-CL-YGQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1005" y="-583"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="bag.fill" catalog="system" width="128" height="128"/>
+        <image name="bubble.left.and.bubble.right" catalog="system" width="128" height="96"/>
+        <image name="bubble.left.and.bubble.right.fill" catalog="system" width="128" height="97"/>
+        <image name="house.fill" catalog="system" width="128" height="104"/>
+        <image name="person.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="sun.haze" catalog="system" width="128" height="118"/>
+        <image name="sun.haze.fill" catalog="system" width="128" height="118"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
