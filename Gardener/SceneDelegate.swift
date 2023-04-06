@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import GoogleSignIn
+
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -53,5 +55,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
 
+}
+extension SceneDelegate{
+ 
 }
 

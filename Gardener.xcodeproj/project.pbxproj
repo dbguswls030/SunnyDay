@@ -23,6 +23,8 @@
 		9F9E11E029C4C3B90090B2E6 /* GardenerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11DF29C4C3B90090B2E6 /* GardenerUITests.swift */; };
 		9F9E11E229C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */; };
 		9FB31D2229D90E4A00F02DE0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9FB31D2129D90E4A00F02DE0 /* GoogleService-Info.plist */; };
+		9FB31D7129DD962F00F02DE0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB31D7029DD962F00F02DE0 /* LoginViewController.swift */; };
+		9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB31D7229DD96AD00F02DE0 /* LoginView.swift */; };
 		C92EDC768C5B4FE847B40B44 /* Pods_GardenerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CCD6EC441EDEEB71EC22DC0 /* Pods_GardenerTests.framework */; };
 		F0F87CBC36ED7911F509BA86 /* Pods_Gardener.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF8AE5FE8727CEABFF322993 /* Pods_Gardener.framework */; };
 /* End PBXBuildFile section */
@@ -70,6 +72,8 @@
 		9F9E11DF29C4C3B90090B2E6 /* GardenerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenerUITests.swift; sourceTree = "<group>"; };
 		9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenerUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9FB31D2129D90E4A00F02DE0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9FB31D7029DD962F00F02DE0 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		9FB31D7229DD96AD00F02DE0 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		AF8AE5FE8727CEABFF322993 /* Pods_Gardener.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gardener.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C8DBF515AC998ACE4F21D9 /* Pods-Gardener-GardenerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gardener-GardenerUITests.release.xcconfig"; path = "Target Support Files/Pods-Gardener-GardenerUITests/Pods-Gardener-GardenerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		F0460E96BF1D0276643EFFF3 /* Pods-Gardener.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gardener.debug.xcconfig"; path = "Target Support Files/Pods-Gardener/Pods-Gardener.debug.xcconfig"; sourceTree = "<group>"; };
@@ -168,6 +172,7 @@
 		9F9E11BD29C4C3B70090B2E6 /* Gardener */ = {
 			isa = PBXGroup;
 			children = (
+				9FB31D6F29DD960A00F02DE0 /* login */,
 				9F9E11BE29C4C3B70090B2E6 /* AppDelegate.swift */,
 				9F9E11C029C4C3B70090B2E6 /* SceneDelegate.swift */,
 				9F9E11C229C4C3B70090B2E6 /* MainTabBarController.swift */,
@@ -202,6 +207,15 @@
 			path = GardenerUITests;
 			sourceTree = "<group>";
 		};
+		9FB31D6F29DD960A00F02DE0 /* login */ = {
+			isa = PBXGroup;
+			children = (
+				9FB31D7029DD962F00F02DE0 /* LoginViewController.swift */,
+				9FB31D7229DD96AD00F02DE0 /* LoginView.swift */,
+			);
+			path = login;
+			sourceTree = "<group>";
+		};
 		D2DB879CDE0433B3EC385030 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -212,7 +226,6 @@
 				87E5E5BF433D86A777A9ADDB /* Pods-GardenerTests.debug.xcconfig */,
 				52EFE9FC3CC91C2C015C2D90 /* Pods-GardenerTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -466,6 +479,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FB31D7129DD962F00F02DE0 /* LoginViewController.swift in Sources */,
 				9F9E11C329C4C3B70090B2E6 /* MainTabBarController.swift in Sources */,
 				9F9E11BF29C4C3B70090B2E6 /* AppDelegate.swift in Sources */,
 				9F13E0D329D2D95D00651EA0 /* ShopViewController.swift in Sources */,
@@ -473,6 +487,7 @@
 				9F9E11C129C4C3B70090B2E6 /* SceneDelegate.swift in Sources */,
 				9F13E0D929D2D97C00651EA0 /* GardenViewController.swift in Sources */,
 				9F13E0D529D2D96400651EA0 /* HomeViewController.swift in Sources */,
+				9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */,
 				9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
