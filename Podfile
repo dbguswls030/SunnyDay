@@ -8,6 +8,10 @@ target 'Gardener' do
   # Pods for Gardener
   pod 'FirebaseAuth'
   pod 'FirebaseFirestore'
+  pod 'GoogleSignIn'
+  pod 'KakaoSDKCommon'
+  pod 'KakaoSDKUser'
+  pod 'KakaoSDKAuth'
   target 'GardenerTests' do
     inherit! :search_paths
     # Pods for testing
