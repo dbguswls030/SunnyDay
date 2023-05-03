@@ -6,6 +6,7 @@ target 'Gardener' do
   use_frameworks!
 
   # Pods for Gardener
+  pod 'SnapKit', '~> 5.6.0'
   pod 'FirebaseAuth'
   pod 'FirebaseFirestore'
   pod 'GoogleSignIn'
