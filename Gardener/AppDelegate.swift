@@ -12,29 +12,17 @@ import GoogleSignIn
 class AppDelegate: UIResponder, UIApplicationDelegate{
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        var handled: Bool
         
-        let handled = GIDSignIn.sharedInstance.handle(url)
-    
-        if handled{
+        handled = GIDSignIn.sharedInstance.handle(url)
+        if handled {
             return true
         }
-        
         return false
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        GIDSignIn.sharedInstance.restorePreviousSignIn{ user, error in
-            if error != nil || user != nil{
-                // MARK: 로그인 복원 성공 !!
-                // 메인 페이지
-            }else{
-                // MARK: 로그인 복원 실패 !!
-                // 로그인 화면
-            }
-        }
-        
-        
         return true
     }
 

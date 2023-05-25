@@ -172,10 +172,10 @@
 		9F9E11BD29C4C3B70090B2E6 /* Gardener */ = {
 			isa = PBXGroup;
 			children = (
-				9FB31D6F29DD960A00F02DE0 /* login */,
 				9F9E11BE29C4C3B70090B2E6 /* AppDelegate.swift */,
 				9F9E11C029C4C3B70090B2E6 /* SceneDelegate.swift */,
 				9F9E11C229C4C3B70090B2E6 /* MainTabBarController.swift */,
+				9FB31D6F29DD960A00F02DE0 /* login */,
 				9F13E0CD29D2D8DC00651EA0 /* Garden */,
 				9F13E0CE29D2D8DE00651EA0 /* Community */,
 				9F13E0CB29D2D8D500651EA0 /* Home */,

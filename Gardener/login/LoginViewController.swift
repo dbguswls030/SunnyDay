@@ -35,7 +35,6 @@ class LoginViewController: UIViewController {
     }
     
     @objc func googleLogin(){
-        FirebaseApp.configure()
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
         
         // Create Google Sign In configuration object.
@@ -47,29 +46,39 @@ class LoginViewController: UIViewController {
             guard error == nil else {
                 return
             }
-            
-            guard let user = result?.user,
-                  let idToken = user.idToken?.tokenString
+            guard let user = result?.user, let idToken = user.idToken?.tokenString
             else {
                 return
             }
-            print("email = \(user.profile?.email)")
-            print("familyName = \(user.profile?.familyName)")
-            print("fullName = \(user.profile?.givenName)")
-            print("id = \(user.userID)")
-            print("idToken = \(idToken)")
-            
             let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: user.accessToken.tokenString)
             
-//            Auth.auth().signIn(with: credential) { result, error in
-//
-//              // At this point, our user is signed in
-//            }
-            // MARK: TODO
-            // 구글 로그인 인증 및 메인 화면 넘어가기
-            
-            
+            Auth.auth().signIn(with: credential) { result, error in
+                // MARK: TODO 로그인 실패 시 처리
+                guard error == nil else{
+                    print("Firebase SignIn failed")
+                    return
+                }
+                let vc = MainTabBarController()
+                vc.modalPresentationStyle = .fullScreen
+                self.present(vc, animated: true)
+            }
         }
     }
-
+    func logout(){
+        // 구글 로그아웃
+        GIDSignIn.sharedInstance.signOut()
+        
+        // 파이어베이스 로그아웃
+        let firebaseAuth = Auth.auth()
+        do {
+          try firebaseAuth.signOut()
+        } catch let signOutError as NSError {
+          print("Error signing out: %@", signOutError)
+        }
+        
+        // 구글 로그인 연결해제
+        GIDSignIn.sharedInstance.disconnect { error in
+            guard error == nil else { return }
+        }
+    }
 }

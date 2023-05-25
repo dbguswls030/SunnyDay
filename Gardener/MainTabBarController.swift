@@ -6,14 +6,15 @@
 //
 
 import UIKit
-
+import FirebaseAuth
 class MainTabBarController: UITabBarController {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         connectNavigationControllerToTabBarController()
         setUI()
+        loginThenShowUserInfo()
     }
     func connectNavigationControllerToTabBarController(){
         let gardenViewController = UINavigationController(rootViewController: GardenViewController())
@@ -23,6 +24,23 @@ class MainTabBarController: UITabBarController {
         let myViewController = UINavigationController(rootViewController: MyViewController())
         
         viewControllers = [gardenViewController,communityViewController,homeViewController,shopViewController,myViewController]
+    }
+    
+    func loginThenShowUserInfo(){
+        let user = Auth.auth().currentUser
+        if let user = user {
+            // The user's ID, unique to the Firebase project.
+            // Do NOT use this value to authenticate with your backend server,
+            // if you have one. Use getTokenWithCompletion:completion: instead.
+            let uid = user.uid
+            let email = user.email
+            let firstName = user.displayName
+            let phoneNumber = user.phoneNumber
+            print("uid = \(uid)")
+            print("email = \(email)")
+            print("displayName = \(firstName)")
+            print("phoneNumber = \(phoneNumber)")
+        }
     }
     
     func setUI(){
