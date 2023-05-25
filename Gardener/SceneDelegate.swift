@@ -7,7 +7,8 @@
 
 import UIKit
 import GoogleSignIn
-
+import FirebaseCore
+import FirebaseAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -22,10 +23,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         
-        window?.rootViewController = MainTabBarController()
-        window?.makeKeyAndVisible()
+        FirebaseApp.configure()
+        
+        if let user = Auth.auth().currentUser{
+            print("Auto login successed")
+            self.window?.rootViewController = MainTabBarController()
+            self.window?.makeKeyAndVisible()
+        }else{
+            print("Auto login failed")
+            self.window?.rootViewController = LoginViewController()
+            self.window?.makeKeyAndVisible()
+        }
     }
-
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
