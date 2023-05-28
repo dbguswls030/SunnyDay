@@ -14,6 +14,7 @@
 		9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D629D2D97200651EA0 /* CommunityViewController.swift */; };
 		9F13E0D929D2D97C00651EA0 /* GardenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D829D2D97C00651EA0 /* GardenViewController.swift */; };
 		9F13E0DF29D2E6AF00651EA0 /* UI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F13E0DE29D2E6AF00651EA0 /* UI.storyboard */; };
+		9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */; };
 		9F9E11BF29C4C3B70090B2E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11BE29C4C3B70090B2E6 /* AppDelegate.swift */; };
 		9F9E11C129C4C3B70090B2E6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11C029C4C3B70090B2E6 /* SceneDelegate.swift */; };
 		9F9E11C329C4C3B70090B2E6 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11C229C4C3B70090B2E6 /* MainTabBarController.swift */; };
@@ -59,6 +60,7 @@
 		9F13E0D629D2D97200651EA0 /* CommunityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewController.swift; sourceTree = "<group>"; };
 		9F13E0D829D2D97C00651EA0 /* GardenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenViewController.swift; sourceTree = "<group>"; };
 		9F13E0DE29D2E6AF00651EA0 /* UI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = UI.storyboard; sourceTree = "<group>"; };
+		9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateBoardViewController.swift; sourceTree = "<group>"; };
 		9F9E11BB29C4C3B70090B2E6 /* Gardener.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gardener.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F9E11BE29C4C3B70090B2E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9F9E11C029C4C3B70090B2E6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 		9F13E0CE29D2D8DE00651EA0 /* Community */ = {
 			isa = PBXGroup;
 			children = (
+				9FCF92B22A22BA5800AF2885 /* Create */,
 				9F13E0D629D2D97200651EA0 /* CommunityViewController.swift */,
 			);
 			path = Community;
@@ -214,6 +217,14 @@
 				9FB31D7229DD96AD00F02DE0 /* LoginView.swift */,
 			);
 			path = login;
+			sourceTree = "<group>";
+		};
+		9FCF92B22A22BA5800AF2885 /* Create */ = {
+			isa = PBXGroup;
+			children = (
+				9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */,
+			);
+			path = Create;
 			sourceTree = "<group>";
 		};
 		D2DB879CDE0433B3EC385030 /* Pods */ = {
@@ -487,6 +498,7 @@
 				9F9E11C129C4C3B70090B2E6 /* SceneDelegate.swift in Sources */,
 				9F13E0D929D2D97C00651EA0 /* GardenViewController.swift in Sources */,
 				9F13E0D529D2D96400651EA0 /* HomeViewController.swift in Sources */,
+				9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */,
 				9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */,
 				9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */,
 			);
