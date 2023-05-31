@@ -18,9 +18,16 @@ class CommunityViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        initNavigationBar()
         initCreateBoardButton()
     }
     
+    func initNavigationBar(){
+        let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        backBarButton.tintColor = .black
+        self.navigationItem.backBarButtonItem = backBarButton
+    }
+
     func initCreateBoardButton(){
         self.view.addSubview(createBoardButton)
         let buttonSize = 60
@@ -34,7 +41,8 @@ class CommunityViewController: UIViewController {
     }
     
     @objc func showCreatBoardView(){
-        // MARK: TODO
-        // 게시글 작성 뷰 이동
+        let vc = CreateBoardViewController()
+        vc.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
