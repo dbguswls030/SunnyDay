@@ -22,13 +22,13 @@ class CommunityViewController: UIViewController {
         initCreateBoardButton()
     }
     
-    func initNavigationBar(){
+    private func initNavigationBar(){
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .black
         self.navigationItem.backBarButtonItem = backBarButton
     }
 
-    func initCreateBoardButton(){
+    private func initCreateBoardButton(){
         self.view.addSubview(createBoardButton)
         let buttonSize = 60
         createBoardButton.snp.makeConstraints { make in
@@ -40,7 +40,7 @@ class CommunityViewController: UIViewController {
         createBoardButton.addTarget(self, action: #selector(showCreatBoardView), for: .touchUpInside)
     }
     
-    @objc func showCreatBoardView(){
+    @objc private func showCreatBoardView(){
         let vc = CreateBoardViewController()
         vc.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(vc, animated: true)

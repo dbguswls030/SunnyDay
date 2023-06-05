@@ -17,27 +17,28 @@ class CreateBoardViewController: UIViewController {
     
     final let LEADINGTRAIINGOFFSET = 15
     
-    lazy var scrollView: UIScrollView = {
+    private lazy var scrollView: UIScrollView = {
         var scrollView = UIScrollView()
         return scrollView
     }()
     
-    lazy var titleObjcetLabel: UILabel = {
+    private lazy var titleObjcetLabel: UILabel = {
         var label = UILabel()
         label.text = "카테고리를 선택해 주세요."
         label.font = .systemFont(ofSize: 17)
         return label
     }()
     
-    lazy var titleObjectButton: UIButton = {
+    private lazy var titleObjectButton: UIButton = {
         var button = UIButton()
         button.setImage(UIImage(systemName: "chevron.forward"), for: .normal)
         button.tintColor = .black
         button.contentHorizontalAlignment = .trailing
+        button.addTarget(self, action: #selector(showCategoryList), for: .touchUpInside)
         return button
     }()
     
-    lazy var contentTextView: UITextView = {
+    private lazy var contentTextView: UITextView = {
         // MARK: TODO - placeholder 기능 만들기
         var textView = UITextView()
         textView.isScrollEnabled = false
@@ -49,19 +50,20 @@ class CreateBoardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .white
         initNavigationBar()
         initUI()
     }
     
-    func initNavigationBar(){
+    private func initNavigationBar(){
         self.navigationItem.title = "글쓰기"
         self.navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(systemName: "arrow.up"), style: .done, target: self, action: #selector(showCategoryList)), animated: true)
         self.navigationItem.rightBarButtonItem?.tintColor = .black
         // MARK: TODO - 하단 그림자
     }
     
-    func initUI(){
+    private func initUI(){
+        self.view.backgroundColor = .white
+        
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(titleObjcetLabel)
         self.scrollView.addSubview(titleObjectButton)
@@ -95,7 +97,8 @@ class CreateBoardViewController: UIViewController {
         }
     }
     
-    @objc func showCategoryList(){
-        
+    @objc private func showCategoryList(){
+        let vc = CategoryViewController()
+        self.present(vc, animated: true)
     }
 }
