@@ -99,6 +99,8 @@ class CreateBoardViewController: UIViewController {
     
     @objc private func showCategoryList(){
         let vc = CategoryViewController()
+        vc.sheetPresentationController?.detents = [.medium()]
+        vc.sheetPresentationController?.preferredCornerRadius = 30
         self.present(vc, animated: true)
     }
 }
