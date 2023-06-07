@@ -49,8 +49,6 @@ class CategoryViewController: UIViewController{
         }
         tableView.tableHeaderView = headerView
     }
-    
-    // TODO: tabelView 올라오는 최대 높이
 }
 extension CategoryViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -7,14 +7,9 @@
 
 import UIKit
 import SnapKit
-class CreateBoardViewController: UIViewController {
+class CreateBoardViewController: UIViewController, UITextViewDelegate {
     
     // 내용, 분류, 사진
-    // MARK: TODO
-    // 키보드 제어
-    // - 키보드 올라오면 contentView 동적 높이 조절
-    // - 다른 곳 터치하면 키보드 숨기기
-    
     final let LEADINGTRAIINGOFFSET = 15
     
     private lazy var scrollView: UIScrollView = {
@@ -49,11 +44,10 @@ class CreateBoardViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         initNavigationBar()
         initUI()
+        hideKeyboard()
     }
-    
     private func initNavigationBar(){
         self.navigationItem.title = "글쓰기"
         self.navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(systemName: "arrow.up"), style: .done, target: self, action: #selector(showCategoryList)), animated: true)
@@ -69,10 +63,10 @@ class CreateBoardViewController: UIViewController {
         self.scrollView.addSubview(titleObjectButton)
         self.scrollView.addSubview(contentTextView)
         
-        
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-            make.trailing.leading.bottom.equalToSuperview()
+            make.trailing.leading.equalToSuperview()
+            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
         
         titleObjcetLabel.snp.makeConstraints { make in
@@ -104,3 +98,4 @@ class CreateBoardViewController: UIViewController {
         self.present(vc, animated: true)
     }
 }
+
