@@ -34,7 +34,6 @@ class CreateBoardViewController: UIViewController {
     }()
     
     private lazy var contentTextView: UITextView = {
-        // MARK: TODO - placeholder 기능 만들기
         var textView = UITextView()
         textView.isScrollEnabled = false
         textView.font = .systemFont(ofSize: 16)
@@ -76,6 +75,7 @@ class CreateBoardViewController: UIViewController {
             make.top.equalToSuperview()
             make.height.equalTo(60)
         }
+        
         titleObjectButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET+5)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
@@ -97,6 +97,7 @@ class CreateBoardViewController: UIViewController {
         let vc = CategoryViewController()
         vc.sheetPresentationController?.detents = [.medium()]
         vc.sheetPresentationController?.preferredCornerRadius = 30
+        vc.delegate = self
         self.present(vc, animated: true)
     }
 }
@@ -113,5 +114,11 @@ extension CreateBoardViewController: UITextViewDelegate{
             textView.text = ""
             textView.textColor = .black
         }
+    }
+}
+
+extension CreateBoardViewController: SendCategoryDelegate{
+    func changeCategory(category: String) {
+        self.titleObjcetLabel.text = category
     }
 }

@@ -8,11 +8,17 @@
 import UIKit
 import SnapKit
 
+protocol SendCategoryDelegate: class{
+    func changeCategory(category: String)
+}
+
 class CategoryViewController: UIViewController{
     
     private lazy var tableView: UITableView = {
         return UITableView()
     }()
+    
+    weak var delegate: SendCategoryDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,6 +69,7 @@ extension CategoryViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // TODO: 셀 선택 시 게시글 작성 뷰 카테고리 Label 수정
+        self.delegate?.changeCategory(category: BoardCategory.allCases[indexPath.row].rawValue)
+        self.dismiss(animated: true)
     }
 }
