@@ -7,7 +7,7 @@
 
 import UIKit
 import SnapKit
-class CreateBoardViewController: UIViewController, UITextViewDelegate {
+class CreateBoardViewController: UIViewController {
     
     // 내용, 분류, 사진
     final let LEADINGTRAIINGOFFSET = 15
@@ -39,6 +39,7 @@ class CreateBoardViewController: UIViewController, UITextViewDelegate {
         textView.isScrollEnabled = false
         textView.font = .systemFont(ofSize: 16)
         textView.text = "내용을 입력해 주세요."
+        textView.textColor = .lightGray
         return textView
     }()
     
@@ -70,13 +71,13 @@ class CreateBoardViewController: UIViewController, UITextViewDelegate {
         }
         
         titleObjcetLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
+            make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET+5)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
             make.top.equalToSuperview()
             make.height.equalTo(60)
         }
         titleObjectButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
+            make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET+5)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
             make.top.equalToSuperview()
             make.height.equalTo(60)
@@ -89,6 +90,7 @@ class CreateBoardViewController: UIViewController, UITextViewDelegate {
             make.bottom.equalToSuperview()
             make.width.equalTo(scrollView.snp.width).offset(-LEADINGTRAIINGOFFSET * 2)
         }
+        contentTextView.delegate = self
     }
     
     @objc private func showCategoryList(){
@@ -99,3 +101,17 @@ class CreateBoardViewController: UIViewController, UITextViewDelegate {
     }
 }
 
+extension CreateBoardViewController: UITextViewDelegate{
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty{
+            textView.textColor = .lightGray
+            textView.text = "내용을 입력해 주세요."
+        }
+    }
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == .lightGray{
+            textView.text = ""
+            textView.textColor = .black
+        }
+    }
+}
