@@ -7,10 +7,16 @@
 
 import UIKit
 import SnapKit
+
+// 네비게이션 바 하단 테두리
+// 카테고리 label 하단 테두리
 class CreateBoardViewController: UIViewController {
     
-    // 내용, 분류, 사진
     final let LEADINGTRAIINGOFFSET = 15
+    
+    private lazy var topBreakLine: BreakLine = {
+       return BreakLine()
+    }()
     
     private lazy var scrollView: UIScrollView = {
         var scrollView = UIScrollView()
@@ -22,6 +28,10 @@ class CreateBoardViewController: UIViewController {
         label.text = "카테고리를 선택해 주세요."
         label.font = .systemFont(ofSize: 17)
         return label
+    }()
+    
+    private lazy var titleContentBreakLine: BreakLine = {
+        return BreakLine()
     }()
     
     private lazy var titleObjectButton: UIButton = {
@@ -58,13 +68,21 @@ class CreateBoardViewController: UIViewController {
     private func initUI(){
         self.view.backgroundColor = .white
         
+        self.view.addSubview(topBreakLine)
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(titleObjcetLabel)
         self.scrollView.addSubview(titleObjectButton)
+        self.scrollView.addSubview(titleContentBreakLine)
         self.scrollView.addSubview(contentTextView)
         
-        scrollView.snp.makeConstraints { make in
+        topBreakLine.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.trailing.leading.equalToSuperview()
+            make.height.equalTo(1)
+        }
+        
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(topBreakLine.snp.bottom)
             make.trailing.leading.equalToSuperview()
             make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
@@ -83,8 +101,15 @@ class CreateBoardViewController: UIViewController {
             make.height.equalTo(60)
         }
         
-        contentTextView.snp.makeConstraints { make in
+        titleContentBreakLine.snp.makeConstraints { make in
             make.top.equalTo(titleObjcetLabel.snp.bottom)
+            make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
+            make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
+            make.height.equalTo(1)
+        }
+        
+        contentTextView.snp.makeConstraints { make in
+            make.top.equalTo(titleContentBreakLine.snp.bottom).offset(10)
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
             make.bottom.equalToSuperview()

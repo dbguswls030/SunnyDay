@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-protocol SendCategoryDelegate: class{
+protocol SendCategoryDelegate: AnyObject{
     func changeCategory(category: String)
 }
 
