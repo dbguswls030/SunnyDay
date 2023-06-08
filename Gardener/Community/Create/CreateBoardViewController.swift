@@ -8,19 +8,19 @@
 import UIKit
 import SnapKit
 
-// 네비게이션 바 하단 테두리
-// 카테고리 label 하단 테두리
+// TODO: 사진 추가 기능
+// TODO: 내용 글자 제한 수
+
 class CreateBoardViewController: UIViewController {
     
-    final let LEADINGTRAIINGOFFSET = 15
+    private final let LEADINGTRAIINGOFFSET = 15
     
     private lazy var topBreakLine: BreakLine = {
        return BreakLine()
     }()
     
     private lazy var scrollView: UIScrollView = {
-        var scrollView = UIScrollView()
-        return scrollView
+        return UIScrollView()
     }()
     
     private lazy var titleObjcetLabel: UILabel = {
@@ -58,11 +58,11 @@ class CreateBoardViewController: UIViewController {
         initUI()
         hideKeyboard()
     }
+    
     private func initNavigationBar(){
         self.navigationItem.title = "글쓰기"
         self.navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(systemName: "arrow.up"), style: .done, target: self, action: #selector(showCategoryList)), animated: true)
         self.navigationItem.rightBarButtonItem?.tintColor = .black
-        // MARK: TODO - 하단 그림자
     }
     
     private func initUI(){

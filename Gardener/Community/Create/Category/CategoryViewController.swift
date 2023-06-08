@@ -30,9 +30,11 @@ class CategoryViewController: UIViewController{
     
     private func initUI(){
         self.view.addSubview(tableView)
+        
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "categoryCell")
         tableView.separatorInset.left = 20
         tableView.separatorInset.right = 20
