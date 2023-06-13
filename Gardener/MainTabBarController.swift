@@ -68,9 +68,10 @@ class MainTabBarController: UITabBarController {
     func setUITabBarItem(){
         if let items = self.tabBar.items{
             let imageConfiguartion = UIImage.SymbolConfiguration(pointSize: 15, weight: .light, scale: .large)
-            
-            items[0].selectedImage = UIImage(systemName: "sun.haze.fill", withConfiguration: imageConfiguartion)
-            items[0].image = UIImage(systemName: "sun.haze", withConfiguration: imageConfiguartion)
+//            items[0].selectedImage = UIImage(systemName: "sun.haze.fill", withConfiguration: imageConfiguartion)
+//            items[0].image = UIImage(systemName: "sun.haze", withConfiguration: imageConfiguartion)
+            items[0].selectedImage = UIImage(systemName: "camera.macro.circle.fill", withConfiguration: imageConfiguartion)
+            items[0].image = UIImage(systemName: "camera.macro.circle", withConfiguration: imageConfiguartion)
             items[0].title = "가드닝"
             
             items[1].selectedImage = UIImage(systemName: "bubble.left.and.bubble.right.fill", withConfiguration: imageConfiguartion)
