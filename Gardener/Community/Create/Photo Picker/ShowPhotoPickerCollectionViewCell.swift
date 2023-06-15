@@ -12,12 +12,9 @@ class ShowPhotoPickerCollectionViewCell: UICollectionViewCell {
     
     lazy var pickerButton: UIButton = {
         var button = UIButton()
-        button.setImage(UIImage(systemName: "plus.square.dashed"), for: .normal)
-//        button.imageView?.preferredSymbolConfiguration = .init(pointSize: 25, weight: .thin, scale: .large)
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 50, weight: .thin)
+        button.setImage(UIImage(systemName: "plus.square.dashed", withConfiguration: imageConfig), for: .normal)
         button.imageView?.tintColor = .green
-        button.imageView?.translatesAutoresizingMaskIntoConstraints = false
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageEdgeInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
         return button
     }()
     
@@ -28,7 +25,6 @@ class ShowPhotoPickerCollectionViewCell: UICollectionViewCell {
         pickerButton.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
         }
-    
     }
     
     required init?(coder: NSCoder) {

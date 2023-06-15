@@ -63,6 +63,7 @@ class MainTabBarController: UITabBarController {
         tabBar.layer.shadowOpacity = 0.2
         tabBar.layer.shadowOffset = CGSize(width: 0, height: 0)
         tabBar.layer.shadowRadius = 6
+        tabBar.layer.shadowPath = UIBezierPath(roundedRect: tabBar.bounds, cornerRadius: tabBar.layer.cornerRadius).cgPath
     }
     
     func setUITabBarItem(){

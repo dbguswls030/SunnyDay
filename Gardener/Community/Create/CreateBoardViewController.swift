@@ -80,7 +80,7 @@ class CreateBoardViewController: UIViewController {
     private func initNavigationBar(){
         self.navigationItem.title = "글쓰기"
 //        self.navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(systemName: "arrow.up"), style: .done, target: self, action: #selector(), animated: true)
-        self.navigationItem.rightBarButtonItem?.tintColor = .black
+//        self.navigationItem.rightBarButtonItem?.tintColor = .black
     }
     
     private func initUI(){
@@ -165,7 +165,6 @@ class CreateBoardViewController: UIViewController {
         
         self.present(picker, animated: true)
     }
-    
 }
 
 extension CreateBoardViewController: UITextViewDelegate{
