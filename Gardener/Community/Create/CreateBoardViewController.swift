@@ -10,15 +10,16 @@ import SnapKit
 
 import PhotosUI
 
-// TODO: 내용 글자 제한 수
 // TODO: 사진 로드 중에는 작성 버튼 잠금
+// TODO: 선택된 사진 삭제 버튼
 // TODO: 사진 CollectionView async & await 적용
+// TODO: 내용 글자 제한 수
 
 class CreateBoardViewController: UIViewController {
     
     private final let LEADINGTRAIINGOFFSET = 15
 
-    var selectedImage: [UIImage] = []
+    private var selectedImage: [UIImage] = []
     
     private lazy var topBreakLine: BreakLine = {
        return BreakLine()
@@ -212,7 +213,6 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
             // TODO: 수정
             dispatchGroup.notify(queue: .global(), work: DispatchWorkItem{
                 DispatchQueue.main.async {
-                    print("s")
                     self.photoCollectionView.reloadData()
                 }
             })
