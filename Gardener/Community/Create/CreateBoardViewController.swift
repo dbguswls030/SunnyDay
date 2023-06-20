@@ -7,20 +7,18 @@
 
 import UIKit
 import SnapKit
+
 import PhotosUI
 
-// TODO: 앨범 보기
-// TODO: 사진 다중 선택 시 완료 후 collectionView 업데이트
-    // TODO: collectionViewCell 작성
-
 // TODO: 내용 글자 제한 수
+// TODO: 사진 로드 중에는 작성 버튼 잠금
+// TODO: 사진 CollectionView async & await 적용
 
 class CreateBoardViewController: UIViewController {
     
     private final let LEADINGTRAIINGOFFSET = 15
-    
-    var itemProviders: [NSItemProvider] = []
-    var iterator: IndexingIterator<[NSItemProvider]>?
+
+    var selectedImage: [UIImage] = []
     
     private lazy var topBreakLine: BreakLine = {
        return BreakLine()
@@ -156,7 +154,7 @@ class CreateBoardViewController: UIViewController {
     }
     
     @objc private func showMyAlbum(){
-        var configuration = PHPickerConfiguration()
+        var configuration = PHPickerConfiguration(photoLibrary: .shared())
         configuration.filter = .images
         configuration.selectionLimit = 5
         
@@ -191,39 +189,61 @@ extension CreateBoardViewController: SendCategoryDelegate{
 extension CreateBoardViewController: PHPickerViewControllerDelegate{
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         dismiss(animated: true)
-        
-        self.itemProviders = results.map(\.itemProvider)
-        iterator = itemProviders.makeIterator()
+
+        if !results.isEmpty{
+            selectedImage.removeAll()
+            let dispatchGroup = DispatchGroup() // TODO: 수정
+            dispatchGroup.enter() // TODO: 수정
+            for result in results {
+                let itemProvider = result.itemProvider
+                if itemProvider.canLoadObject(ofClass: UIImage.self){
+                    itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (image, error) in
+                        if let image = image as? UIImage{
+                            self?.selectedImage.append(image)
+                            // TODO: 수정 /**
+                            if self?.selectedImage.count == results.count{
+                                dispatchGroup.leave()
+                            }
+                            // **/
+                        }
+                    }
+                }
+            }
+            // TODO: 수정
+            dispatchGroup.notify(queue: .global(), work: DispatchWorkItem{
+                DispatchQueue.main.async {
+                    print("s")
+                    self.photoCollectionView.reloadData()
+                }
+            })
+        }
     }
 }
 
 extension CreateBoardViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return itemProviders.count + 1
+        return selectedImage.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.row == 0{
+        if indexPath.item == 0{
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addImage", for: indexPath) as? ShowPhotoPickerCollectionViewCell else{
                 return UICollectionViewCell()
             }
             cell.pickerButton.addTarget(self, action: #selector(showMyAlbum), for: .touchUpInside)
             return cell
         }else{
-            return UICollectionViewCell()
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.row == 0{
-        }else{
-            
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "selectedImage", for: indexPath) as? SelectedPhotoCollectionViewCell else{
+                return UICollectionViewCell()
+            }
+            cell.updateImage(image: selectedImage[indexPath.item-1])
+            return cell
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width: CGFloat = collectionView.frame.width / 5
-        return CGSize(width: width - 3, height: width)
+        return CGSize(width: width, height: width)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
