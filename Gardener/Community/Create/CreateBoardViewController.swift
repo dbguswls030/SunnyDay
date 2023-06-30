@@ -11,7 +11,6 @@ import SnapKit
 import PhotosUI
 
 // TODO: 사진 로드 중에는 작성 버튼 잠금
-// TODO: 선택된 사진 삭제 버튼
 // TODO: 사진 CollectionView async & await 적용
 // TODO: 내용 글자 제한 수
 
@@ -133,8 +132,7 @@ class CreateBoardViewController: UIViewController {
             make.bottom.equalToSuperview()
             make.width.equalTo(scrollView.snp.width).offset(-LEADINGTRAIINGOFFSET * 2)
         }
-        
-        photoCollectionView.register(ShowPhotoPickerCollectionViewCell.self, forCellWithReuseIdentifier: "addImage")
+        photoCollectionView.register(ShowPhotoPickerCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "addImage")
         photoCollectionView.register(SelectedPhotoCollectionViewCell.self, forCellWithReuseIdentifier: "selectedImage")
 
         photoCollectionView.snp.makeConstraints { make in
@@ -186,6 +184,13 @@ extension CreateBoardViewController: SendCategoryDelegate{
         self.titleObjcetLabel.text = category
     }
 }
+extension CreateBoardViewController: DeleteImageDelegate{
+    @objc func deleteImage(sender: UIButton) {
+        guard let cell = sender.superview as? UICollectionViewCell, let indexPath = photoCollectionView.indexPath(for: cell) else{ return }
+        self.selectedImage.remove(at: indexPath.item)
+        self.photoCollectionView.deleteItems(at: [indexPath])
+    }
+}
 
 extension CreateBoardViewController: PHPickerViewControllerDelegate{
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -222,26 +227,32 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
 
 extension CreateBoardViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return selectedImage.count + 1
+        return selectedImage.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.item == 0{
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addImage", for: indexPath) as? ShowPhotoPickerCollectionViewCell else{
-                return UICollectionViewCell()
-            }
-            cell.pickerButton.addTarget(self, action: #selector(showMyAlbum), for: .touchUpInside)
-            return cell
-        }else{
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "selectedImage", for: indexPath) as? SelectedPhotoCollectionViewCell else{
-                return UICollectionViewCell()
-            }
-            cell.updateImage(image: selectedImage[indexPath.item-1])
-            return cell
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader, let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "addImage", for: indexPath) as? ShowPhotoPickerCollectionViewCell else {
+            return UICollectionReusableView()
         }
+        header.pickerButton.addTarget(self, action: #selector(showMyAlbum), for: .touchUpInside)
+        return header
+     }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "selectedImage", for: indexPath) as? SelectedPhotoCollectionViewCell else{
+            return UICollectionViewCell()
+        }
+        cell.updateImage(image: selectedImage[indexPath.item])
+        cell.deleteButton.addTarget(self, action: #selector(deleteImage), for: .touchUpInside)
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width: CGFloat = collectionView.frame.width / 5
+        return CGSize(width: width, height: width)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let width: CGFloat = collectionView.frame.width / 5
         return CGSize(width: width, height: width)
     }

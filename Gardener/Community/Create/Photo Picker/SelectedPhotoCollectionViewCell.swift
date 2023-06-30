@@ -7,6 +7,11 @@
 
 import UIKit
 import SnapKit
+
+protocol DeleteImageDelegate: AnyObject{
+    func deleteImage(sender: UIButton)
+}
+
 class SelectedPhotoCollectionViewCell: UICollectionViewCell {
     
     lazy var imageView: UIImageView = {
@@ -33,7 +38,7 @@ class SelectedPhotoCollectionViewCell: UICollectionViewCell {
         }
 
         deleteButton.snp.makeConstraints { make in
-            make.width.height.equalTo(15)
+            make.width.height.equalTo(20)
             make.centerY.equalTo(imageView.snp.top)
             make.centerX.equalTo(imageView.snp.right)
         }
