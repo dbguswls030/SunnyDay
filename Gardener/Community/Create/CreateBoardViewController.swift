@@ -10,7 +10,7 @@ import SnapKit
 
 import PhotosUI
 
-// TODO: 사진 로드 중에는 작성 버튼 잠금
+// TODO: 사진 로드 중에는 작성 버튼 잠금 (삭제, 추가 시)
 // TODO: 사진 CollectionView async & await 적용
 // TODO: 내용 글자 제한 수
 
@@ -77,8 +77,8 @@ class CreateBoardViewController: UIViewController {
     
     private func initNavigationBar(){
         self.navigationItem.title = "글쓰기"
-//        self.navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(systemName: "arrow.up"), style: .done, target: self, action: #selector(), animated: true)
-//        self.navigationItem.rightBarButtonItem?.tintColor = .black
+        self.navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(systemName: "arrow.up"), style: .done, target: self, action: #selector(uploadBoard)), animated: true)
+        self.navigationItem.rightBarButtonItem?.tintColor = .black
     }
     
     private func initUI(){
@@ -143,6 +143,10 @@ class CreateBoardViewController: UIViewController {
             make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
     }
+               
+    @objc private func uploadBoard(){
+        
+    }
     
     @objc private func showCategoryList(){
         let vc = CategoryViewController()
@@ -164,6 +168,7 @@ class CreateBoardViewController: UIViewController {
     }
 }
 
+                                              
 extension CreateBoardViewController: UITextViewDelegate{
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty{
@@ -199,6 +204,8 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
         if !results.isEmpty{
             selectedImage.removeAll()
             let dispatchGroup = DispatchGroup() // TODO: 수정
+            // MARK: 업로드 버튼 비활성화
+            self.navigationItem.rightBarButtonItem?.isEnabled = false
             dispatchGroup.enter() // TODO: 수정
             for result in results {
                 let itemProvider = result.itemProvider
@@ -209,6 +216,10 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
                             // TODO: 수정 /**
                             if self?.selectedImage.count == results.count{
                                 dispatchGroup.leave()
+                                // MARK: 업로드 버튼 활성화
+                                DispatchQueue.main.async {
+                                    self?.navigationItem.rightBarButtonItem?.isEnabled = true
+                                }
                             }
                             // **/
                         }
