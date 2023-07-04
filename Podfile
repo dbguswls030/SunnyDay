@@ -8,6 +8,7 @@ target 'Gardener' do
   # Pods for Gardener
   pod 'SnapKit', '~> 5.6.0'
   pod 'FirebaseAuth'
+  pod 'FirebaseStorage'
   pod 'FirebaseFirestore'
   pod 'GoogleSignIn'
   pod 'KakaoSDKCommon'

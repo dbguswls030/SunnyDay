@@ -13,7 +13,7 @@ import GoogleSignIn
 
 class LoginViewController: UIViewController {
     
-    lazy var loginView: LoginView = {
+    private lazy var loginView: LoginView = {
         let view = LoginView()
         view.googleLoginButtonAction(target: self, action: #selector(googleLogin))
        return view
@@ -26,7 +26,7 @@ class LoginViewController: UIViewController {
         
     }
     
-    func initUI(){
+    private func initUI(){
         self.view.addSubview(loginView)
         loginView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -34,7 +34,7 @@ class LoginViewController: UIViewController {
         loginView.initUI()
     }
     
-    @objc func googleLogin(){
+    @objc private func googleLogin(){
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
         
         // Create Google Sign In configuration object.
@@ -64,7 +64,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-    func logout(){
+    private func logout(){
         // 구글 로그아웃
         GIDSignIn.sharedInstance.signOut()
         
