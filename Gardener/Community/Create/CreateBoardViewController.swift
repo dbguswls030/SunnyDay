@@ -7,12 +7,16 @@
 
 import UIKit
 import SnapKit
-
 import PhotosUI
+import FirebaseAuth
+import FirebaseFirestore
+import FirebaseCore
+import FirebaseStorage
 
 // TODO: 사진 로드 중에는 작성 버튼 잠금 (삭제, 추가 시)
 // TODO: 사진 CollectionView async & await 적용
-// TODO: 내용 글자 제한 수
+// TODO: 게시글 업로드
+
 
 class CreateBoardViewController: UIViewController {
     
@@ -145,6 +149,24 @@ class CreateBoardViewController: UIViewController {
     }
                
     @objc private func uploadBoard(){
+        guard let category = titleObjcetLabel.text, category != "카테고리를 선택해 주세요." else{
+            // TODO: 카테고리 선택 경고
+            return
+        }
+        guard let contents = contentTextView.text, !contents.isEmpty else{
+            // TODO: 내용 공백 경고
+            return
+        }
+        let db = Firestore.firestore()
+        if let uid = Auth.auth().currentUser?.uid{
+            db.collection("community").addDocument(data: ["category" : category,
+                                                          "contents" :contents,
+                                                          "uid" : uid,
+                                                          "date" : Timestamp(date: Date()),
+                                                          "imageUrl" : ""])
+        }
+        
+        
         
     }
     
