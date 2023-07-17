@@ -24,7 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         FirebaseApp.configure()
         
-        if let user = Auth.auth().currentUser{
+        if Auth.auth().currentUser != nil{
             print("Auto login successed")
             self.window?.rootViewController = MainTabBarController()
             self.window?.makeKeyAndVisible()
