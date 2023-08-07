@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseCore
 import FirebaseAuth
+import FirebaseFirestore
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -24,15 +25,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         FirebaseApp.configure()
         
-        if Auth.auth().currentUser != nil{
-            print("Auto login successed")
-            self.window?.rootViewController = MainTabBarController()
-            self.window?.makeKeyAndVisible()
+        if let user = Auth.auth().currentUser{
+            Firestore.firestore().collection("user").document(user.uid).getDocument { document, error in
+                if let error = error{
+                    print("getDocument erorr : \(error.localizedDescription)")
+                }
+                if let document = document, document.exists{
+                    let data = document.data().map{$0}
+                    print("Auto login successed")
+                    print(String(describing: data))
+                    self.window?.rootViewController = MainTabBarController()
+                    self.window?.makeKeyAndVisible()
+                }else{
+                    print("Auto login failed")
+                    print("not find uid in fireStore")
+                    self.window?.rootViewController = SignUpViewController()
+                    self.window?.makeKeyAndVisible()
+                }
+            }
         }else{
             print("Auto login failed")
-            self.window?.rootViewController = LoginViewController()
+            print("not find uid in fireStore")
+            self.window?.rootViewController = SignUpViewController()
             self.window?.makeKeyAndVisible()
         }
+       
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

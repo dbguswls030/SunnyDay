@@ -114,9 +114,10 @@ extension LoginViewController{
                 print("verification error : \(error.localizedDescription)")
                 return
             }
+            
+            print("login success")
             if let uid = success?.user.uid{
                 print(uid)
-
                 Firestore.firestore().collection("user").document(uid).getDocument { document, error in
                     if let error = error{
                         print("getDocument erorr : \(error.localizedDescription)")
@@ -124,17 +125,20 @@ extension LoginViewController{
                     if let document = document, document.exists{
                         let data = document.data().map{$0}
                         print("success get document ")
-                        // TODO: 가드닝 화면 이동
-                        print(data)
+                        print(String(describing: data))
+                        let vc = MainTabBarController()
+                        vc.modalPresentationStyle = .fullScreen
+                        self.present(vc, animated: true)
                     }else{
                         // TODO: 닉네임 입력창 이동
                         print("failed get document")
+                        let vc = SignUpViewController()
+                        vc.modalPresentationStyle = .fullScreen
+                        vc.uid = uid
+                        self.present(vc, animated: true)
                     }
                 }
             }
-            
-            
-            print("login success")
         }
     }
 }
