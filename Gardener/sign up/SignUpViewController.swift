@@ -11,9 +11,7 @@ import FirebaseCore
 import FirebaseFirestore
 import PhotosUI
 
-// TODO: 프로필 사진 선택 시 앨범보기, 이미지 삭제 바
-// TODO: 프로필 사진 -> 앨범 선택 시 프로필 사진 업데이트
-
+// TODO: 사진 저장하는 방법(storage -> fireStore)
 
 class SignUpViewController: UIViewController {
 
@@ -40,7 +38,25 @@ class SignUpViewController: UIViewController {
         signView.nickNameTextField.delegate = self
         signView.nickNameTextField.addTarget(self, action: #selector(minimumNickNameLength(_ :)), for: .editingChanged)
         signView.submitButton.addTarget(self, action: #selector(setProfile(_ :)), for: .touchUpInside)
-        signView.profileImage.addTarget(self, action: #selector(showMyAlbum(_ :)), for: .touchUpInside)
+        signView.profileImage.addTarget(self, action: #selector(touchUpProfileImage(_ :)), for: .touchUpInside)
+    }
+    
+    @objc private func touchUpProfileImage(_ sender: Any){
+        let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+    
+        let showAlbum = UIAlertAction(title: "앨범에서 선택", style: .default) { action in
+            self.showMyAlbum()
+        }
+        let removeProfile = UIAlertAction(title: "기본 이미지로 변경", style: .destructive) { action in
+            self.signView.profileImage.setImage(UIImage(named: "free-icon-user-847969"), for: .normal)
+        }
+        let actionCancel = UIAlertAction(title: "취소", style: .cancel)
+        
+        actionSheetController.addAction(showAlbum)
+        actionSheetController.addAction(removeProfile)
+        actionSheetController.addAction(actionCancel)
+        
+        self.present(actionSheetController, animated: true)
     }
     
     @objc private func setProfile(_ sender: Any){
@@ -49,7 +65,7 @@ class SignUpViewController: UIViewController {
                                                           "profileImage" : ""])
     }
     
-    @objc private func showMyAlbum(_ sender: Any){
+    private func showMyAlbum(){
         var configuration = PHPickerConfiguration(photoLibrary: .shared())
         configuration.filter = .images
         configuration.selectionLimit = 1

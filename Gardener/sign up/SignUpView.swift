@@ -24,9 +24,10 @@ class SignUpView: UIView {
     
     lazy var profileImage: UIButton = {
         var button = UIButton()
-        button.setImage(UIImage(named: "ralo"), for: .normal)
+        button.setImage(UIImage(named: "free-icon-user-847969"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFill
         button.layer.cornerRadius = 60
+        button.adjustsImageWhenHighlighted = false
         button.clipsToBounds = true
         return button
     }()
