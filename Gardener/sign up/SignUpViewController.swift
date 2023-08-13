@@ -9,17 +9,18 @@ import UIKit
 import SnapKit
 import FirebaseCore
 import FirebaseFirestore
+import FirebaseStorage
+import FirebaseAuth
 import PhotosUI
 
-// TODO: 사진 저장하는 방법(storage -> fireStore)
+
+// TODO: 사진 고르고 프로필 사진 업데이트 되는 동안 시작 버튼 잠금 -> button.ImageView 업데이트 부분과 button.image 변수 분리하기
 
 class SignUpViewController: UIViewController {
 
     private lazy var signView: SignUpView = {
         return SignUpView()
     }()
-    
-    var uid = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,7 +49,7 @@ class SignUpViewController: UIViewController {
             self.showMyAlbum()
         }
         let removeProfile = UIAlertAction(title: "기본 이미지로 변경", style: .destructive) { action in
-            self.signView.profileImage.setImage(UIImage(named: "free-icon-user-847969"), for: .normal)
+            self.signView.profileImage.setImage(UIImage(named: "defaultProfileImage"), for: .normal)
         }
         let actionCancel = UIAlertAction(title: "취소", style: .cancel)
         
@@ -61,8 +62,20 @@ class SignUpViewController: UIViewController {
     
     @objc private func setProfile(_ sender: Any){
         let db = Firestore.firestore()
-        db.collection("user").document(self.uid).setData(["nickName" : String(describing: signView.nickNameTextField.text),
-                                                          "profileImage" : ""])
+        guard let uploadProfileImage = self.signView.profileImage.imageView?.image else { return }
+        print("isExist uploadProfileImage")
+        if let user = Auth.auth().currentUser{
+            FirebaseStorageManager.uploadProfileImage(image: uploadProfileImage, pathRoot: user.uid) { url in
+                if let url = url {
+                    print("download url = \(url)")
+                    db.collection("user").document(user.uid).setData(["nickName" : String(describing: self.signView.nickNameTextField.text!),
+                                                                      "profileImage" : url.absoluteString])
+                    let vc = MainTabBarController()
+                    vc.modalPresentationStyle = .fullScreen
+                    self.present(vc, animated: true)
+                }
+            }
+        }
     }
     
     private func showMyAlbum(){

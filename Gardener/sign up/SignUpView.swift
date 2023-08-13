@@ -24,7 +24,7 @@ class SignUpView: UIView {
     
     lazy var profileImage: UIButton = {
         var button = UIButton()
-        button.setImage(UIImage(named: "free-icon-user-847969"), for: .normal)
+        button.setImage(UIImage(named: "defaultProfileImage"), for: .normal)
         button.imageView?.contentMode = .scaleAspectFill
         button.layer.cornerRadius = 60
         button.adjustsImageWhenHighlighted = false
@@ -38,6 +38,7 @@ class SignUpView: UIView {
         view.layer.cornerRadius = 15
         return view
     }()
+    
     private lazy var addImageButton: UIImageView = {
         var imageView = UIImageView(image: UIImage(systemName: "camera.fill"))
         imageView.contentMode = .scaleAspectFill

@@ -114,10 +114,9 @@ extension LoginViewController{
                 print("verification error : \(error.localizedDescription)")
                 return
             }
-            
-            print("login success")
+
+            print("firebase signIn success")
             if let uid = success?.user.uid{
-                print(uid)
                 Firestore.firestore().collection("user").document(uid).getDocument { document, error in
                     if let error = error{
                         print("getDocument erorr : \(error.localizedDescription)")
@@ -125,16 +124,15 @@ extension LoginViewController{
                     if let document = document, document.exists{
                         let data = document.data().map{$0}
                         print("success get document ")
-                        print(String(describing: data))
+                        // TODO: 이미 생성된 계정이 있습니다 팝업
                         let vc = MainTabBarController()
                         vc.modalPresentationStyle = .fullScreen
                         self.present(vc, animated: true)
                     }else{
-                        // TODO: 닉네임 입력창 이동
+                        // TODO: 생성된 프로필이 없습니다. 프로필 설정 화면으로 이동합니다.
                         print("failed get document")
                         let vc = SignUpViewController()
                         vc.modalPresentationStyle = .fullScreen
-                        vc.uid = uid
                         self.present(vc, animated: true)
                     }
                 }

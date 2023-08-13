@@ -14,7 +14,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -24,7 +23,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         
         FirebaseApp.configure()
-        
+                let firebaseAuth = Auth.auth()
+                do {
+                    try firebaseAuth.signOut()
+                } catch let signOutError as NSError {
+                    print("Error signing out: %@", signOutError)
+                }
+        // 앱 삭제 후 재설치 해도 auth 존재
         if let user = Auth.auth().currentUser{
             Firestore.firestore().collection("user").document(user.uid).getDocument { document, error in
                 if let error = error{
@@ -32,21 +37,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
                 if let document = document, document.exists{
                     let data = document.data().map{$0}
-                    print("Auto login successed")
-                    print(String(describing: data))
+                    print("exist document")
                     self.window?.rootViewController = MainTabBarController()
                     self.window?.makeKeyAndVisible()
                 }else{
-                    print("Auto login failed")
-                    print("not find uid in fireStore")
-                    self.window?.rootViewController = SignUpViewController()
+                    // 인증번호 검사 후 프로필 설정 화면에서 껐을 경우(프로필 설정까지 완료하지 않은 경우)
+                    print("not exist document")
+                    self.window?.rootViewController = LoginViewController()
                     self.window?.makeKeyAndVisible()
                 }
             }
         }else{
-            print("Auto login failed")
-            print("not find uid in fireStore")
-            self.window?.rootViewController = SignUpViewController()
+            // 폰 인증 안 받은 경우
+            print("not found currentUser")
+            self.window?.rootViewController = LoginViewController()
             self.window?.makeKeyAndVisible()
         }
        
