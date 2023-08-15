@@ -11,6 +11,9 @@ import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
 
+// TODO: 타인에게 인증번호 공유하지 않기 경고 label
+// TODO: 인증번호 유효시간 5분 안내 Label
+
 class LoginViewController: UIViewController {
     
     private var verificationId = ""
@@ -57,10 +60,10 @@ extension LoginViewController: UITextFieldDelegate{
         if let text = self.loginView.phoneNumberTextField.text{
             if text.count < 11{
                 loginView.submitButton.isEnabled = false
-                loginView.submitButton.backgroundColor = .lightGray
+                loginView.submitButton.setTitleColor(.lightGray, for: .normal)
             }else{
                 loginView.submitButton.isEnabled = true
-                loginView.submitButton.backgroundColor = .green
+                loginView.submitButton.setTitleColor(.black, for: .normal)
             }
         }
     }
@@ -69,26 +72,36 @@ extension LoginViewController: UITextFieldDelegate{
         if let text = self.loginView.verificationNumberTextField.text{
             if text.count < 6{
                 loginView.startButton.isEnabled = false
-                loginView.startButton.backgroundColor = .lightGray
+                loginView.startButton.setTitleColor(.lightGray, for: .normal)
             }else{
                 loginView.startButton.isEnabled = true
-                loginView.startButton.backgroundColor = .green
+                loginView.startButton.setTitleColor(.black, for: .normal)
             }
         }
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if let char = string.cString(using: String.Encoding.utf8) {
-            let isBackSpace = strcmp(char, "\\b")
-            if isBackSpace == -92 {
-                return true
+        if textField == loginView.verificationNumberTextField{
+            if let char = string.cString(using: String.Encoding.utf8) {
+                let isBackSpace = strcmp(char, "\\b")
+                if isBackSpace == -92 {
+                    return true
+                }
+            }
+            guard loginView.verificationNumberTextField.text!.count < 6 else{
+                return false
             }
         }
-        guard loginView.phoneNumberTextField.text!.count < 11 else{
-            return false
-        }
-        guard loginView.verificationNumberTextField.text!.count < 6 else{
-            return false
+        if textField == loginView.phoneNumberTextField{
+            if let char = string.cString(using: String.Encoding.utf8) {
+                let isBackSpace = strcmp(char, "\\b")
+                if isBackSpace == -92 {
+                    return true
+                }
+            }
+            guard loginView.phoneNumberTextField.text!.count < 11 else{
+                return false
+            }
         }
         return true
     }
@@ -100,7 +113,8 @@ extension LoginViewController{
                 print("phoneNumber verifing error \(error.localizedDescription)")
                 return
             }
-            
+            self.loginView.hideLogoImage()
+            self.loginView.submitButton.setTitle("인증번호 다시 받기", for: .normal)
             self.loginView.verificationNumberTextField.isHidden = false
             self.loginView.startButton.isHidden = false
             self.verificationId = verification ?? ""
@@ -111,16 +125,18 @@ extension LoginViewController{
         let credential = PhoneAuthProvider.provider().credential(withVerificationID: self.verificationId, verificationCode: "123456")
         Auth.auth().signIn(with: credential){ success, error in
             if let error = error {
+                // TODO: 인증번호 오류 시 팝업
                 print("verification error : \(error.localizedDescription)")
                 return
             }
-
+            
             print("firebase signIn success")
             if let uid = success?.user.uid{
                 Firestore.firestore().collection("user").document(uid).getDocument { document, error in
                     if let error = error{
                         print("getDocument erorr : \(error.localizedDescription)")
                     }
+                    // 로그아웃 후 재 로그인 시
                     if let document = document, document.exists{
                         let data = document.data().map{$0}
                         print("success get document ")

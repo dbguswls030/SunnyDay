@@ -12,7 +12,7 @@ class SignUpView: UIView {
     
     private lazy var profileTitle: UILabel = {
         var label = UILabel()
-        label.text = "프로필 설정하기"
+        label.text = "프로필 설정"
         label.font = UIFont.boldSystemFont(ofSize: 22)
         return label
     }()
@@ -100,7 +100,7 @@ class SignUpView: UIView {
         self.addSubview(submitButton)
 
         profileTitle.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(60)
+            make.top.equalToSuperview().offset(55)
             make.left.equalToSuperview().offset(30)
         }
         

@@ -10,11 +10,20 @@ import SnapKit
 import FirebaseCore
 import FirebaseAuth
 
-// TODO: Firebase에 없은 계정일 시에 회원가입 프로필 생성 ㄱㄱ
-
-
 class LoginView: UIView{
 
+    private lazy var profileTitle: UILabel = {
+        var label = UILabel()
+        label.text = "전화번호 인증"
+        label.font = UIFont.boldSystemFont(ofSize: 22)
+        return label
+    }()
+    
+    private lazy var profileTitleBottomLine: BreakLine = {
+        var view = BreakLine()
+        return view
+    }()
+    
     private lazy var tempImage: UIImageView = {
         return UIImageView(image: UIImage(named: "ralo"))
     }()
@@ -36,10 +45,10 @@ class LoginView: UIView{
         button.layer.borderColor = UIColor.darkGray.cgColor
         button.layer.borderWidth = 1.1
         button.layer.cornerRadius = 5
-        button.isEnabled = true
-        button.backgroundColor = .lightGray
-        button.setTitle("인증하기", for: .normal)
+        button.isEnabled = false
+        button.setTitle("인증문자 받기", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.setTitleColor(.lightGray, for: .normal)
         return button
     }()
     
@@ -62,9 +71,9 @@ class LoginView: UIView{
         button.layer.borderWidth = 1.1
         button.layer.cornerRadius = 5
         button.isEnabled = true
-        button.backgroundColor = .lightGray
         button.setTitle("시작하기", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.setTitleColor(.lightGray, for: .normal)
         button.isHidden = true
         return button
     }()
@@ -80,14 +89,28 @@ class LoginView: UIView{
     
     private func initUI(){
         backgroundColor = .white
+        self.addSubview(profileTitle)
+        self.addSubview(profileTitleBottomLine)
         self.addSubview(tempImage)
         self.addSubview(phoneNumberTextField)
         self.addSubview(submitButton)
         self.addSubview(verificationNumberTextField)
         self.addSubview(startButton)
         
+        profileTitle.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(55)
+            make.left.equalToSuperview().offset(30)
+        }
+        
+        profileTitleBottomLine.snp.makeConstraints { make in
+            make.top.equalTo(profileTitle.snp.bottom).offset(15)
+            make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
+            make.height.equalTo(1)
+        }
+        
         tempImage.snp.makeConstraints { make in
-            make.top.equalTo(80)
+            make.top.equalTo(profileTitleBottomLine.snp.bottom).offset(45)
             make.width.equalTo(140)
             make.height.equalTo(140)
             make.centerX.equalToSuperview()
@@ -101,7 +124,7 @@ class LoginView: UIView{
         }
         
         submitButton.snp.makeConstraints { make in
-            make.top.equalTo(phoneNumberTextField.snp.bottom).offset(20)
+            make.top.equalTo(phoneNumberTextField.snp.bottom).offset(18)
             make.left.equalToSuperview().offset(30)
             make.right.equalToSuperview().offset(-30)
             make.height.equalTo(45)
@@ -115,10 +138,19 @@ class LoginView: UIView{
         }
         
         startButton.snp.makeConstraints { make in
-            make.top.equalTo(verificationNumberTextField.snp.bottom).offset(20)
+            make.top.equalTo(verificationNumberTextField.snp.bottom).offset(18)
             make.left.equalToSuperview().offset(30)
             make.right.equalToSuperview().offset(-30)
             make.height.equalTo(45)
         }   
+    }
+    
+    func hideLogoImage(){
+        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+            self.tempImage.snp.updateConstraints { make in
+                make.height.equalTo(0)
+            }
+            self.tempImage.superview?.layoutIfNeeded()
+        })
     }
 }
