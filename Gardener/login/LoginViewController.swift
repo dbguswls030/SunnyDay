@@ -119,6 +119,7 @@ extension LoginViewController{
     }
     
     @objc func start(_ sender: Any?){
+        self.dismissKeyboard()
         let credential = PhoneAuthProvider.provider().credential(withVerificationID: self.verificationId, verificationCode: "123456")
         Auth.auth().signIn(with: credential){ success, error in
             if let error = error {
@@ -133,16 +134,14 @@ extension LoginViewController{
                     if let error = error{
                         print("getDocument erorr : \(error.localizedDescription)")
                     }
+                    
                     // 로그아웃 후 재 로그인 시
                     if let document = document, document.exists{
-                        let data = document.data().map{$0}
                         print("success get document ")
-                        // TODO: 이미 생성된 계정이 있습니다 팝업
                         let vc = MainTabBarController()
                         vc.modalPresentationStyle = .fullScreen
                         self.present(vc, animated: true)
                     }else{
-                        // TODO: 생성된 프로필이 없습니다. 프로필 설정 화면으로 이동합니다.
                         print("failed get document")
                         let vc = SignUpViewController()
                         vc.modalPresentationStyle = .fullScreen

@@ -20,12 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.windowScene = windowScene
         
         FirebaseApp.configure()
-        let firebaseAuth = Auth.auth()
-        do {
-            try firebaseAuth.signOut()
-        } catch let signOutError as NSError {
-            print("Error signing out: %@", signOutError)
-        }
+
         // 앱 삭제 후 재설치 해도 auth 존재
         if let user = Auth.auth().currentUser{
             Firestore.firestore().collection("user").document(user.uid).getDocument { document, error in
