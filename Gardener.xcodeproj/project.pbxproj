@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		85CDA233D3286C0B1E28E996 /* Pods_Gardener_GardenerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80C115DF6914C18DF7B916A6 /* Pods_Gardener_GardenerUITests.framework */; };
+		9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0414852A6557BF00DD6F2C /* SignUpViewController.swift */; };
+		9F0414882A6557DB00DD6F2C /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0414872A6557DB00DD6F2C /* SignUpView.swift */; };
 		9F13E0D129D2D95000651EA0 /* MyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D029D2D95000651EA0 /* MyViewController.swift */; };
 		9F13E0D329D2D95D00651EA0 /* ShopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D229D2D95D00651EA0 /* ShopViewController.swift */; };
 		9F13E0D529D2D96400651EA0 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D429D2D96400651EA0 /* HomeViewController.swift */; };
@@ -28,6 +30,9 @@
 		9F9E11D629C4C3B90090B2E6 /* GardenerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11D529C4C3B90090B2E6 /* GardenerTests.swift */; };
 		9F9E11E029C4C3B90090B2E6 /* GardenerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11DF29C4C3B90090B2E6 /* GardenerUITests.swift */; };
 		9F9E11E229C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */; };
+		9FB122562A87AB6F00C346E7 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */; };
+		9FB122592A87ABDC00C346E7 /* FirebaseFirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */; };
+		9FB1229B2A8E780800C346E7 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB1229A2A8E780800C346E7 /* Toast.swift */; };
 		9FB31D2229D90E4A00F02DE0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9FB31D2129D90E4A00F02DE0 /* GoogleService-Info.plist */; };
 		9FB31D7129DD962F00F02DE0 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB31D7029DD962F00F02DE0 /* LoginViewController.swift */; };
 		9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB31D7229DD96AD00F02DE0 /* LoginView.swift */; };
@@ -59,6 +64,8 @@
 		7673A8386E10A1990787A4F1 /* Pods-Gardener.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gardener.release.xcconfig"; path = "Target Support Files/Pods-Gardener/Pods-Gardener.release.xcconfig"; sourceTree = "<group>"; };
 		80C115DF6914C18DF7B916A6 /* Pods_Gardener_GardenerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gardener_GardenerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		87E5E5BF433D86A777A9ADDB /* Pods-GardenerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GardenerTests.debug.xcconfig"; path = "Target Support Files/Pods-GardenerTests/Pods-GardenerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		9F0414852A6557BF00DD6F2C /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		9F0414872A6557DB00DD6F2C /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		9F13E0D029D2D95000651EA0 /* MyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyViewController.swift; sourceTree = "<group>"; };
 		9F13E0D229D2D95D00651EA0 /* ShopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewController.swift; sourceTree = "<group>"; };
 		9F13E0D429D2D96400651EA0 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
@@ -83,6 +90,9 @@
 		9F9E11DB29C4C3B90090B2E6 /* GardenerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GardenerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F9E11DF29C4C3B90090B2E6 /* GardenerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenerUITests.swift; sourceTree = "<group>"; };
 		9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenerUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
+		9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseFirestoreManager.swift; sourceTree = "<group>"; };
+		9FB1229A2A8E780800C346E7 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		9FB31D2129D90E4A00F02DE0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9FB31D7029DD962F00F02DE0 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		9FB31D7229DD96AD00F02DE0 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -119,6 +129,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9F0414842A65579300DD6F2C /* sign up */ = {
+			isa = PBXGroup;
+			children = (
+				9F0414852A6557BF00DD6F2C /* SignUpViewController.swift */,
+				9F0414872A6557DB00DD6F2C /* SignUpView.swift */,
+			);
+			path = "sign up";
+			sourceTree = "<group>";
+		};
 		9F13E0CB29D2D8D500651EA0 /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -210,16 +229,19 @@
 		9F9E11BD29C4C3B70090B2E6 /* Gardener */ = {
 			isa = PBXGroup;
 			children = (
+				9FB122542A87AB4A00C346E7 /* Network */,
 				9F1F64052A52CB6F00CD9265 /* Model */,
 				9F9E11BE29C4C3B70090B2E6 /* AppDelegate.swift */,
 				9F9E11C029C4C3B70090B2E6 /* SceneDelegate.swift */,
 				9F9E11C229C4C3B70090B2E6 /* MainTabBarController.swift */,
 				9FB31D6F29DD960A00F02DE0 /* login */,
+				9F0414842A65579300DD6F2C /* sign up */,
 				9F13E0CD29D2D8DC00651EA0 /* Garden */,
 				9F13E0CE29D2D8DE00651EA0 /* Community */,
 				9F13E0CB29D2D8D500651EA0 /* Home */,
 				9F13E0CF29D2D8E000651EA0 /* Shop */,
 				9F13E0CC29D2D8DA00651EA0 /* My */,
+				9FB122932A8E697300C346E7 /* Popup */,
 				9F95B9D82A2DC8B100A5E247 /* Common.swift */,
 				9F9E11C729C4C3B90090B2E6 /* Assets.xcassets */,
 				9F13E0DE29D2E6AF00651EA0 /* UI.storyboard */,
@@ -245,6 +267,23 @@
 				9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */,
 			);
 			path = GardenerUITests;
+			sourceTree = "<group>";
+		};
+		9FB122542A87AB4A00C346E7 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */,
+				9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		9FB122932A8E697300C346E7 /* Popup */ = {
+			isa = PBXGroup;
+			children = (
+				9FB1229A2A8E780800C346E7 /* Toast.swift */,
+			);
+			path = Popup;
 			sourceTree = "<group>";
 		};
 		9FB31D6F29DD960A00F02DE0 /* login */ = {
@@ -533,10 +572,13 @@
 				9F9E11C329C4C3B70090B2E6 /* MainTabBarController.swift in Sources */,
 				9F95BA032A31DC3800A5E247 /* ShowPhotoPickerCollectionViewCell.swift in Sources */,
 				9F95B9D92A2DC8B100A5E247 /* Common.swift in Sources */,
+				9FB122562A87AB6F00C346E7 /* FirebaseStorageManager.swift in Sources */,
 				9F9E11BF29C4C3B70090B2E6 /* AppDelegate.swift in Sources */,
+				9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */,
 				9F13E0D329D2D95D00651EA0 /* ShopViewController.swift in Sources */,
 				9F95B9D72A2DB9E200A5E247 /* CategoryViewController.swift in Sources */,
 				9F13E0D129D2D95000651EA0 /* MyViewController.swift in Sources */,
+				9FB122592A87ABDC00C346E7 /* FirebaseFirestoreManager.swift in Sources */,
 				9F9E11C129C4C3B70090B2E6 /* SceneDelegate.swift in Sources */,
 				9F95BA052A31DC5100A5E247 /* SelectedPhotoCollectionViewCell.swift in Sources */,
 				9F13E0D929D2D97C00651EA0 /* GardenViewController.swift in Sources */,
@@ -544,6 +586,8 @@
 				9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */,
 				9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */,
 				9F1F64072A52CB9200CD9265 /* Board.swift in Sources */,
+				9FB1229B2A8E780800C346E7 /* Toast.swift in Sources */,
+				9F0414882A6557DB00DD6F2C /* SignUpView.swift in Sources */,
 				9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

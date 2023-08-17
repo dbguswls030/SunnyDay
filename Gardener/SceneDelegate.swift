@@ -6,34 +6,45 @@
 //
 
 import UIKit
-import GoogleSignIn
 import FirebaseCore
 import FirebaseAuth
+import FirebaseFirestore
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         
         FirebaseApp.configure()
-        
+
+        // 앱 삭제 후 재설치 해도 auth 존재
         if let user = Auth.auth().currentUser{
-            print("Auto login successed")
-            self.window?.rootViewController = MainTabBarController()
-            self.window?.makeKeyAndVisible()
+            Firestore.firestore().collection("user").document(user.uid).getDocument { document, error in
+                if let error = error{
+                    print("getDocument erorr : \(error.localizedDescription)")
+                }
+                if let document = document, document.exists{
+                    print("exist document")
+                    self.window?.rootViewController = MainTabBarController()
+                    self.window?.makeKeyAndVisible()
+                }else{
+                    // 인증번호 검사 후 프로필 설정 화면에서 껐을 경우(프로필 설정까지 완료하지 않은 경우)
+                    print("not exist document")
+                    self.window?.rootViewController = LoginViewController()
+                    self.window?.makeKeyAndVisible()
+                }
+            }
         }else{
-            print("Auto login failed")
+            // 폰 인증 안 받은 경우
+            print("not found currentUser")
             self.window?.rootViewController = LoginViewController()
             self.window?.makeKeyAndVisible()
         }
+       
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
