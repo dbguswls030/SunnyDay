@@ -15,20 +15,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         
         FirebaseApp.configure()
-                let firebaseAuth = Auth.auth()
-                do {
-                    try firebaseAuth.signOut()
-                } catch let signOutError as NSError {
-                    print("Error signing out: %@", signOutError)
-                }
+        let firebaseAuth = Auth.auth()
+        do {
+            try firebaseAuth.signOut()
+        } catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
+        }
         // 앱 삭제 후 재설치 해도 auth 존재
         if let user = Auth.auth().currentUser{
             Firestore.firestore().collection("user").document(user.uid).getDocument { document, error in
@@ -36,7 +33,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     print("getDocument erorr : \(error.localizedDescription)")
                 }
                 if let document = document, document.exists{
-                    let data = document.data().map{$0}
                     print("exist document")
                     self.window?.rootViewController = MainTabBarController()
                     self.window?.makeKeyAndVisible()

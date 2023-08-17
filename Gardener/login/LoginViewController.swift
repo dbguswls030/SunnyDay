@@ -11,9 +11,6 @@ import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
 
-// TODO: 타인에게 인증번호 공유하지 않기 경고 label
-// TODO: 인증번호 유효시간 5분 안내 Label
-
 class LoginViewController: UIViewController {
     
     private var verificationId = ""
@@ -37,9 +34,9 @@ class LoginViewController: UIViewController {
         }
         
         loginView.phoneNumberTextField.delegate = self
-        loginView.verificationNumberTextField.delegate = self
+        loginView.certificationNumberTextField.delegate = self
         loginView.phoneNumberTextField.addTarget(self, action: #selector(PhoneNumberTextFieldDidChange(_:)), for: .editingChanged)
-        loginView.verificationNumberTextField.addTarget(self, action: #selector(verificationNumberTextFieldDidChange(_:)), for: .editingChanged)
+        loginView.certificationNumberTextField.addTarget(self, action: #selector(verificationNumberTextFieldDidChange(_:)), for: .editingChanged)
         loginView.submitButton.addTarget(self, action: #selector(verifyPhoneNumber(_:)), for: .touchUpInside)
         loginView.startButton.addTarget(self, action: #selector(start(_:)), for: .touchUpInside)
 //        loginView.initUI()
@@ -69,7 +66,7 @@ extension LoginViewController: UITextFieldDelegate{
     }
     
     @objc func verificationNumberTextFieldDidChange(_ sender: Any?){
-        if let text = self.loginView.verificationNumberTextField.text{
+        if let text = self.loginView.certificationNumberTextField.text{
             if text.count < 6{
                 loginView.startButton.isEnabled = false
                 loginView.startButton.setTitleColor(.lightGray, for: .normal)
@@ -81,14 +78,14 @@ extension LoginViewController: UITextFieldDelegate{
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField == loginView.verificationNumberTextField{
+        if textField == loginView.certificationNumberTextField{
             if let char = string.cString(using: String.Encoding.utf8) {
                 let isBackSpace = strcmp(char, "\\b")
                 if isBackSpace == -92 {
                     return true
                 }
             }
-            guard loginView.verificationNumberTextField.text!.count < 6 else{
+            guard loginView.certificationNumberTextField.text!.count < 6 else{
                 return false
             }
         }
@@ -114,9 +111,9 @@ extension LoginViewController{
                 return
             }
             self.loginView.hideLogoImage()
+            self.loginView.showWarningLabel()
             self.loginView.submitButton.setTitle("인증번호 다시 받기", for: .normal)
-            self.loginView.verificationNumberTextField.isHidden = false
-            self.loginView.startButton.isHidden = false
+            self.loginView.showCeritificationView()
             self.verificationId = verification ?? ""
         }
     }

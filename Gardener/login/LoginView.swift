@@ -11,7 +11,7 @@ import FirebaseCore
 import FirebaseAuth
 
 class LoginView: UIView{
-
+    
     private lazy var profileTitle: UILabel = {
         var label = UILabel()
         label.text = "전화번호 인증"
@@ -52,7 +52,16 @@ class LoginView: UIView{
         return button
     }()
     
-    internal lazy var verificationNumberTextField: UITextField = {
+    private lazy var certificationExpirationPeriodLabel: UILabel = {
+        var label = UILabel()
+        label.text = "인증번호 유효기간은 5분 이내입니다."
+        label.font = .systemFont(ofSize: 13)
+        label.sizeToFit()
+        label.isHidden = true
+        return label
+    }()
+    
+    internal lazy var certificationNumberTextField: UITextField = {
         var textField = UITextField()
         textField.placeholder = "인증번호 입력"
         textField.layer.borderColor = UIColor.darkGray.cgColor
@@ -71,7 +80,7 @@ class LoginView: UIView{
         button.layer.borderWidth = 1.1
         button.layer.cornerRadius = 5
         button.isEnabled = true
-        button.setTitle("시작하기", for: .normal)
+        button.setTitle("인증하기", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.setTitleColor(.lightGray, for: .normal)
         button.isHidden = true
@@ -94,7 +103,8 @@ class LoginView: UIView{
         self.addSubview(tempImage)
         self.addSubview(phoneNumberTextField)
         self.addSubview(submitButton)
-        self.addSubview(verificationNumberTextField)
+        self.addSubview(certificationExpirationPeriodLabel)
+        self.addSubview(certificationNumberTextField)
         self.addSubview(startButton)
         
         profileTitle.snp.makeConstraints { make in
@@ -130,23 +140,37 @@ class LoginView: UIView{
             make.height.equalTo(45)
         }
         
-        verificationNumberTextField.snp.makeConstraints { make in
+        certificationExpirationPeriodLabel.snp.makeConstraints { make in
             make.top.equalTo(submitButton.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
+        
+        certificationNumberTextField.snp.makeConstraints { make in
+            make.top.equalTo(certificationExpirationPeriodLabel.snp.bottom).offset(20)
             make.left.equalToSuperview().offset(30)
             make.right.equalToSuperview().offset(-30)
             make.height.equalTo(45)
         }
         
         startButton.snp.makeConstraints { make in
-            make.top.equalTo(verificationNumberTextField.snp.bottom).offset(18)
+            make.top.equalTo(certificationNumberTextField.snp.bottom).offset(18)
             make.left.equalToSuperview().offset(30)
             make.right.equalToSuperview().offset(-30)
             make.height.equalTo(45)
         }   
     }
     
+    func showWarningLabel(){
+        certificationExpirationPeriodLabel.isHidden = false
+    }
+    
+    func showCeritificationView(){
+        certificationNumberTextField.isHidden = false
+        startButton.isHidden = false
+    }
+    
     func hideLogoImage(){
-        UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+        UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseOut, animations: {
             self.tempImage.snp.updateConstraints { make in
                 make.height.equalTo(0)
             }
