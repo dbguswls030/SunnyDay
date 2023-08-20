@@ -24,6 +24,8 @@ class SelectedPhotoCollectionViewCell: UICollectionViewCell {
         var button = UIButton()
         button.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
         button.imageView?.tintColor = .black
+        button.backgroundColor = .white
+        button.clipsToBounds = true
         return button
     }()
     
@@ -42,6 +44,7 @@ class SelectedPhotoCollectionViewCell: UICollectionViewCell {
             make.centerY.equalTo(imageView.snp.top)
             make.centerX.equalTo(imageView.snp.right)
         }
+        deleteButton.layer.cornerRadius = 10
     }
     
     override func prepareForReuse() {
