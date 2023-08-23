@@ -42,4 +42,48 @@ class FirebaseStorageManager{
 //            completion(UIImage(data: imageData))
 //        }
 //    }
+    
+    static func uploadBoardImages(images: [UIImage], boardId: String, uid: String, completion: @escaping ([String]) -> Void){
+        var imagesData = [Data]()
+        images.forEach { image in
+            guard let data = image.jpegData(compressionQuality: 1) else{
+                return
+            }
+            imagesData.append(data)
+        }
+        
+        // url 다 채워지고 completion 되어야함
+        let metaData = StorageMetadata()
+        metaData.contentType = "image/png"
+        
+
+        let firebaseReference = Storage.storage().reference().child("\(uid)").child("community").child("\(boardId)")
+        var urls = [String]()
+        
+        let group = DispatchGroup()
+        
+        for (offset, datum) in imagesData.enumerated() {
+            group.enter()
+            let imagesReferce = firebaseReference.child("\(boardId)_\(offset)")
+            imagesReferce.putData(datum, metadata: metaData) { metaData, error in
+                if let error = error{
+                    print("putdata Error\(error.localizedDescription)")
+                    group.leave()
+                }
+                imagesReferce.downloadURL { url, _ in
+                    defer{
+                        group.leave()
+                    }
+                    if let url = url{
+                        urls.append(url.absoluteString)
+                    }
+                }
+            }
+        }
+        group.notify(queue: .main){
+            if urls.count == imagesData.count{
+                completion(urls)
+            }
+        }
+    }
 }

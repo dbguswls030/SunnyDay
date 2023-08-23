@@ -153,21 +153,32 @@ class CreateBoardViewController: UIViewController {
             // TODO: 카테고리 선택 경고
             return
         }
+        
         guard let contents = contentTextView.text, !contents.isEmpty else{
             // TODO: 내용 공백 경고
             return
         }
+        
         let db = Firestore.firestore()
+        // storage는 올렸는데 firestore에 업로드 실패시 storage 삭제
+        
         if let uid = Auth.auth().currentUser?.uid{
-            db.collection("community").addDocument(data: ["category" : category,
-                                                          "contents" :contents,
-                                                          "uid" : uid,
-                                                          "date" : Timestamp(date: Date()),
-                                                          "imageUrl" : ""])
+            if !selectedImage.isEmpty{
+                FirebaseStorageManager.uploadBoardImages(images: selectedImage, boardId: UUID().uuidString + String(Date().timeIntervalSince1970), uid: uid) { urls in
+                    db.collection("community").addDocument(data: ["category" : category,
+                                                                  "contents" :contents,
+                                                                  "uid" : uid,
+                                                                  "date" : Timestamp(date: Date()),
+                                                                  "imageUrl" : urls])
+                }
+            }else{
+                db.collection("community").addDocument(data: ["category" : category,
+                                                              "contents" :contents,
+                                                              "uid" : uid,
+                                                              "date" : Timestamp(date: Date()),
+                                                              "imageUrl" : [String]()])
+            }
         }
-        
-        
-        
     }
     
     @objc private func showCategoryList(){
@@ -179,6 +190,7 @@ class CreateBoardViewController: UIViewController {
     }
     
     @objc private func showMyAlbum(){
+        hideKeyboard()
         var configuration = PHPickerConfiguration(photoLibrary: .shared())
         configuration.filter = .images
         configuration.selectionLimit = 5
@@ -214,8 +226,16 @@ extension CreateBoardViewController: SendCategoryDelegate{
 extension CreateBoardViewController: DeleteImageDelegate{
     @objc func deleteImage(sender: UIButton) {
         guard let cell = sender.superview as? UICollectionViewCell, let indexPath = photoCollectionView.indexPath(for: cell) else{ return }
+        DispatchQueue.main.async {
+            self.navigationItem.rightBarButtonItem?.isEnabled = false
+        }
         self.selectedImage.remove(at: indexPath.item)
         self.photoCollectionView.deleteItems(at: [indexPath])
+        self.photoCollectionView.performBatchUpdates {
+            DispatchQueue.main.async {
+                self.navigationItem.rightBarButtonItem?.isEnabled = true
+            }
+        }
     }
 }
 
@@ -226,24 +246,20 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
         if !results.isEmpty{
             selectedImage.removeAll()
             let dispatchGroup = DispatchGroup() // TODO: 수정
-            // MARK: 업로드 버튼 비활성화
-            self.navigationItem.rightBarButtonItem?.isEnabled = false
             dispatchGroup.enter() // TODO: 수정
             for result in results {
+                DispatchQueue.main.async {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = false
+                }
                 let itemProvider = result.itemProvider
                 if itemProvider.canLoadObject(ofClass: UIImage.self){
                     itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (image, error) in
                         if let image = image as? UIImage{
                             self?.selectedImage.append(image)
-                            // TODO: 수정 /**
                             if self?.selectedImage.count == results.count{
                                 dispatchGroup.leave()
-                                // MARK: 업로드 버튼 활성화
-                                DispatchQueue.main.async {
-                                    self?.navigationItem.rightBarButtonItem?.isEnabled = true
-                                }
+                                
                             }
-                            // **/
                         }
                     }
                 }
@@ -252,13 +268,16 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
             dispatchGroup.notify(queue: .global(), work: DispatchWorkItem{
                 DispatchQueue.main.async {
                     self.photoCollectionView.reloadData()
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
                 }
+                
             })
         }
     }
 }
 
 extension CreateBoardViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return selectedImage.count
     }
