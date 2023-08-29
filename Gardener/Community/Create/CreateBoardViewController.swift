@@ -13,9 +13,7 @@ import FirebaseFirestore
 import FirebaseCore
 import FirebaseStorage
 
-// TODO: 사진 로드 중에는 작성 버튼 잠금 (삭제, 추가 시)
-// TODO: 사진 CollectionView async & await 적용
-// TODO: 게시글 업로드
+// TODO: 업로드 시 indicator 
 
 
 class CreateBoardViewController: UIViewController {
@@ -136,6 +134,7 @@ class CreateBoardViewController: UIViewController {
             make.bottom.equalToSuperview()
             make.width.equalTo(scrollView.snp.width).offset(-LEADINGTRAIINGOFFSET * 2)
         }
+        
         photoCollectionView.register(ShowPhotoPickerCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "addImage")
         photoCollectionView.register(SelectedPhotoCollectionViewCell.self, forCellWithReuseIdentifier: "selectedImage")
 
@@ -150,33 +149,48 @@ class CreateBoardViewController: UIViewController {
                
     @objc private func uploadBoard(){
         guard let category = titleObjcetLabel.text, category != "카테고리를 선택해 주세요." else{
-            // TODO: 카테고리 선택 경고
+//            Toast().showToast(view: self.view, message: "카테고리를 선택해 주세요.")
             return
         }
         
-        guard let contents = contentTextView.text, !contents.isEmpty else{
-            // TODO: 내용 공백 경고
+        guard let contents = contentTextView.text, contents.count > 1, contents != "내용을 입력해 주세요." else{
+//            Toast().showToast(view: self.view, message: "내용을 최소 두 글자 이상 입력해주세요.")
             return
         }
         
         let db = Firestore.firestore()
-        // storage는 올렸는데 firestore에 업로드 실패시 storage 삭제
         
         if let uid = Auth.auth().currentUser?.uid{
             if !selectedImage.isEmpty{
-                FirebaseStorageManager.uploadBoardImages(images: selectedImage, boardId: UUID().uuidString + String(Date().timeIntervalSince1970), uid: uid) { urls in
+                let boardId = UUID().uuidString + String(Date().timeIntervalSince1970)
+                FirebaseStorageManager.uploadBoardImages(images: selectedImage, boardId: boardId, uid: uid) { urls in
                     db.collection("community").addDocument(data: ["category" : category,
                                                                   "contents" :contents,
                                                                   "uid" : uid,
                                                                   "date" : Timestamp(date: Date()),
-                                                                  "imageUrl" : urls])
+                                                                  "imageUrl" : urls]) { error in
+                        if error != nil {
+                            FirebaseStorageManager.deleteBoard(boardId: boardId, uid: uid)
+//                            Toast().showToast(view: self.view, message: "게시글 업로드를 실패했습니다.")
+                        }else{
+//                            Toast().showToast(view: self.view, message: "게시글 업로드를 성공하였습니다.")
+                            self.navigationController?.popViewController(animated: true)
+                        }
+                    }
                 }
             }else{
                 db.collection("community").addDocument(data: ["category" : category,
                                                               "contents" :contents,
                                                               "uid" : uid,
                                                               "date" : Timestamp(date: Date()),
-                                                              "imageUrl" : [String]()])
+                                                              "imageUrl" : [String]()]) { error in
+                    if error != nil {
+//                        Toast().showToast(view: self.view, message: "게시글 업로드를 실패했습니다.")
+                    }else{
+//                        Toast().showToast(view: self.view, message: "게시글 업로드를 성공하였습니다.")
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
             }
         }
     }
@@ -190,7 +204,7 @@ class CreateBoardViewController: UIViewController {
     }
     
     @objc private func showMyAlbum(){
-        hideKeyboard()
+        dismissKeyboard()
         var configuration = PHPickerConfiguration(photoLibrary: .shared())
         configuration.filter = .images
         configuration.selectionLimit = 5
@@ -245,8 +259,8 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
 
         if !results.isEmpty{
             selectedImage.removeAll()
-            let dispatchGroup = DispatchGroup() // TODO: 수정
-            dispatchGroup.enter() // TODO: 수정
+            let dispatchGroup = DispatchGroup()
+            dispatchGroup.enter()
             for result in results {
                 DispatchQueue.main.async {
                     self.navigationItem.rightBarButtonItem?.isEnabled = false
@@ -264,7 +278,6 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
                     }
                 }
             }
-            // TODO: 수정
             dispatchGroup.notify(queue: .global(), work: DispatchWorkItem{
                 DispatchQueue.main.async {
                     self.photoCollectionView.reloadData()

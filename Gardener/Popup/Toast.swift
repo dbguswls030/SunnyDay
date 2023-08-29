@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 
 class Toast{
+    // TODO: 최상위 뷰?
+    // TODO: 팝업 위치 동적으로 조정(키보드 나와있을 경우, 홈일 경우 등...)
     func showToast(view: UIView, message: String){
         let toastLabel = UILabel()
         toastLabel.text = message

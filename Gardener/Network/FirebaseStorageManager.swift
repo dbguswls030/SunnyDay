@@ -86,4 +86,22 @@ class FirebaseStorageManager{
             }
         }
     }
+    
+    static func deleteBoard(boardId: String, uid: String){
+        Storage.storage().reference().child("\(uid)").child("community").child("\(boardId)").listAll { result, error in
+            if error != nil{
+                print("get list falied")
+                return
+            }
+            if let result = result{
+                for item in result.items{
+                    item.delete { error in
+                        if let error = error{
+                            print("item delete failed error : \(error.localizedDescription)")
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

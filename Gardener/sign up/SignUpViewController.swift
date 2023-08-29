@@ -16,6 +16,7 @@ import PhotosUI
 
 // TODO: 사진 고르고 프로필 사진 업데이트 되는 동안 시작 버튼 잠금 -> button.ImageView 업데이트 부분과 button.image 변수 분리하기
 // TODO: 시작 버튼 클릭 후 로딩 표시
+
 class SignUpViewController: UIViewController {
 
     private lazy var signView: SignUpView = {
@@ -79,6 +80,7 @@ class SignUpViewController: UIViewController {
     }
     
     private func showMyAlbum(){
+        dismissKeyboard()
         var configuration = PHPickerConfiguration(photoLibrary: .shared())
         configuration.filter = .images
         configuration.selectionLimit = 1
