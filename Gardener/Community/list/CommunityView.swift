@@ -31,6 +31,7 @@ class CommunityView: UIView {
     func initUI(){
         print("init communityView")
         self.backgroundColor = .white
+        
         self.addSubview(boardCollectionView)
         boardCollectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

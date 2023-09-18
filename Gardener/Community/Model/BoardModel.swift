@@ -12,7 +12,7 @@ class BoardModel{
     var category: String
     var contents: String
     var date: Date
-    var images: [String]
+    var images: [UIImage]
     var uid: String
     
 //    enum CodingKeys: String, CodingKey{
@@ -20,7 +20,7 @@ class BoardModel{
 //        case images = "imageUrl"
 //    }
     
-    init(category: String, contents: String, date: Date, images: [String], uid: String) {
+    init(category: String, contents: String, date: Date, images: [UIImage], uid: String) {
         self.category = category
         self.contents = contents
         self.date = date

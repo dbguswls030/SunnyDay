@@ -23,13 +23,24 @@ class BoardCollectionViewCell: UICollectionViewCell {
     
     func setCategroy(categroy: String){
         boardCellView.categroy.text = categroy
+        boardCellView.categroy.sizeToFit()
     }
     
     func setContents(contents: String){
         boardCellView.contents.text = contents
+        boardCellView.contents.sizeToFit()
+    }
+    
+    func setDate(date: Date){
+        // TODO: 날짜 케이스, 분, 시간, 일
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let formattedDate = dateFormatter.string(from: date)
+        boardCellView.date.text = formattedDate
+        boardCellView.date.sizeToFit()
     }
     
     func getHeight() -> CGFloat{
-        return boardCellView.getCategoryHeight() + boardCellView.getContentsHeight()
+        return boardCellView.getCategoryHeight() + boardCellView.getContentsHeight() + boardCellView.getDateHeight()
     }
 }

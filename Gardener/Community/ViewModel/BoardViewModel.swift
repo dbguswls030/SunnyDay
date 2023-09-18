@@ -12,18 +12,31 @@ class BoardViewModel{
     private var query: Query? = nil
     private var boards = [BoardModel]()
     
-    func setBoards(){
+    func setBoards(completion: @escaping () -> Void){
         FirebaseFirestoreManager.getCommunityBoards(query: self.query) { [weak self] models, query in
             guard let self = self else{
                 return
             }
             self.boards = models
             self.query = query
-            print(boards)
+            print("이거 머고 \(boards)")
+            completion()
         }
     }
     
     func numberOfBoards() -> Int{
         return boards.count
+    }
+    
+    func getCategroy(index: Int) -> String{
+        return boards[index].category
+    }
+    
+    func getContents(index: Int) -> String{
+        return boards[index].contents
+    }
+    
+    func getDate(index: Int) -> Date{
+        return boards[index].date
     }
 }

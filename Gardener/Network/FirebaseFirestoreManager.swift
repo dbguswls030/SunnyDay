@@ -31,21 +31,26 @@ class FirebaseFirestoreManager{
             guard let lastShapshot = snapshot.documents.last else{
                 return
             }
+            let group = DispatchGroup()
             var models = [BoardModel]()
-            print("snapshot.foreach")
             snapshot.documents.forEach { document in
-                
+                group.enter()
                 if let data = document.data() as? [String: Any]{
                     if let category = data["category"] as? String,
                        let contents = data["contents"] as? String,
                        let date = data["date"] as? Timestamp,
-                       let images = data["imageUrl"] as? [String],
-                       let uid = data["uid"] as? String {
-                        models.append(BoardModel(category: category,
-                                                 contents: contents,
-                                                 date: date.dateValue(),
-                                                 images: images,
-                                                 uid: uid))
+                       let uid = data["uid"] as? String,
+                       let imageUrl = data["imageUrl"] as? [String]{
+                        FirebaseStorageManager.downloadBoardImages(urls: imageUrl) { images in
+                            print(images)
+                            models.append(BoardModel(category: category,
+                                                     contents: contents,
+                                                     date: date.dateValue(),
+                                                     images: images,
+                                                     uid: uid))
+                            
+                        }
+                        group.leave()
                     }
                 }
                 //                do{
@@ -55,8 +60,12 @@ class FirebaseFirestoreManager{
 //                }catch let error{
 //                    print("json decoder error : \(error.localizedDescription)")
 //                }
-            } 
-            completion(models, db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
+            }
+            group.notify(queue: .main){
+                if models.count == snapshot.documents.count{
+                    completion(models, db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
+                }
+            }
         }
     }
 }

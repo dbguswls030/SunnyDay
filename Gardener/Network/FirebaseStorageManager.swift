@@ -10,7 +10,8 @@ import FirebaseStorage
 
 class FirebaseStorageManager{
     static func uploadProfileImage(image: UIImage, pathRoot: String, completion: @escaping (URL?) -> Void){
-        guard let imageData = image.jpegData(compressionQuality: 1) else {
+        // Warning: 용량 제한
+        guard let imageData = image.jpegData(compressionQuality: 0.4) else {
             print("[uploadProfileImage] failed convert image to imageData")
             return
         }
@@ -21,8 +22,8 @@ class FirebaseStorageManager{
         let imageName = UUID().uuidString + String(Date().timeIntervalSince1970)
         let firebaseReference = Storage.storage().reference().child("\(pathRoot)").child("profileImage").child("\(imageName)")
         firebaseReference.putData(imageData, metadata: metaData) { metaData, error in
-            if error != nil{
-                print("putdata Error\(error?.localizedDescription)")
+            if let error = error{
+                print("putdata Error\(error.localizedDescription)")
             }
             firebaseReference.downloadURL { url, _ in
                 completion(url)
@@ -30,18 +31,37 @@ class FirebaseStorageManager{
         }
     }
     
-//    static func downloadImage(urlString: String, completion: @escaping (UIImage?) -> Void){
-//        let storageReference = Storage.storage().reference(forURL: urlString)
-//        let megaBtye = Int64(1 * 1024 * 1024)
-//
-//        storageReference.getData(maxSize: megaBtye) { data, error in
-//            guard let imageData = data else {
-//                completion(nil)
-//                return
-//            }
-//            completion(UIImage(data: imageData))
-//        }
-//    }
+    static func downloadBoardImages(urls: [String], completion: @escaping ([UIImage]) -> Void){
+        var images = [UIImage]()
+        // Warning: 용량 제한
+        let megaBtye = Int64(1 * 2560 * 1440)
+        let group = DispatchGroup()
+        if urls.isEmpty{
+            print("urls is empty")
+            completion([])
+        }
+        for url in urls{
+            group.enter()
+            let storageReference = Storage.storage().reference(forURL: url)
+            storageReference.getData(maxSize: megaBtye) { data, error in
+                if let error = error{
+                    print("download Board Images error : \(error.localizedDescription)")
+                }
+                guard let imageData = data else{
+                    print("nil data")
+                    return
+                }
+                images.append(UIImage(data: imageData)!)
+                group.leave()
+            }
+            
+        }
+        group.notify(queue: .main){
+            if images.count == urls.count{
+                completion(images)
+            }
+        }
+    }
     
     static func uploadBoardImages(images: [UIImage], boardId: String, uid: String, completion: @escaping ([String]) -> Void){
         var imagesData = [Data]()

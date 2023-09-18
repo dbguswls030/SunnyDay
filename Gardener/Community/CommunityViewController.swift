@@ -28,21 +28,27 @@ class CommunityViewController: UIViewController {
         super.viewDidLoad()
         initViewModel()
         initUI()
-        initNavigationBar()
         initCollectionView()
+        initNavigationBar()
         initCreateBoardButton()
     }
     
     private func initViewModel(){
-        self.viewModel.setBoards()
+        self.viewModel.setBoards {
+            DispatchQueue.main.async {
+                self.communityView.boardCollectionView.reloadData()
+            }
+        }
     }
     
     private func initUI(){
         self.view.addSubview(communityView)
         
         communityView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().offset(tabBarController?.tabBar.frame.size.height ?? 0)
+            make.top.equalToSuperview()
+//            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-(tabBarController?.tabBar.frame.size.height ?? 0))
         }
     }
     
@@ -51,6 +57,8 @@ class CommunityViewController: UIViewController {
         backBarButton.tintColor = .black
         self.navigationItem.backBarButtonItem = backBarButton
         self.title = "게시판"
+//        self.navigationController?.navigationBar.backgroundColor = .white
+        // TODO: 네비게이션 바 아래 그림자
     }
 
     private func initCreateBoardButton(){
@@ -63,6 +71,7 @@ class CommunityViewController: UIViewController {
         }
         createBoardButton.layer.cornerRadius = CGFloat(buttonSize/2)
         createBoardButton.addTarget(self, action: #selector(showCreatBoardView), for: .touchUpInside)
+        // TODO: 테두리 그림자
     }
     
     @objc private func showCreatBoardView(){
@@ -90,8 +99,9 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         }
 
         cell.initUI()
-//        cell.setCategroy(categroy: "자유")
-//        cell.setContents(contents: "ㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇㅁㄴㅇ")
+        cell.setCategroy(categroy: viewModel.getCategroy(index: indexPath.item))
+        cell.setContents(contents: viewModel.getContents(index: indexPath.item))
+        cell.setDate(date: viewModel.getDate(index: indexPath.item))
         return cell
     }
    
@@ -100,6 +110,7 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
             return .zero
         }
         // TODO: viewModel에서 데이터 가져와서 크기 구하기
-        return CGSize(width: self.view.frame.width, height:  cell.getHeight())
+        
+        return CGSize(width: self.view.frame.width - 20, height: cell.getHeight())
     }
 }
