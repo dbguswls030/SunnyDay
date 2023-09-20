@@ -19,7 +19,6 @@ class BoardViewModel{
             }
             self.boards = models
             self.query = query
-            print("이거 머고 \(boards)")
             completion()
         }
     }

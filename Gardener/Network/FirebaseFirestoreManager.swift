@@ -68,17 +68,17 @@ class FirebaseFirestoreManager{
                        let date = data["date"] as? Timestamp,
                        let uid = data["uid"] as? String,
                        let imageUrl = data["imageUrl"] as? [String]{
+                        
+                        print(category, title, contents, imageUrl)
                         FirebaseStorageManager.downloadBoardImages(urls: imageUrl) { images in
-                            print("downlaodBoradImage completion images -> \(images)")
                             models.append(BoardModel(category: category,
                                                      title: title,
                                                      contents: contents,
                                                      date: date.dateValue(),
                                                      images: images,
                                                      uid: uid))
-                            
+                            group.leave()
                         }
-                        group.leave()
                     }
                 }
                 //                do{

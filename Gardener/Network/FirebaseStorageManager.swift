@@ -39,11 +39,12 @@ class FirebaseStorageManager{
         if urls.isEmpty{
             print("urls is empty")
             completion([])
+            return
         }
         
         for url in urls{
-            group.enter()
             let storageReference = Storage.storage().reference(forURL: url)
+            group.enter()
             storageReference.getData(maxSize: megaBtye) { data, error in
                 if let error = error{
                     print("download Board Images error : \(error.localizedDescription)")
