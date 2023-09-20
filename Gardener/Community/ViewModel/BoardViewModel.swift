@@ -28,6 +28,10 @@ class BoardViewModel{
         return boards.count
     }
     
+    func getTitle(index: Int) -> String{
+        return boards[index].title
+    }
+    
     func getCategroy(index: Int) -> String{
         return boards[index].category
     }

@@ -26,6 +26,11 @@ class BoardCollectionViewCell: UICollectionViewCell {
         boardCellView.categroy.sizeToFit()
     }
     
+    func setTitle(title: String){
+        boardCellView.title.text = title
+        boardCellView.title.sizeToFit()
+    }
+    
     func setContents(contents: String){
         boardCellView.contents.text = contents
         boardCellView.contents.sizeToFit()
@@ -41,6 +46,6 @@ class BoardCollectionViewCell: UICollectionViewCell {
     }
     
     func getHeight() -> CGFloat{
-        return boardCellView.getCategoryHeight() + boardCellView.getContentsHeight() + boardCellView.getDateHeight()
+        return boardCellView.getCategoryHeight() + boardCellView.getTitleHeight() + boardCellView.getContentsHeight() + boardCellView.getDateHeight()
     }
 }

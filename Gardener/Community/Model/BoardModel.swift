@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 class BoardModel{
     var category: String
+    var title: String
     var contents: String
     var date: Date
     var images: [UIImage]
@@ -19,9 +20,9 @@ class BoardModel{
 //        case category, contents, uid //, date
 //        case images = "imageUrl"
 //    }
-    
-    init(category: String, contents: String, date: Date, images: [UIImage], uid: String) {
+    init(category: String, title: String, contents: String, date: Date, images: [UIImage], uid: String) {
         self.category = category
+        self.title = title
         self.contents = contents
         self.date = date
         self.images = images

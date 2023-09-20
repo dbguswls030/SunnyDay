@@ -13,16 +13,26 @@ class BoardCellView: UIView {
     lazy var categroy: UILabel = {
         var label = UILabel()
         label.text = "카테고리"
-        label.sizeToFit()
         label.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+        label.sizeToFit()
         label.textColor = .black
+        return label
+    }()
+    
+    lazy var title: UILabel = {
+        var label = UILabel()
+        label.text = "제목"
+        label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        label.textColor = .black
+        label.sizeToFit()
         return label
     }()
     
     lazy var contents: UILabel = {
         var label = UILabel()
-        label.text = "내...\n\n\n\n...용"
-        label.numberOfLines = 5
+        label.text = "내...\n\n...용"
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.numberOfLines = 3
         label.lineBreakMode = .byTruncatingTail
         label.textColor = .black
         label.sizeToFit()
@@ -37,6 +47,7 @@ class BoardCellView: UIView {
     lazy var date: UILabel = {
         var label = UILabel()
         label.text = "날짜"
+        label.font = UIFont.systemFont(ofSize: 10, weight: .ultraLight)
         label.sizeToFit()
         return label
     }()
@@ -53,17 +64,26 @@ class BoardCellView: UIView {
     private func initUI(){
         self.backgroundColor = .white
         self.addSubview(categroy)
+        self.addSubview(title)
         self.addSubview(contents)
 //        self.addSubview(images)
         self.addSubview(date)
+        
         categroy.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(10)
             make.top.equalToSuperview().offset(5)
             make.height.equalTo(categroy.intrinsicContentSize.height)
         }
         
-        contents.snp.makeConstraints { make in
+        title.snp.makeConstraints { make in
             make.top.equalTo(categroy.snp.bottom).offset(15)
+            make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
+            make.height.equalTo(title.intrinsicContentSize.height)
+        }
+        
+        contents.snp.makeConstraints { make in
+            make.top.equalTo(title.snp.bottom).offset(5)
             make.left.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
             make.height.equalTo(contents.intrinsicContentSize.height)
@@ -88,8 +108,12 @@ class BoardCellView: UIView {
         return categroy.intrinsicContentSize.height + 5
     }
     
+    func getTitleHeight() -> CGFloat{
+        return title.intrinsicContentSize.height + 15
+    }
+    
     func getContentsHeight() -> CGFloat{
-        return 15 + contents.intrinsicContentSize.height
+        return 5 + contents.intrinsicContentSize.height
     }
     
     func getDateHeight() -> CGFloat{

@@ -90,6 +90,7 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print("numberOfItem = \(viewModel.numberOfBoards())")
         return viewModel.numberOfBoards()
     }
     
@@ -100,6 +101,7 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
 
         cell.initUI()
         cell.setCategroy(categroy: viewModel.getCategroy(index: indexPath.item))
+        cell.setTitle(title: viewModel.getTitle(index: indexPath.item))
         cell.setContents(contents: viewModel.getContents(index: indexPath.item))
         cell.setDate(date: viewModel.getDate(index: indexPath.item))
         return cell

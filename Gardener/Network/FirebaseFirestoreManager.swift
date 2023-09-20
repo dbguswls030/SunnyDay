@@ -7,9 +7,34 @@
 
 import Foundation
 import FirebaseFirestore
-
+import FirebaseAuth
 
 class FirebaseFirestoreManager{
+    static func uploadCommunityBoard(model: CreateBoard, completion: @escaping () -> Void){
+        let db = Firestore.firestore()
+        
+        if let uid = Auth.auth().currentUser?.uid{
+            let boardId = UUID().uuidString + String(Date().timeIntervalSince1970)
+            FirebaseStorageManager.uploadBoardImages(images: model.images, boardId: boardId, uid: uid) { urls in
+                db.collection("community").addDocument(data: ["category" : model.category,
+                                                              "title" : model.title,
+                                                              "contents" : model.contents,
+                                                              "uid" : uid,
+                                                              "date" : Timestamp(date: model.date),
+                                                              "imageUrl" : urls]) { error in
+                    if error != nil {
+                        FirebaseStorageManager.deleteBoard(boardId: boardId, uid: uid)
+//                        Toast().showToast(view: self.view, message: "게시글 업로드를 실패했습니다.")
+                        return
+                    }else{
+//                        Toast().showToast(view: self.view, message: "게시글 업로드를 성공하였습니다.")
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
     static func getCommunityBoards(query: Query?, completion: @escaping ([BoardModel], Query) -> Void){
         let db = Firestore.firestore()
         let request: Query
@@ -26,6 +51,7 @@ class FirebaseFirestoreManager{
                 return
             }
             guard let snapshot = snapshot else{
+                print("not exist snapshot")
                 return
             }
             guard let lastShapshot = snapshot.documents.last else{
@@ -37,13 +63,15 @@ class FirebaseFirestoreManager{
                 group.enter()
                 if let data = document.data() as? [String: Any]{
                     if let category = data["category"] as? String,
+                       let title = data["title"] as? String,
                        let contents = data["contents"] as? String,
                        let date = data["date"] as? Timestamp,
                        let uid = data["uid"] as? String,
                        let imageUrl = data["imageUrl"] as? [String]{
                         FirebaseStorageManager.downloadBoardImages(urls: imageUrl) { images in
-                            print(images)
+                            print("downlaodBoradImage completion images -> \(images)")
                             models.append(BoardModel(category: category,
+                                                     title: title,
                                                      contents: contents,
                                                      date: date.dateValue(),
                                                      images: images,

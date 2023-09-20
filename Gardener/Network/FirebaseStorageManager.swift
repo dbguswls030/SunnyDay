@@ -34,18 +34,20 @@ class FirebaseStorageManager{
     static func downloadBoardImages(urls: [String], completion: @escaping ([UIImage]) -> Void){
         var images = [UIImage]()
         // Warning: 용량 제한
-        let megaBtye = Int64(1 * 2560 * 1440)
+        let megaBtye = Int64(1 * 3840 * 2160)
         let group = DispatchGroup()
         if urls.isEmpty{
             print("urls is empty")
             completion([])
         }
+        
         for url in urls{
             group.enter()
             let storageReference = Storage.storage().reference(forURL: url)
             storageReference.getData(maxSize: megaBtye) { data, error in
                 if let error = error{
                     print("download Board Images error : \(error.localizedDescription)")
+                    return
                 }
                 guard let imageData = data else{
                     print("nil data")
@@ -64,6 +66,10 @@ class FirebaseStorageManager{
     }
     
     static func uploadBoardImages(images: [UIImage], boardId: String, uid: String, completion: @escaping ([String]) -> Void){
+        if images.isEmpty{
+            completion([])
+            return
+        }
         var imagesData = [Data]()
         images.forEach { image in
             guard let data = image.jpegData(compressionQuality: 1) else{

@@ -30,24 +30,31 @@ class CreateBoardViewController: UIViewController {
         return UIScrollView()
     }()
     
-    private lazy var titleObjcetLabel: UILabel = {
+    private lazy var categoryLabel: UILabel = {
         var label = UILabel()
         label.text = "카테고리를 선택해 주세요."
         label.font = .systemFont(ofSize: 17)
         return label
     }()
     
-    private lazy var titleContentBreakLine: BreakLine = {
-        return BreakLine()
-    }()
-    
-    private lazy var titleObjectButton: UIButton = {
+    private lazy var categoryButton: UIButton = {
         var button = UIButton()
         button.setImage(UIImage(systemName: "chevron.forward"), for: .normal)
         button.tintColor = .black
         button.contentHorizontalAlignment = .trailing
         button.addTarget(self, action: #selector(showCategoryList), for: .touchUpInside)
         return button
+    }()
+    
+    private lazy var categoryTitleBreakLine: BreakLine = {
+        return BreakLine()
+    }()
+    
+    private lazy var titleTextView: UITextField = {
+        var textField = UITextField()
+        textField.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        textField.placeholder = "제목을 입력해 주세요."
+        return textField
     }()
     
     private lazy var contentTextView: UITextView = {
@@ -88,9 +95,10 @@ class CreateBoardViewController: UIViewController {
         
         self.view.addSubview(topBreakLine)
         self.view.addSubview(scrollView)
-        self.scrollView.addSubview(titleObjcetLabel)
-        self.scrollView.addSubview(titleObjectButton)
-        self.scrollView.addSubview(titleContentBreakLine)
+        self.scrollView.addSubview(categoryLabel)
+        self.scrollView.addSubview(categoryButton)
+        self.scrollView.addSubview(titleTextView)
+        self.scrollView.addSubview(categoryTitleBreakLine)
         self.scrollView.addSubview(contentTextView)
         self.view.addSubview(photoCollectionView)
         
@@ -106,29 +114,35 @@ class CreateBoardViewController: UIViewController {
             make.bottom.equalTo(photoCollectionView.snp.top)
         }
         
-        titleObjcetLabel.snp.makeConstraints { make in
+        categoryLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET+5)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
             make.top.equalToSuperview()
             make.height.equalTo(60)
         }
         
-        titleObjectButton.snp.makeConstraints { make in
+        categoryButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET+5)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
             make.top.equalToSuperview()
             make.height.equalTo(60)
         }
         
-        titleContentBreakLine.snp.makeConstraints { make in
-            make.top.equalTo(titleObjcetLabel.snp.bottom)
+        categoryTitleBreakLine.snp.makeConstraints { make in
+            make.top.equalTo(categoryLabel.snp.bottom)
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
             make.height.equalTo(1)
         }
         
+        titleTextView.snp.makeConstraints { make in
+            make.top.equalTo(categoryTitleBreakLine.snp.bottom).offset(15)
+            make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET+5)
+            make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
+        }
+        
         contentTextView.snp.makeConstraints { make in
-            make.top.equalTo(titleContentBreakLine.snp.bottom).offset(10)
+            make.top.equalTo(titleTextView.snp.bottom).offset(10)
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
             make.bottom.equalToSuperview()
@@ -148,7 +162,7 @@ class CreateBoardViewController: UIViewController {
     }
                
     @objc private func uploadBoard(){
-        guard let category = titleObjcetLabel.text, category != "카테고리를 선택해 주세요." else{
+        guard let category = categoryLabel.text, category != "카테고리를 선택해 주세요." else{
 //            Toast().showToast(view: self.view, message: "카테고리를 선택해 주세요.")
             return
         }
@@ -158,40 +172,13 @@ class CreateBoardViewController: UIViewController {
             return
         }
         
-        let db = Firestore.firestore()
+        guard let title = titleTextView.text, title.count > 1 else{
+//            Toast().showToast(view: self.view, message: "제목을 최소 두 글자 이상 입력해주세요.")
+            return
+        }
         
-        if let uid = Auth.auth().currentUser?.uid{
-            if !selectedImage.isEmpty{
-                let boardId = UUID().uuidString + String(Date().timeIntervalSince1970)
-                FirebaseStorageManager.uploadBoardImages(images: selectedImage, boardId: boardId, uid: uid) { urls in
-                    db.collection("community").addDocument(data: ["category" : category,
-                                                                  "contents" :contents,
-                                                                  "uid" : uid,
-                                                                  "date" : Timestamp(date: Date()),
-                                                                  "imageUrl" : urls]) { error in
-                        if error != nil {
-                            FirebaseStorageManager.deleteBoard(boardId: boardId, uid: uid)
-//                            Toast().showToast(view: self.view, message: "게시글 업로드를 실패했습니다.")
-                        }else{
-//                            Toast().showToast(view: self.view, message: "게시글 업로드를 성공하였습니다.")
-                            self.navigationController?.popViewController(animated: true)
-                        }
-                    }
-                }
-            }else{
-                db.collection("community").addDocument(data: ["category" : category,
-                                                              "contents" :contents,
-                                                              "uid" : uid,
-                                                              "date" : Timestamp(date: Date()),
-                                                              "imageUrl" : [String]()]) { error in
-                    if error != nil {
-//                        Toast().showToast(view: self.view, message: "게시글 업로드를 실패했습니다.")
-                    }else{
-//                        Toast().showToast(view: self.view, message: "게시글 업로드를 성공하였습니다.")
-                        self.navigationController?.popViewController(animated: true)
-                    }
-                }
-            }
+        FirebaseFirestoreManager.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: selectedImage, date: Date())) {
+            self.navigationController?.popViewController(animated: true)
         }
     }
     
@@ -234,7 +221,7 @@ extension CreateBoardViewController: UITextViewDelegate{
 
 extension CreateBoardViewController: SendCategoryDelegate{
     func changeCategory(category: String) {
-        self.titleObjcetLabel.text = category
+        self.categoryLabel.text = category
     }
 }
 extension CreateBoardViewController: DeleteImageDelegate{
