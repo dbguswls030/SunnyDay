@@ -57,43 +57,34 @@ class FirebaseFirestoreManager{
             guard let lastShapshot = snapshot.documents.last else{
                 return
             }
-            let group = DispatchGroup()
+            
             var models = [BoardModel]()
             snapshot.documents.forEach { document in
-                group.enter()
                 if let data = document.data() as? [String: Any]{
                     if let category = data["category"] as? String,
                        let title = data["title"] as? String,
                        let contents = data["contents"] as? String,
                        let date = data["date"] as? Timestamp,
                        let uid = data["uid"] as? String,
-                       let imageUrl = data["imageUrl"] as? [String]{
-                        
-                        print(category, title, contents, imageUrl)
-                        FirebaseStorageManager.downloadBoardImages(urls: imageUrl) { images in
-                            models.append(BoardModel(category: category,
-                                                     title: title,
-                                                     contents: contents,
-                                                     date: date.dateValue(),
-                                                     images: images,
-                                                     uid: uid))
-                            group.leave()
-                        }
+                       let imageUrls = data["imageUrl"] as? [String]{
+                        models.append(BoardModel(category: category,
+                                                 title: title,
+                                                 contents: contents,
+                                                 date: date.dateValue(),
+                                                 imageUrls: imageUrls,
+                                                 uid: uid))
                     }
                 }
-                //                do{
-//                    let jsonData = try JSONSerialization.data(withJSONObject: document.data(), options: [])
-//                    let data = try JSONDecoder().decode(BoardModel.self, from: jsonData)
-//                    models.append(data)
-//                }catch let error{
-//                    print("json decoder error : \(error.localizedDescription)")
-//                }
             }
-            group.notify(queue: .main){
-                if models.count == snapshot.documents.count{
-                    completion(models, db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
-                }
-            }
+            completion(models, db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
         }
     }
 }
+
+//do{
+//    let jsonData = try JSONSerialization.data(withJSONObject: document.data(), options: [])
+//    let data = try JSONDecoder().decode(BoardModel.self, from: jsonData)
+//    models.append(data)
+//}catch let error{
+//    print("json decoder error : \(error.localizedDescription)")
+//}

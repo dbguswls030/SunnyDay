@@ -26,9 +26,9 @@ class CommunityViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initViewModel()
         initUI()
-        initCollectionView()
+        initBoardCollectionView()
+        initViewModel()
         initNavigationBar()
         initCreateBoardButton()
     }
@@ -36,6 +36,7 @@ class CommunityViewController: UIViewController {
     private func initViewModel(){
         self.viewModel.setBoards {
             DispatchQueue.main.async {
+//                self.initBoardCollectionView()
                 self.communityView.boardCollectionView.reloadData()
             }
         }
@@ -64,11 +65,13 @@ class CommunityViewController: UIViewController {
     private func initCreateBoardButton(){
         self.view.addSubview(createBoardButton)
         let buttonSize = 60
+        
         createBoardButton.snp.makeConstraints { make in
             make.bottom.equalToSuperview().offset(-((tabBarController?.tabBar.frame.size.height ?? 0) + 15))
             make.trailing.equalToSuperview().offset(-15)
             make.width.height.equalTo(buttonSize)
         }
+        
         createBoardButton.layer.cornerRadius = CGFloat(buttonSize/2)
         createBoardButton.addTarget(self, action: #selector(showCreatBoardView), for: .touchUpInside)
         // TODO: 테두리 그림자
@@ -83,7 +86,7 @@ class CommunityViewController: UIViewController {
 
 extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
     
-    private func initCollectionView(){
+    private func initBoardCollectionView(){
         communityView.boardCollectionView.delegate = self
         communityView.boardCollectionView.dataSource = self
         communityView.boardCollectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: "boardCell")
@@ -104,15 +107,11 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         cell.setTitle(title: viewModel.getTitle(index: indexPath.item))
         cell.setContents(contents: viewModel.getContents(index: indexPath.item))
         cell.setDate(date: viewModel.getDate(index: indexPath.item))
+//        cell.setImage(images: viewModel.getImages(index: indexPath.item))
         return cell
     }
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "boardCell", for: indexPath) as? BoardCollectionViewCell else{
-            return .zero
-        }
-        // TODO: viewModel에서 데이터 가져와서 크기 구하기
-        
-        return CGSize(width: self.view.frame.width - 20, height: cell.getHeight())
+        return CGSize(width: self.view.frame.width - 20, height: viewModel.getHeight(index: indexPath.item, width: self.view.frame.width - 20 - 20))
     }
 }

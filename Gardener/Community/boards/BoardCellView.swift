@@ -30,8 +30,8 @@ class BoardCellView: UIView {
     
     lazy var contents: UILabel = {
         var label = UILabel()
-        label.text = "내...\n\n...용"
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.text = "내"
+        label.font = UIFont.systemFont(ofSize: 13)
         label.numberOfLines = 3
         label.lineBreakMode = .byTruncatingTail
         label.textColor = .black
@@ -39,10 +39,14 @@ class BoardCellView: UIView {
         return label
     }()
     
-    lazy var images: UICollectionView = {
-        var collectionView = UICollectionView(frame: .init(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: .init())
-        return collectionView
-    }()
+//    lazy var imageCollectionView: UICollectionView? = {
+//        let layout = UICollectionViewFlowLayout()
+//        layout.scrollDirection = .horizontal
+//        layout.estimatedItemSize = .zero
+//        var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+//        collectionView.translatesAutoresizingMaskIntoConstraints = false
+//        return collectionView
+//    }()
     
     lazy var date: UILabel = {
         var label = UILabel()
@@ -66,7 +70,6 @@ class BoardCellView: UIView {
         self.addSubview(categroy)
         self.addSubview(title)
         self.addSubview(contents)
-//        self.addSubview(images)
         self.addSubview(date)
         
         categroy.snp.makeConstraints { make in
@@ -83,40 +86,33 @@ class BoardCellView: UIView {
         }
         
         contents.snp.makeConstraints { make in
-            make.top.equalTo(title.snp.bottom).offset(5)
+            make.top.equalTo(title.snp.bottom).offset(10)
             make.left.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
-            make.height.equalTo(contents.intrinsicContentSize.height)
+//            make.height.equalTo(contents.intrinsicContentSize.height)
         }
         
-//        images.snp.makeConstraints { make in
-//            make.top.equalTo(contents.snp.bottom).offset(20)
-//            make.left.equalToSuperview().offset(10)
-//            make.right.equalToSuperview().offset(-10)
-//            make.height.equalTo(200)
-//        }
-        
         date.snp.makeConstraints { make in
-            make.top.equalTo(contents.snp.bottom).offset(15)
+//            if imageCollectionView?.numberOfItems(inSection: 0) ?? 0 > 0{
+//                print("image collection exist")
+//                make.top.equalTo(imageCollectionView!.snp.bottom).offset(15)
+//            }else{
+//                print("image collection not exist")
+                make.top.equalTo(contents.snp.bottom).offset(15)
+//            }
             make.left.equalToSuperview().offset(10)
             make.right.equalToSuperview().offset(-10)
             make.bottom.equalToSuperview().offset(-10)
         }
     }
     
-    func getCategoryHeight() -> CGFloat{
-        return categroy.intrinsicContentSize.height + 5
-    }
-    
-    func getTitleHeight() -> CGFloat{
-        return title.intrinsicContentSize.height + 15
-    }
-    
-    func getContentsHeight() -> CGFloat{
-        return 5 + contents.intrinsicContentSize.height
-    }
-    
-    func getDateHeight() -> CGFloat{
-        return 15 + date.intrinsicContentSize.height + 10
-    }
+//    func initImageColletionViewLayout(){
+//        self.addSubview(imageCollectionView!)
+//        imageCollectionView!.snp.makeConstraints { make in
+//            make.top.equalTo(contents.snp.bottom).offset(15)
+//            make.left.equalToSuperview().offset(10)
+//            make.right.equalToSuperview().offset(-10)
+//            make.height.equalTo(100)
+//        }
+//    }
 }
