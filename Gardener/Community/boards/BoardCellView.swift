@@ -22,7 +22,7 @@ class BoardCellView: UIView {
     lazy var title: UILabel = {
         var label = UILabel()
         label.text = "제목"
-        label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         label.textColor = .black
         label.sizeToFit()
         return label
@@ -31,7 +31,7 @@ class BoardCellView: UIView {
     lazy var contents: UILabel = {
         var label = UILabel()
         label.text = "내"
-        label.font = UIFont.systemFont(ofSize: 13)
+        label.font = UIFont.systemFont(ofSize: 15)
         label.numberOfLines = 3
         label.lineBreakMode = .byTruncatingTail
         label.textColor = .black
@@ -73,22 +73,22 @@ class BoardCellView: UIView {
         self.addSubview(date)
         
         categroy.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(10)
-            make.top.equalToSuperview().offset(5)
+            make.left.equalToSuperview().offset(15)
+            make.top.equalToSuperview().offset(10)
             make.height.equalTo(categroy.intrinsicContentSize.height)
         }
         
         title.snp.makeConstraints { make in
             make.top.equalTo(categroy.snp.bottom).offset(15)
-            make.left.equalToSuperview().offset(10)
-            make.right.equalToSuperview().offset(-10)
+            make.left.equalToSuperview().offset(15)
+            make.right.equalToSuperview().offset(-15)
             make.height.equalTo(title.intrinsicContentSize.height)
         }
         
         contents.snp.makeConstraints { make in
             make.top.equalTo(title.snp.bottom).offset(10)
-            make.left.equalToSuperview().offset(10)
-            make.right.equalToSuperview().offset(-10)
+            make.left.equalToSuperview().offset(15)
+            make.right.equalToSuperview().offset(-15)
 //            make.height.equalTo(contents.intrinsicContentSize.height)
         }
         
@@ -100,11 +100,12 @@ class BoardCellView: UIView {
 //                print("image collection not exist")
                 make.top.equalTo(contents.snp.bottom).offset(15)
 //            }
-            make.left.equalToSuperview().offset(10)
-            make.right.equalToSuperview().offset(-10)
+            make.left.equalToSuperview().offset(15)
+            make.right.equalToSuperview().offset(-15)
             make.bottom.equalToSuperview().offset(-10)
         }
     }
+    
     
 //    func initImageColletionViewLayout(){
 //        self.addSubview(imageCollectionView!)

@@ -44,10 +44,10 @@ class CommunityViewController: UIViewController {
     
     private func initUI(){
         self.view.addSubview(communityView)
-        
+        self.view.backgroundColor = .white
         communityView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-//            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+//            make.top.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview().offset(-(tabBarController?.tabBar.frame.size.height ?? 0))
         }
@@ -112,6 +112,10 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
     }
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: self.view.frame.width - 20, height: viewModel.getHeight(index: indexPath.item, width: self.view.frame.width - 20 - 20))
+        return CGSize(width: self.view.frame.width, height: viewModel.getHeight(index: indexPath.item, width: self.view.frame.width - 20 - 20))
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 7
     }
 }

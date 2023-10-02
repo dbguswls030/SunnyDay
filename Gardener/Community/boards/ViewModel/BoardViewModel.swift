@@ -44,11 +44,11 @@ class BoardViewModel{
     }
     
     func getHeight(index: Int, width: CGFloat) -> CGFloat{
-        return 5 + getCategoryHeight(index: index, width: width) + 15 + getTitleHeight(index: index, width: width) + 10 + getContentsHeight(index: index, width: width) + 15 + getDateHeight(index: index, width: width) + 10
+        return 10 + getCategoryHeight(index: index, width: width) + 15 + getTitleHeight(index: index, width: width) + 10 + getContentsHeight(index: index, width: width) + 15 + getDateHeight(index: index, width: width) + 10
     }
     
     func getTitleHeight(index: Int, width: CGFloat) -> CGFloat{
-        let font = UIFont.systemFont(ofSize: 16, weight: .bold) // 원하는 폰트 및 크기 선택
+        let font = UIFont.systemFont(ofSize: 17, weight: .semibold) // 원하는 폰트 및 크기 선택
         let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
         let attributes = [NSAttributedString.Key.font: font]
@@ -66,7 +66,7 @@ class BoardViewModel{
     }
     
     func getContentsHeight(index: Int, width: CGFloat) -> CGFloat{
-        let font = UIFont.systemFont(ofSize: 13) // 원하는 폰트 및 크기 선택
+        let font = UIFont.systemFont(ofSize: 15) // 원하는 폰트 및 크기 선택
         let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
         let attributes = [NSAttributedString.Key.font: font]
