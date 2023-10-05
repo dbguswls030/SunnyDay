@@ -31,38 +31,22 @@ class FirebaseStorageManager{
         }
     }
     
-    static func downloadBoardImages(urls: [String], completion: @escaping ([UIImage]) -> Void){
-        var images = [UIImage]()
+    static func downloadBoardImages(url: String, completion: @escaping (UIImage) -> Void){
+        var images = UIImage()
         // Warning: 용량 제한
         let megaBtye = Int64(1 * 3840 * 2160)
-        let group = DispatchGroup()
-        if urls.isEmpty{
-            print("urls is empty")
-            completion([])
-            return
-        }
-        
-        for url in urls{
-            let storageReference = Storage.storage().reference(forURL: url)
-            group.enter()
-            storageReference.getData(maxSize: megaBtye) { data, error in
-                if let error = error{
-                    print("download Board Images error : \(error.localizedDescription)")
-                    return
-                }
-                guard let imageData = data else{
-                    print("nil data")
-                    return
-                }
-                images.append(UIImage(data: imageData)!)
-                group.leave()
+  
+        let storageReference = Storage.storage().reference(forURL: url)
+        storageReference.getData(maxSize: megaBtye) { data, error in
+            if let error = error{
+                print("download Board Images error : \(error.localizedDescription)")
+                return
             }
-            
-        }
-        group.notify(queue: .main){
-            if images.count == urls.count{
-                completion(images)
+            guard let imageData = data else{
+                print("nil data")
+                return
             }
+            completion(UIImage(data: imageData)!)
         }
     }
     

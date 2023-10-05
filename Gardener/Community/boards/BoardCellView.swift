@@ -39,14 +39,16 @@ class BoardCellView: UIView {
         return label
     }()
     
-//    lazy var imageCollectionView: UICollectionView? = {
-//        let layout = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .horizontal
-//        layout.estimatedItemSize = .zero
-//        var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        return collectionView
-//    }()
+    lazy var imageCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.estimatedItemSize = .zero
+        var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
+        return collectionView
+    }()
     
     lazy var date: UILabel = {
         var label = UILabel()
@@ -74,7 +76,7 @@ class BoardCellView: UIView {
         
         categroy.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(15)
-            make.top.equalToSuperview().offset(10)
+            make.top.equalToSuperview().offset(20)
             make.height.equalTo(categroy.intrinsicContentSize.height)
         }
         
@@ -93,27 +95,28 @@ class BoardCellView: UIView {
         }
         
         date.snp.makeConstraints { make in
-//            if imageCollectionView?.numberOfItems(inSection: 0) ?? 0 > 0{
-//                print("image collection exist")
-//                make.top.equalTo(imageCollectionView!.snp.bottom).offset(15)
-//            }else{
-//                print("image collection not exist")
-                make.top.equalTo(contents.snp.bottom).offset(15)
-//            }
+            make.top.equalTo(contents.snp.bottom).offset(15)
             make.left.equalToSuperview().offset(15)
             make.right.equalToSuperview().offset(-15)
-            make.bottom.equalToSuperview().offset(-10)
+            make.bottom.equalToSuperview().offset(-20)
         }
     }
     
     
-//    func initImageColletionViewLayout(){
-//        self.addSubview(imageCollectionView!)
-//        imageCollectionView!.snp.makeConstraints { make in
-//            make.top.equalTo(contents.snp.bottom).offset(15)
-//            make.left.equalToSuperview().offset(10)
-//            make.right.equalToSuperview().offset(-10)
-//            make.height.equalTo(100)
-//        }
-//    }
+    func initImageColletionViewLayout(){
+        self.addSubview(imageCollectionView)
+        imageCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(contents.snp.bottom).offset(15)
+            make.left.equalToSuperview().offset(15)
+            make.right.equalToSuperview().offset(-15)
+            make.height.equalTo(150)
+        }
+    
+        date.snp.remakeConstraints { make in
+            make.top.equalTo(imageCollectionView.snp.bottom).offset(15)
+            make.left.equalToSuperview().offset(15)
+            make.right.equalToSuperview().offset(-15)
+            make.bottom.equalToSuperview().offset(-20)
+        }
+    }
 }

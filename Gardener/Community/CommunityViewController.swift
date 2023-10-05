@@ -93,7 +93,6 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("numberOfItem = \(viewModel.numberOfBoards())")
         return viewModel.numberOfBoards()
     }
     
@@ -107,7 +106,7 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         cell.setTitle(title: viewModel.getTitle(index: indexPath.item))
         cell.setContents(contents: viewModel.getContents(index: indexPath.item))
         cell.setDate(date: viewModel.getDate(index: indexPath.item))
-//        cell.setImage(images: viewModel.getImages(index: indexPath.item))
+        cell.setImageUrl(urls: viewModel.getImageUrls(index: indexPath.item))
         return cell
     }
    

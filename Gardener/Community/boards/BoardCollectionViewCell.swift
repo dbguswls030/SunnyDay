@@ -10,7 +10,7 @@ import SnapKit
 
 class BoardCollectionViewCell: UICollectionViewCell {
 
-    var images: [UIImage] = []
+    var imageUrls: [String] = []
     
     lazy var boardCellView: BoardCellView = {
        return BoardCellView()
@@ -43,44 +43,37 @@ class BoardCollectionViewCell: UICollectionViewCell {
         boardCellView.date.text = formattedDate
     }
  
-//    func setImage(images: [UIImage]){
-//        guard !images.isEmpty else {
-//            boardCellView.imageCollectionView = nil
-//            return
-//        }
-//        self.images = images
-//        initCollectionView()
+    func setImageUrl(urls: [String]){
+        guard !urls.isEmpty else {
+            return
+        }
+        imageUrls = urls
+        initCollectionView()
 //        boardCellView.imageCollectionView?.reloadData()
-//    }
+    }
     
-//    func initCollectionView(){
-//        boardCellView.imageCollectionView?.register(BoardImageCollectionViewCell.self, forCellWithReuseIdentifier: "boardImageCell")
-//        boardCellView.imageCollectionView!.dataSource = self
-//        boardCellView.imageCollectionView!.delegate = self
-//        boardCellView.initImageColletionViewLayout()
-//    }
-    
-//    func getHeight() -> CGFloat{
-//        return boardCellView.getCategoryHeight() + boardCellView.getTitleHeight() + boardCellView.getContentsHeight() + boardCellView.getDateHeight() //+ boardCellView.getImageHeight()
-//    }
+    func initCollectionView(){
+        boardCellView.imageCollectionView.register(BoardImageCollectionViewCell.self, forCellWithReuseIdentifier: "boardImageCell")
+        boardCellView.imageCollectionView.dataSource = self
+        boardCellView.imageCollectionView.delegate = self
+        boardCellView.initImageColletionViewLayout()
+    }
 }
 
-//extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return images.count
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        print("imageCellDataSource \(indexPath.item)")
-//        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "boardImageCell", for: indexPath) as? BoardImageCollectionViewCell else {
-//            return UICollectionViewCell()
-//        }
-//        cell.setImage(image: images[indexPath.item])
-//        return cell
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        print("imageCell sizeForItem \(indexPath.item)")
-//        return CGSize(width: 100, height: 100)
-//    }
-//}
+extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return imageUrls.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "boardImageCell", for: indexPath) as? BoardImageCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        cell.setImage(url: imageUrls[indexPath.item])
+        return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 150, height: 150)
+    }
+}

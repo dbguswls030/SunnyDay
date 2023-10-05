@@ -43,10 +43,16 @@ class BoardViewModel{
         return boards[index].date
     }
     
-    func getHeight(index: Int, width: CGFloat) -> CGFloat{
-        return 10 + getCategoryHeight(index: index, width: width) + 15 + getTitleHeight(index: index, width: width) + 10 + getContentsHeight(index: index, width: width) + 15 + getDateHeight(index: index, width: width) + 10
+    func getImageUrls(index: Int) -> [String]{
+        return boards[index].imageUrls
     }
     
+    func getHeight(index: Int, width: CGFloat) -> CGFloat{
+        return 20 + getCategoryHeight(index: index, width: width) + 15 + getTitleHeight(index: index, width: width) + 10 + getContentsHeight(index: index, width: width) + 15 + getImagesHeight(index: index) + getDateHeight(index: index, width: width) + 20
+    }
+    func getImagesHeight(index: Int) -> CGFloat{
+        return boards[index].imageUrls.isEmpty ? 0 : 150 + 15
+    }
     func getTitleHeight(index: Int, width: CGFloat) -> CGFloat{
         let font = UIFont.systemFont(ofSize: 17, weight: .semibold) // 원하는 폰트 및 크기 선택
         let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
@@ -85,7 +91,5 @@ class BoardViewModel{
         let boundingRect = (formattedDate as NSString).boundingRect(with: size, options: options, attributes: attributes, context: nil)
         return ceil(boundingRect.height)
     }
-//    func getImages(index: Int) -> [UIImage]{
-//        return boards[index].images
-//    }
+
 }

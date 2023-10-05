@@ -17,6 +17,7 @@ class CommunityView: UIView {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         // TODO: 색상 고르기
         collectionView.backgroundColor = .green
+        collectionView.showsVerticalScrollIndicator = false
         return collectionView
     }()
     
