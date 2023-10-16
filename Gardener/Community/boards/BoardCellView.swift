@@ -119,4 +119,14 @@ class BoardCellView: UIView {
             make.bottom.equalToSuperview().offset(-20)
         }
     }
+    
+    func prepareReuseInitUI(){
+        imageCollectionView.removeFromSuperview()
+        date.snp.remakeConstraints { make in
+            make.top.equalTo(contents.snp.bottom).offset(15)
+            make.left.equalToSuperview().offset(15)
+            make.right.equalToSuperview().offset(-15)
+            make.bottom.equalToSuperview().offset(-20)
+        }
+    }
 }

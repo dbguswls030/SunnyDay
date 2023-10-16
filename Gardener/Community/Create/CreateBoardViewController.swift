@@ -177,6 +177,8 @@ class CreateBoardViewController: UIViewController {
             return
         }
         
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        
         FirebaseFirestoreManager.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: selectedImage, date: Date())) {
             self.navigationController?.popViewController(animated: true)
         }

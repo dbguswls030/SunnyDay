@@ -16,6 +16,10 @@ class BoardCollectionViewCell: UICollectionViewCell {
        return BoardCellView()
     }()
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        boardCellView.prepareReuseInitUI()
+    }
     func initUI(){
         self.addSubview(boardCellView)
         boardCellView.snp.makeConstraints { make in
@@ -29,6 +33,7 @@ class BoardCollectionViewCell: UICollectionViewCell {
     
     func setTitle(title: String){
         boardCellView.title.text = title
+        print(title)
     }
     
     func setContents(contents: String){
@@ -44,12 +49,13 @@ class BoardCollectionViewCell: UICollectionViewCell {
     }
  
     func setImageUrl(urls: [String]){
+        print("urls \(urls)")
         guard !urls.isEmpty else {
+            print("urls empty")
             return
         }
         imageUrls = urls
         initCollectionView()
-//        boardCellView.imageCollectionView?.reloadData()
     }
     
     func initCollectionView(){
@@ -66,10 +72,12 @@ extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDat
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        print("zz")
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "boardImageCell", for: indexPath) as? BoardImageCollectionViewCell else {
             return UICollectionViewCell()
         }
-        cell.setImage(url: imageUrls[indexPath.item])
+        cell.initUI()
+        cell.setImageUrl(url: imageUrls[indexPath.item])
         return cell
     }
 

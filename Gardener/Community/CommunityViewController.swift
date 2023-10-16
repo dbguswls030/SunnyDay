@@ -107,6 +107,7 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         cell.setContents(contents: viewModel.getContents(index: indexPath.item))
         cell.setDate(date: viewModel.getDate(index: indexPath.item))
         cell.setImageUrl(urls: viewModel.getImageUrls(index: indexPath.item))
+        
         return cell
     }
    
