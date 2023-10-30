@@ -7,6 +7,7 @@ target 'Gardener' do
 
   # Pods for Gardener
   pod 'SnapKit', '~> 5.6.0'
+  pod 'Kingfisher'
   pod 'FirebaseAuth'
   pod 'FirebaseStorage'
   pod 'FirebaseFirestore'

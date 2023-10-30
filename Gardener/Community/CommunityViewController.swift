@@ -32,7 +32,7 @@ class CommunityViewController: UIViewController {
         initNavigationBar()
         initCreateBoardButton()
     }
-    
+
     private func initViewModel(){
         self.viewModel.setBoards {
             DispatchQueue.main.async {
@@ -102,12 +102,9 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         }
 
         cell.initUI()
-        cell.setCategroy(categroy: viewModel.getCategroy(index: indexPath.item))
-        cell.setTitle(title: viewModel.getTitle(index: indexPath.item))
-        cell.setContents(contents: viewModel.getContents(index: indexPath.item))
-        cell.setDate(date: viewModel.getDate(index: indexPath.item))
-        cell.setImageUrl(urls: viewModel.getImageUrls(index: indexPath.item))
-        
+        cell.setModel(model: viewModel.getBoard(index: indexPath.item))
+        cell.boardCellView.imageCollectionView.reloadData()
+
         return cell
     }
    

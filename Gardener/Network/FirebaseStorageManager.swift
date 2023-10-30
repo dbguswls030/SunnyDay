@@ -31,7 +31,7 @@ class FirebaseStorageManager{
         }
     }
     
-    static func downloadBoardImages(url: String, completion: @escaping (UIImage) -> Void){
+    static func downloadBoardImage(url: String, completion: @escaping (UIImage) -> Void){
         var images = UIImage()
         // Warning: 용량 제한
         let megaBtye = Int64(1 * 3840 * 2160)

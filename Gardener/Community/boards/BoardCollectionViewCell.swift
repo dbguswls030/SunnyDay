@@ -10,15 +10,22 @@ import SnapKit
 
 class BoardCollectionViewCell: UICollectionViewCell {
 
-    var imageUrls: [String] = []
+    var model: BoardModel?
     
     lazy var boardCellView: BoardCellView = {
        return BoardCellView()
     }()
     
     override func prepareForReuse() {
-        super.prepareForReuse()
+//        super.prepareForReuse()
+        model = nil
         boardCellView.prepareReuseInitUI()
+//        for indexPath in boardCellView.imageCollectionView.indexPathsForVisibleItems {
+//            if let cell = boardCellView.imageCollectionView.cellForItem(at: indexPath) as? BoardImageCollectionViewCell {
+//                cell.imageView.image = nil
+//            }
+//        }
+//        boardCellView.imageCollectionView.reloadData()
     }
     func initUI(){
         self.addSubview(boardCellView)
@@ -26,14 +33,20 @@ class BoardCollectionViewCell: UICollectionViewCell {
             make.edges.equalToSuperview()
         }
     }
-    
+    func setModel(model: BoardModel){
+        self.model = model
+        setCategroy(categroy: model.category)
+        setTitle(title: model.title)
+        setContents(contents: model.contents)
+        setDate(date: model.date)
+        setImageUrl(urls: model.imageUrls)
+    }
     func setCategroy(categroy: String){
         boardCellView.categroy.text = categroy
     }
     
     func setTitle(title: String){
         boardCellView.title.text = title
-        print(title)
     }
     
     func setContents(contents: String){
@@ -49,12 +62,11 @@ class BoardCollectionViewCell: UICollectionViewCell {
     }
  
     func setImageUrl(urls: [String]){
-        print("urls \(urls)")
+        print(model!.title)
         guard !urls.isEmpty else {
             print("urls empty")
             return
         }
-        imageUrls = urls
         initCollectionView()
     }
     
@@ -68,16 +80,17 @@ class BoardCollectionViewCell: UICollectionViewCell {
 
 extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageUrls.count
+        guard let model = model else { return 0 }
+        return model.imageUrls.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        print("zz")
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "boardImageCell", for: indexPath) as? BoardImageCollectionViewCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "boardImageCell", for: indexPath) as? BoardImageCollectionViewCell, let model = model else {
             return UICollectionViewCell()
         }
         cell.initUI()
-        cell.setImageUrl(url: imageUrls[indexPath.item])
+        cell.setImageUrl(url: model.imageUrls[indexPath.item])
+        
         return cell
     }
 

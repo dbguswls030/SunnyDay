@@ -22,7 +22,9 @@ class BoardViewModel{
             completion()
         }
     }
-    
+    func getBoard(index: Int) -> BoardModel{
+        return boards[index]
+    }
     func numberOfBoards() -> Int{
         return boards.count
     }
