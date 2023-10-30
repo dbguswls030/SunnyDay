@@ -34,12 +34,12 @@ class CommunityViewController: UIViewController {
     }
 
     private func initViewModel(){
-        self.viewModel.setBoards {
-            DispatchQueue.main.async {
+//        self.viewModel.setBoards {
+//            DispatchQueue.main.async {
 //                self.initBoardCollectionView()
-                self.communityView.boardCollectionView.reloadData()
-            }
-        }
+//                self.communityView.boardCollectionView.reloadData()
+//            }
+//        }
     }
     
     private func initUI(){
@@ -104,7 +104,6 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         cell.initUI()
         cell.setModel(model: viewModel.getBoard(index: indexPath.item))
         cell.boardCellView.imageCollectionView.reloadData()
-
         return cell
     }
    
@@ -114,5 +113,23 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 7
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let contentOffsetY = self.communityView.boardCollectionView.contentOffset.y
+        let collectionViewContentSizeY = self.communityView.boardCollectionView.contentSize.height
+        let paginationY = self.communityView.boardCollectionView.frame.height
+        
+        
+        if contentOffsetY > collectionViewContentSizeY - paginationY, viewModel.isValidPaging(){
+            let startIndex = viewModel.numberOfBoards()
+            self.viewModel.setBoards {
+                let endIndex = self.viewModel.numberOfBoards()
+                let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
+                self.communityView.boardCollectionView.performBatchUpdates {
+                    self.communityView.boardCollectionView.insertItems(at: indexPath)
+                }
+            }
+        }
     }
 }

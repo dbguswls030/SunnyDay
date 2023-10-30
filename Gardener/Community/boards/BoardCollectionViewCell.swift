@@ -62,9 +62,7 @@ class BoardCollectionViewCell: UICollectionViewCell {
     }
  
     func setImageUrl(urls: [String]){
-        print(model!.title)
         guard !urls.isEmpty else {
-            print("urls empty")
             return
         }
         initCollectionView()

@@ -47,6 +47,7 @@ class BoardCellView: UIView {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.decelerationRate = .fast
         return collectionView
     }()
     
