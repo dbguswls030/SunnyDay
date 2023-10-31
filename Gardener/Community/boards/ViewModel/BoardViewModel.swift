@@ -11,7 +11,7 @@ import FirebaseFirestore
 class BoardViewModel{
     private var query: Query? = nil
     private var boards = [BoardModel]()
-    private var paging = true
+    private var paging = false
     
     func setBoards(completion: @escaping () -> Void){
         FirebaseFirestoreManager.getCommunityBoards(query: self.query) { [weak self] models, query in
@@ -32,6 +32,11 @@ class BoardViewModel{
             }
             
         }
+    }
+    func reloadViewModel(){
+        query = nil
+        boards.removeAll()
+        paging = false
     }
     func pagingAppendModel(models: [BoardModel]){
         self.boards += models

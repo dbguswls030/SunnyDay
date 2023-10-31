@@ -102,8 +102,7 @@ class BoardCellView: UIView {
             make.bottom.equalToSuperview().offset(-20)
         }
     }
-    
-    
+
     func initImageColletionViewLayout(){
         self.addSubview(imageCollectionView)
         imageCollectionView.snp.makeConstraints { make in

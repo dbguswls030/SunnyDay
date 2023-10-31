@@ -15,8 +15,13 @@ import FirebaseStorage
 
 // TODO: 업로드 시 indicator 
 
+protocol SendDelegateWhenPop: AnyObject{
+    func sendFunction()
+}
 
 class CreateBoardViewController: UIViewController {
+    
+    weak var delegate: SendDelegateWhenPop?
     
     private final let LEADINGTRAIINGOFFSET = 15
 
@@ -160,7 +165,7 @@ class CreateBoardViewController: UIViewController {
             make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
     }
-               
+
     @objc private func uploadBoard(){
         guard let category = categoryLabel.text, category != "카테고리를 선택해 주세요." else{
 //            Toast().showToast(view: self.view, message: "카테고리를 선택해 주세요.")
@@ -180,6 +185,7 @@ class CreateBoardViewController: UIViewController {
         self.navigationItem.rightBarButtonItem?.isEnabled = false
         
         FirebaseFirestoreManager.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: selectedImage, date: Date())) {
+            self.delegate?.sendFunction()
             self.navigationController?.popViewController(animated: true)
         }
     }

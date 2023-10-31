@@ -34,12 +34,12 @@ class CommunityViewController: UIViewController {
     }
 
     private func initViewModel(){
-//        self.viewModel.setBoards {
-//            DispatchQueue.main.async {
-//                self.initBoardCollectionView()
-//                self.communityView.boardCollectionView.reloadData()
-//            }
-//        }
+        self.viewModel.setBoards {
+            self.viewModel.setPaging(data: true)
+            DispatchQueue.main.async {
+                self.communityView.boardCollectionView.reloadData()
+            }
+        }
     }
     
     private func initUI(){
@@ -80,7 +80,23 @@ class CommunityViewController: UIViewController {
     @objc private func showCreatBoardView(){
         let vc = CreateBoardViewController()
         vc.hidesBottomBarWhenPushed = true
+        vc.delegate = self
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+   
+}
+extension CommunityViewController: SendDelegateWhenPop{
+    func sendFunction(){
+        print("delegate func")
+        self.viewModel.reloadViewModel()
+        self.viewModel.setBoards {
+            self.viewModel.setPaging(data: true)
+            DispatchQueue.main.async {
+                self.communityView.boardCollectionView.reloadData()
+            }
+            
+        }
     }
 }
 
@@ -119,15 +135,18 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         let contentOffsetY = self.communityView.boardCollectionView.contentOffset.y
         let collectionViewContentSizeY = self.communityView.boardCollectionView.contentSize.height
         let paginationY = self.communityView.boardCollectionView.frame.height
-        
-        
-        if contentOffsetY > collectionViewContentSizeY - paginationY, viewModel.isValidPaging(){
-            let startIndex = viewModel.numberOfBoards()
-            self.viewModel.setBoards {
-                let endIndex = self.viewModel.numberOfBoards()
-                let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
-                self.communityView.boardCollectionView.performBatchUpdates {
-                    self.communityView.boardCollectionView.insertItems(at: indexPath)
+    
+        if viewModel.isValidPaging(){
+            if contentOffsetY > collectionViewContentSizeY - paginationY{
+                let startIndex = viewModel.numberOfBoards()
+                var indexPath: [IndexPath]?
+                self.communityView.boardCollectionView.performBatchUpdates ({
+                    self.viewModel.setBoards {
+                        let endIndex = self.viewModel.numberOfBoards()
+                        indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
+                    }
+                }) { finished in
+                    self.communityView.boardCollectionView.insertItems(at: indexPath!)
                 }
             }
         }
