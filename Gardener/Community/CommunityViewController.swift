@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class CommunityViewController: UIViewController {
+class CommunityViewController: UIViewController{
     
     private lazy var viewModel: BoardViewModel = {
         return BoardViewModel()
@@ -16,6 +16,12 @@ class CommunityViewController: UIViewController {
     
     private lazy var communityView: CommunityView = {
         return CommunityView()
+    }()
+    
+    private lazy var refresh: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshCollectionView), for: .valueChanged)
+        return refreshControl
     }()
     
     private lazy var createBoardButton: UIButton = {
@@ -84,25 +90,32 @@ class CommunityViewController: UIViewController {
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
-   
-}
-extension CommunityViewController: SendDelegateWhenPop{
-    func sendFunction(){
-        print("delegate func")
+    @objc private func refreshCollectionView(){
+        refreshViewModelAndCollectionView()
+        refresh.endRefreshing()
+    }
+    
+    func refreshViewModelAndCollectionView(){
         self.viewModel.reloadViewModel()
         self.viewModel.setBoards {
             self.viewModel.setPaging(data: true)
             DispatchQueue.main.async {
                 self.communityView.boardCollectionView.reloadData()
             }
-            
         }
+    }
+}
+
+extension CommunityViewController: SendDelegateWhenPop{
+    func sendFunction(){
+        refreshViewModelAndCollectionView()
     }
 }
 
 extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
     
     private func initBoardCollectionView(){
+        communityView.boardCollectionView.refreshControl = refresh
         communityView.boardCollectionView.delegate = self
         communityView.boardCollectionView.dataSource = self
         communityView.boardCollectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: "boardCell")
@@ -136,18 +149,33 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         let collectionViewContentSizeY = self.communityView.boardCollectionView.contentSize.height
         let paginationY = self.communityView.boardCollectionView.frame.height
     
+//        if viewModel.isValidPaging(){
+//            if contentOffsetY > collectionViewContentSizeY - paginationY{
+//                let startIndex = viewModel.numberOfBoards()
+//                var indexPath: [IndexPath]?
+//                self.communityView.boardCollectionView.performBatchUpdates ({
+//                    self.viewModel.setBoards {
+//                        let endIndex = self.viewModel.numberOfBoards()
+//                        indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
+//                    }
+//                }) { finished in
+//                    self.communityView.boardCollectionView.insertItems(at: indexPath!)
+//                }
+//            }
+//        }
         if viewModel.isValidPaging(){
             if contentOffsetY > collectionViewContentSizeY - paginationY{
                 let startIndex = viewModel.numberOfBoards()
-                var indexPath: [IndexPath]?
-                self.communityView.boardCollectionView.performBatchUpdates ({
-                    self.viewModel.setBoards {
-                        let endIndex = self.viewModel.numberOfBoards()
-                        indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
+                self.viewModel.setBoards {
+                    let endIndex = self.viewModel.numberOfBoards()
+                    let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
+                    self.communityView.boardCollectionView.performBatchUpdates ({
+                       
+                    }) { finished in
+                        self.communityView.boardCollectionView.insertItems(at: indexPath)
                     }
-                }) { finished in
-                    self.communityView.boardCollectionView.insertItems(at: indexPath!)
                 }
+               
             }
         }
     }
