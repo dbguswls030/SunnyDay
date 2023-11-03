@@ -11,32 +11,36 @@ import FirebaseFirestore
 class BoardViewModel{
     private var query: Query? = nil
     private var boards = [BoardModel]()
-    private var paging = false
+    private var paging = true
+    private var lastPage = false
     
     func setBoards(completion: @escaping () -> Void){
         FirebaseFirestoreManager.getCommunityBoards(query: self.query) { [weak self] models, query in
-            guard let self = self else{
+            guard let self = self, !models.isEmpty else{
                 return
             }
-            if models.count < 10 {
-                setPaging(data: false)
-            }
+            setPaging(data: false)
             
             self.boards += models
             self.query = query
             
-            if models.count != 0{
-                completion()
-            }else{
-                return
+            if models.count < 10{
+                self.setLastPage(data: true)
             }
-            
+            completion()
         }
+    }
+    func setLastPage(data: Bool){
+        self.lastPage = data
+    }
+    func isLastPage()->Bool{
+        return self.lastPage
     }
     func reloadViewModel(){
         query = nil
         boards.removeAll()
         paging = false
+        lastPage = false
     }
     func pagingAppendModel(models: [BoardModel]){
         self.boards += models
