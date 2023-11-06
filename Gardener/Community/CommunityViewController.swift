@@ -8,7 +8,21 @@
 import UIKit
 import SnapKit
 
-class CommunityViewController: UIViewController {
+class CommunityViewController: UIViewController{
+    
+    private lazy var viewModel: BoardViewModel = {
+        return BoardViewModel()
+    }()
+    
+    private lazy var communityView: CommunityView = {
+        return CommunityView()
+    }()
+    
+    private lazy var refresh: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshCollectionView), for: .valueChanged)
+        return refreshControl
+    }()
     
     private lazy var createBoardButton: UIButton = {
         var button = UIButton()
@@ -18,31 +32,135 @@ class CommunityViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        initUI()
+        initBoardCollectionView()
+        initViewModel()
         initNavigationBar()
         initCreateBoardButton()
+    }
+
+    private func initViewModel(){
+        self.viewModel.setBoards {
+//            self.viewModel.setPaging(data: true)
+            DispatchQueue.main.async {
+                self.communityView.boardCollectionView.reloadData()
+            }
+        }
+    }
+    
+    private func initUI(){
+        self.view.addSubview(communityView)
+        self.view.backgroundColor = .white
+        communityView.snp.makeConstraints { make in
+//            make.top.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-(tabBarController?.tabBar.frame.size.height ?? 0))
+        }
     }
     
     private func initNavigationBar(){
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .black
         self.navigationItem.backBarButtonItem = backBarButton
+        self.title = "게시판"
+//        self.navigationController?.navigationBar.backgroundColor = .white
+        // TODO: 네비게이션 바 아래 그림자
     }
 
     private func initCreateBoardButton(){
         self.view.addSubview(createBoardButton)
         let buttonSize = 60
+        
         createBoardButton.snp.makeConstraints { make in
             make.bottom.equalToSuperview().offset(-((tabBarController?.tabBar.frame.size.height ?? 0) + 15))
             make.trailing.equalToSuperview().offset(-15)
             make.width.height.equalTo(buttonSize)
         }
+        
         createBoardButton.layer.cornerRadius = CGFloat(buttonSize/2)
         createBoardButton.addTarget(self, action: #selector(showCreatBoardView), for: .touchUpInside)
+        // TODO: 테두리 그림자
     }
     
     @objc private func showCreatBoardView(){
         let vc = CreateBoardViewController()
         vc.hidesBottomBarWhenPushed = true
+        vc.delegate = self
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc private func refreshCollectionView(){
+        refreshViewModelAndCollectionView()
+        refresh.endRefreshing()
+    }
+    
+    func refreshViewModelAndCollectionView(){
+        self.viewModel.reloadViewModel()
+        self.viewModel.setBoards {
+//            self.viewModel.setPaging(data: true)
+            DispatchQueue.main.async {
+                self.communityView.boardCollectionView.reloadData()
+            }
+        }
+    }
+}
+
+extension CommunityViewController: SendDelegateWhenPop{
+    func sendFunction(){
+        refreshViewModelAndCollectionView()
+    }
+}
+
+extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
+    
+    private func initBoardCollectionView(){
+        communityView.boardCollectionView.refreshControl = refresh
+        communityView.boardCollectionView.delegate = self
+        communityView.boardCollectionView.dataSource = self
+        communityView.boardCollectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: "boardCell")
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.numberOfBoards()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "boardCell", for: indexPath) as? BoardCollectionViewCell else{
+            return UICollectionViewCell()
+        }
+
+        cell.initUI()
+        cell.setModel(model: viewModel.getBoard(index: indexPath.item))
+        cell.boardCellView.imageCollectionView.reloadData()
+        return cell
+    }
+   
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: self.view.frame.width, height: viewModel.getHeight(index: indexPath.item, width: self.view.frame.width - 20 - 20))
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 7
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let contentOffsetY = self.communityView.boardCollectionView.contentOffset.y
+        let collectionViewContentSizeY = self.communityView.boardCollectionView.contentSize.height
+        let paginationY = self.communityView.boardCollectionView.frame.height
+
+        if !viewModel.isValidPaging() && !viewModel.isLastPage(){
+            if contentOffsetY > collectionViewContentSizeY - paginationY{
+                let startIndex = viewModel.numberOfBoards()
+                self.viewModel.setPaging(data: true)
+                self.viewModel.setBoards {
+                    let endIndex = self.viewModel.numberOfBoards()
+                    let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
+                    self.communityView.boardCollectionView.performBatchUpdates ({
+                            self.communityView.boardCollectionView.insertItems(at: indexPath)
+                    })
+                }
+            }
+        }
     }
 }
