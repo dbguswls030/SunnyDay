@@ -39,7 +39,7 @@ class BoardViewModel{
     func reloadViewModel(){
         query = nil
         boards.removeAll()
-        paging = false
+        paging = true
         lastPage = false
     }
     func pagingAppendModel(models: [BoardModel]){

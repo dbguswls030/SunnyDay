@@ -27,6 +27,16 @@ class CreateBoardViewController: UIViewController {
 
     private var selectedImage: [UIImage] = []
     
+    private lazy var activityIndicator: UIActivityIndicatorView  = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.frame = .init(x: 0, y: 0, width: 50, height: 50)
+        activityIndicator.center = self.view.center
+        activityIndicator.stopAnimating()
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .medium
+        return activityIndicator
+    }()
+    
     private lazy var topBreakLine: BreakLine = {
        return BreakLine()
     }()
@@ -106,6 +116,7 @@ class CreateBoardViewController: UIViewController {
         self.scrollView.addSubview(categoryTitleBreakLine)
         self.scrollView.addSubview(contentTextView)
         self.view.addSubview(photoCollectionView)
+        self.view.addSubview(activityIndicator)
         
         topBreakLine.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
@@ -164,6 +175,9 @@ class CreateBoardViewController: UIViewController {
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
             make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
+        activityIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     @objc private func uploadBoard(){
@@ -183,11 +197,13 @@ class CreateBoardViewController: UIViewController {
         }
         
         self.navigationItem.rightBarButtonItem?.isEnabled = false
-        
+        self.activityIndicator.startAnimating()
         FirebaseFirestoreManager.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: selectedImage, date: Date())) {
             self.delegate?.sendFunction()
+            self.activityIndicator.stopAnimating()
             self.navigationController?.popViewController(animated: true)
         }
+        
     }
     
     @objc private func showCategoryList(){
