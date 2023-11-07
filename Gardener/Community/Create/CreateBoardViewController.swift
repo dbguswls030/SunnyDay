@@ -16,7 +16,7 @@ import FirebaseStorage
 // TODO: 업로드 시 indicator 
 
 protocol SendDelegateWhenPop: AnyObject{
-    func sendFunction()
+    func popCreatBoardView()
 }
 
 class CreateBoardViewController: UIViewController {
@@ -199,7 +199,7 @@ class CreateBoardViewController: UIViewController {
         self.navigationItem.rightBarButtonItem?.isEnabled = false
         self.activityIndicator.startAnimating()
         FirebaseFirestoreManager.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: selectedImage, date: Date())) {
-            self.delegate?.sendFunction()
+            self.delegate?.popCreatBoardView()
             self.activityIndicator.stopAnimating()
             self.navigationController?.popViewController(animated: true)
         }

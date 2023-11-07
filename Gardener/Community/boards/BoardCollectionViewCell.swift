@@ -20,6 +20,7 @@ class BoardCollectionViewCell: UICollectionViewCell {
 //        super.prepareForReuse()
         model = nil
         boardCellView.prepareReuseInitUI()
+        boardCellView.imageCollectionView.gestureRecognizers = nil
 //        for indexPath in boardCellView.imageCollectionView.indexPathsForVisibleItems {
 //            if let cell = boardCellView.imageCollectionView.cellForItem(at: indexPath) as? BoardImageCollectionViewCell {
 //                cell.imageView.image = nil
@@ -88,7 +89,7 @@ extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDat
         }
         cell.initUI()
         cell.setImageUrl(url: model.imageUrls[indexPath.item])
-        
+        cell.isUserInteractionEnabled = false
         return cell
     }
 

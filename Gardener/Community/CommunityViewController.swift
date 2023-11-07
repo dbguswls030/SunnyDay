@@ -104,15 +104,29 @@ class CommunityViewController: UIViewController{
             }
         }
     }
+    
+    func showBoardContent(){
+        let boardViewController = BoardViewController()
+        boardViewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(boardViewController, animated: true)
+    }
+    
+    @objc func showBoardContentByImageCollectionView(){
+        showBoardContent()
+    }
 }
 
 extension CommunityViewController: SendDelegateWhenPop{
-    func sendFunction(){
+    func popCreatBoardView(){
         refreshViewModelAndCollectionView()
     }
 }
 
-extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
+extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIGestureRecognizerDelegate{
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
+    }
     
     private func initBoardCollectionView(){
         communityView.boardCollectionView.refreshControl = refresh
@@ -133,7 +147,14 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         cell.initUI()
         cell.setModel(model: viewModel.getBoard(index: indexPath.item))
         cell.boardCellView.imageCollectionView.reloadData()
+        let tapRecognize = UITapGestureRecognizer(target: self, action: #selector(showBoardContentByImageCollectionView))
+        tapRecognize.delegate = self
+        cell.boardCellView.imageCollectionView.addGestureRecognizer(tapRecognize)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        showBoardContent()
     }
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
