@@ -8,6 +8,10 @@
 import UIKit
 import SnapKit
 
+class ImageTapGestureRecognizer: UITapGestureRecognizer{
+    var index: Int?
+}
+
 class CommunityViewController: UIViewController{
     
     private lazy var viewModel: BoardViewModel = {
@@ -105,14 +109,15 @@ class CommunityViewController: UIViewController{
         }
     }
     
-    func showBoardContent(){
+    private func showBoardContent(index: Int){
         let boardViewController = BoardViewController()
+        boardViewController.setBoardModel(model: viewModel.getBoard(index: index))
         boardViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(boardViewController, animated: true)
     }
     
-    @objc func showBoardContentByImageCollectionView(){
-        showBoardContent()
+    @objc func showBoardContentByImageCollectionView(sender: ImageTapGestureRecognizer){
+        showBoardContent(index: sender.index!)
     }
 }
 
@@ -147,14 +152,15 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         cell.initUI()
         cell.setModel(model: viewModel.getBoard(index: indexPath.item))
         cell.boardCellView.imageCollectionView.reloadData()
-        let tapRecognize = UITapGestureRecognizer(target: self, action: #selector(showBoardContentByImageCollectionView))
+        let tapRecognize = ImageTapGestureRecognizer(target: self, action: #selector(showBoardContentByImageCollectionView))
         tapRecognize.delegate = self
+        tapRecognize.index = indexPath.item
         cell.boardCellView.imageCollectionView.addGestureRecognizer(tapRecognize)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        showBoardContent()
+        showBoardContent(index: indexPath.item)
     }
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

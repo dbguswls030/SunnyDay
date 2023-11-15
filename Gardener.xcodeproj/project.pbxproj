@@ -31,6 +31,7 @@
 		9F9E11D629C4C3B90090B2E6 /* GardenerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11D529C4C3B90090B2E6 /* GardenerTests.swift */; };
 		9F9E11E029C4C3B90090B2E6 /* GardenerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11DF29C4C3B90090B2E6 /* GardenerUITests.swift */; };
 		9F9E11E229C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */; };
+		9FA37F0B2B0518920065BE3D /* ImageSildeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA37F0A2B0518920065BE3D /* ImageSildeViewController.swift */; };
 		9FB122562A87AB6F00C346E7 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */; };
 		9FB122592A87ABDC00C346E7 /* FirebaseFirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */; };
 		9FB1229B2A8E780800C346E7 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB1229A2A8E780800C346E7 /* Toast.swift */; };
@@ -100,6 +101,7 @@
 		9F9E11DB29C4C3B90090B2E6 /* GardenerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GardenerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F9E11DF29C4C3B90090B2E6 /* GardenerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenerUITests.swift; sourceTree = "<group>"; };
 		9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenerUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		9FA37F0A2B0518920065BE3D /* ImageSildeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSildeViewController.swift; sourceTree = "<group>"; };
 		9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
 		9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseFirestoreManager.swift; sourceTree = "<group>"; };
 		9FB1229A2A8E780800C346E7 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
@@ -186,7 +188,6 @@
 				9F13E0D629D2D97200651EA0 /* CommunityViewController.swift */,
 				9FDD56912AA080B500C35268 /* CommunityView.swift */,
 				9F5AD0B32AB1B592002105DE /* boards */,
-				9FCBD8852AFA60B800FBBE27 /* board */,
 				9FCF92B22A22BA5800AF2885 /* Create */,
 			);
 			path = Community;
@@ -205,9 +206,10 @@
 			children = (
 				9F5AD0B42AB1B5D2002105DE /* Model */,
 				9F5AD0B72AB1B622002105DE /* ViewModel */,
+				9FDFBF5E2ABC77B100F5E9B3 /* image Cell */,
 				9FDD56932AA0986800C35268 /* BoardCollectionViewCell.swift */,
 				9FDD56952AA09F1200C35268 /* BoardCellView.swift */,
-				9FDFBF5E2ABC77B100F5E9B3 /* image Cell */,
+				9FCBD8852AFA60B800FBBE27 /* board */,
 			);
 			path = boards;
 			sourceTree = "<group>";
@@ -310,6 +312,14 @@
 			path = GardenerUITests;
 			sourceTree = "<group>";
 		};
+		9FA37F0C2B05189A0065BE3D /* Image Slide */ = {
+			isa = PBXGroup;
+			children = (
+				9FA37F0A2B0518920065BE3D /* ImageSildeViewController.swift */,
+			);
+			path = "Image Slide";
+			sourceTree = "<group>";
+		};
 		9FB122542A87AB4A00C346E7 /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -341,6 +351,7 @@
 			children = (
 				9FCBD8862AFA612600FBBE27 /* BoardViewController.swift */,
 				9FCBD8882AFA641500FBBE27 /* BoardView.swift */,
+				9FA37F0C2B05189A0065BE3D /* Image Slide */,
 			);
 			path = board;
 			sourceTree = "<group>";
@@ -636,6 +647,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FB31D7129DD962F00F02DE0 /* LoginViewController.swift in Sources */,
+				9FA37F0B2B0518920065BE3D /* ImageSildeViewController.swift in Sources */,
 				9F9E11C329C4C3B70090B2E6 /* MainTabBarController.swift in Sources */,
 				9F95BA032A31DC3800A5E247 /* ShowPhotoPickerCollectionViewCell.swift in Sources */,
 				9F95B9D92A2DC8B100A5E247 /* Common.swift in Sources */,

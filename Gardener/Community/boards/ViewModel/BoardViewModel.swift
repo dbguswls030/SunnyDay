@@ -42,9 +42,6 @@ class BoardViewModel{
         paging = true
         lastPage = false
     }
-    func pagingAppendModel(models: [BoardModel]){
-        self.boards += models
-    }
     func isValidPaging() -> Bool{
         return self.paging
     }

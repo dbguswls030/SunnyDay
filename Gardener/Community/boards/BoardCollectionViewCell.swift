@@ -42,19 +42,19 @@ class BoardCollectionViewCell: UICollectionViewCell {
         setDate(date: model.date)
         setImageUrl(urls: model.imageUrls)
     }
-    func setCategroy(categroy: String){
+    private func setCategroy(categroy: String){
         boardCellView.categroy.text = categroy
     }
     
-    func setTitle(title: String){
+    private func setTitle(title: String){
         boardCellView.title.text = title
     }
     
-    func setContents(contents: String){
+    private func setContents(contents: String){
         boardCellView.contents.text = contents
     }
     
-    func setDate(date: Date){
+    private func setDate(date: Date){
         // TODO: 날짜 케이스, 분, 시간, 일
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -62,14 +62,14 @@ class BoardCollectionViewCell: UICollectionViewCell {
         boardCellView.date.text = formattedDate
     }
  
-    func setImageUrl(urls: [String]){
+    private func setImageUrl(urls: [String]){
         guard !urls.isEmpty else {
             return
         }
         initCollectionView()
     }
     
-    func initCollectionView(){
+    private func initCollectionView(){
         boardCellView.imageCollectionView.register(BoardImageCollectionViewCell.self, forCellWithReuseIdentifier: "boardImageCell")
         boardCellView.imageCollectionView.dataSource = self
         boardCellView.imageCollectionView.delegate = self
