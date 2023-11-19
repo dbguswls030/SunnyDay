@@ -13,6 +13,9 @@ class ImageSildeViewController: UIViewController {
     var imageUrls: [String]?
     var cur: Int? 
     
+    private var touchPoint = CGPoint(x: 0, y: 0)
+    private var panGestureGecognizer: UIPanGestureRecognizer!
+    
     private lazy var ImageScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -35,6 +38,7 @@ class ImageSildeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        initPanGestureRecognizer()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -44,7 +48,8 @@ class ImageSildeViewController: UIViewController {
     }
     
     private func initUI(){
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .black
+        
         let backBarButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backBarButton.tintColor = .white
         self.navigationItem.backBarButtonItem = backBarButton
@@ -53,11 +58,10 @@ class ImageSildeViewController: UIViewController {
         self.view.addSubview(ImageScrollView)
         self.ImageScrollView.addSubview(baseView)
         self.view.addSubview(pageControl)
-        
-//        ImageScrollView.delegate = self
+    
         ImageScrollView.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-30)
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-30)
             make.left.right.equalToSuperview()
         }
         
@@ -70,7 +74,6 @@ class ImageSildeViewController: UIViewController {
             make.left.right.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
-        
     }
     
     func initImages(){
@@ -87,6 +90,9 @@ class ImageSildeViewController: UIViewController {
             ImageScrollView.addSubview(imageView)
             ImageScrollView.contentSize.width = imageView.frame.width * CGFloat(i + 1)
         }
+        if let cur = cur{
+            ImageScrollView.contentOffset.x = ImageScrollView.bounds.width * CGFloat(cur)
+        }
         ImageScrollView.delegate = self
         // imageScrollView.contentsize가 계속 바뀌기 때문에 scrollViewDidScroll 호출되는 것을 방지
     }
@@ -100,10 +106,51 @@ class ImageSildeViewController: UIViewController {
     func setPageControl(current: Int){
         pageControl.currentPage = current
     }
+    
+    func initPanGestureRecognizer(){
+        panGestureGecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestPopView))
+        panGestureGecognizer.delegate = self
+        self.ImageScrollView.addGestureRecognizer(panGestureGecognizer)
+    }
+    
+    @objc func panGestPopView(_ sender: UIPanGestureRecognizer){
+        let translation = sender.translation(in: ImageScrollView)
+        switch sender.state{
+        case .began:
+            touchPoint = sender.location(in: ImageScrollView)
+        case .changed:
+            ImageScrollView.frame.origin.y = max(translation.y, 0)
+            let alphaValue = 1.0 - min(translation.y / 200.0, 1.0)
+            ImageScrollView.alpha = alphaValue
+        case .ended:
+            let dragDistance = touchPoint.y - translation.y
+            if dragDistance < 180{
+                dismiss(animated: true)
+            }else{
+                UIView.animate(withDuration: 0.3){
+                    self.ImageScrollView.frame.origin.y = 0
+                    self.ImageScrollView.alpha = 1
+                }
+            }
+        default : break
+        }
+        if translation.y < -50{
+            dismiss(animated: true)
+        }
+    }
 }
 extension ImageSildeViewController: UIScrollViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let value = ImageScrollView.contentOffset.x / ImageScrollView.frame.size.width
         setPageControl(current: Int(round(value)))
+    }
+}
+extension ImageSildeViewController: UIGestureRecognizerDelegate{
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let panGesture = gestureRecognizer as? UIPanGestureRecognizer {
+            let velocity = panGesture.velocity(in: ImageScrollView)
+            return abs(velocity.x) < abs(velocity.y) // 위 아래로 당길 때만 panGesture 실행
+        }
+        return true
     }
 }

@@ -94,10 +94,11 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("click")
         let vc = ImageSildeViewController()
         vc.cur = indexPath.item
         vc.imageUrls = model?.imageUrls
-        self.navigationController?.pushViewController(vc, animated: true)
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: true)
+//        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
