@@ -35,6 +35,13 @@ class ImageSildeViewController: UIViewController {
         return pageControl
     }()
     
+    private lazy var cancelButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)), for: .normal)
+        button.tintColor = .white
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
@@ -58,7 +65,8 @@ class ImageSildeViewController: UIViewController {
         self.view.addSubview(ImageScrollView)
         self.ImageScrollView.addSubview(baseView)
         self.view.addSubview(pageControl)
-    
+        self.view .addSubview(cancelButton)
+        
         ImageScrollView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.bottom.equalToSuperview().offset(-30)
@@ -74,6 +82,14 @@ class ImageSildeViewController: UIViewController {
             make.left.right.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
+        
+        cancelButton.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(50)
+            make.left.equalToSuperview().offset(10)
+            make.width.height.equalTo(45)
+        }
+        
+        cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
     }
     
     func initImages(){
@@ -137,6 +153,10 @@ class ImageSildeViewController: UIViewController {
         if translation.y < -50{
             dismiss(animated: true)
         }
+    }
+    
+    @objc func cancel(){
+        dismiss(animated: true)
     }
 }
 extension ImageSildeViewController: UIScrollViewDelegate{
