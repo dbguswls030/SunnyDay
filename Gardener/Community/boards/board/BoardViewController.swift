@@ -12,13 +12,17 @@ class BoardViewController: UIViewController {
     
     private weak var model: BoardModel?
     
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
+    }()
+    
     private lazy var boardView: BoardView = {
         return BoardView()
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         initUI()
         initNavigationBar()
     }
@@ -50,7 +54,6 @@ class BoardViewController: UIViewController {
         boardView.setTitle(title: model.title)
         boardView.setDate(date: model.date)
         boardView.setContents(contents: model.contents)
-        
     }
     
     private func initNavigationBar(){
@@ -99,6 +102,5 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
         vc.imageUrls = model?.imageUrls
         vc.modalPresentationStyle = .overFullScreen
         self.present(vc, animated: true)
-//        self.navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -27,6 +27,7 @@ class SignUpViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         initUI()
+        initObserver()
         hideKeyboard()
     }
     
@@ -41,6 +42,22 @@ class SignUpViewController: UIViewController {
         signView.nickNameTextField.addTarget(self, action: #selector(minimumNickNameLength(_ :)), for: .editingChanged)
         signView.submitButton.addTarget(self, action: #selector(setProfile(_ :)), for: .touchUpInside)
         signView.profileImage.addTarget(self, action: #selector(touchUpProfileImage(_ :)), for: .touchUpInside)
+    }
+    
+    private func initObserver(){
+        NotificationCenter.default.addObserver(self, selector: #selector(nickNameTextFieldDidChange), name: UITextField.textDidChangeNotification, object: signView.nickNameTextField)
+    }
+    
+    @objc func nickNameTextFieldDidChange(_ notification: Notification){
+        if let textfield = notification.object as? UITextField{
+            if let text = textfield.text{
+                if text.count >= 8{
+                    let index = text.index(text.startIndex, offsetBy: 8)
+                    let newString = text[text.startIndex..<index]
+                    signView.nickNameTextField.text = String(newString)
+                }
+            }
+        }
     }
     
     @objc private func touchUpProfileImage(_ sender: Any){

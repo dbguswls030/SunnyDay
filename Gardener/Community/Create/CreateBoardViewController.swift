@@ -68,7 +68,7 @@ class CreateBoardViewController: UIViewController {
     private lazy var titleTextView: UITextField = {
         var textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        textField.placeholder = "제목을 입력해 주세요."
+        textField.placeholder = "제목을 입력해 주세요.(최대 20자)"
         return textField
     }()
     
@@ -96,6 +96,7 @@ class CreateBoardViewController: UIViewController {
         super.viewDidLoad()
         initNavigationBar()
         initUI()
+        initObserver()
         hideKeyboard()
     }
     
@@ -156,6 +157,7 @@ class CreateBoardViewController: UIViewController {
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET+5)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
         }
+        titleTextView.delegate = self
         
         contentTextView.snp.makeConstraints { make in
             make.top.equalTo(titleTextView.snp.bottom).offset(10)
@@ -164,6 +166,7 @@ class CreateBoardViewController: UIViewController {
             make.bottom.equalToSuperview()
             make.width.equalTo(scrollView.snp.width).offset(-LEADINGTRAIINGOFFSET * 2)
         }
+//        contentTextView.delegate = self
         
         photoCollectionView.register(ShowPhotoPickerCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "addImage")
         photoCollectionView.register(SelectedPhotoCollectionViewCell.self, forCellWithReuseIdentifier: "selectedImage")
@@ -179,7 +182,23 @@ class CreateBoardViewController: UIViewController {
             make.edges.equalToSuperview()
         }
     }
-
+    
+    private func initObserver(){
+        NotificationCenter.default.addObserver(self, selector: #selector(titleTextFieldDidChange), name: UITextField.textDidChangeNotification, object: titleTextView)
+    }
+    
+    @objc func titleTextFieldDidChange(_ notification: Notification){
+        if let textfield = notification.object as? UITextField{
+            if let text = textfield.text{
+                if text.count >= 20{
+                    let index = text.index(text.startIndex, offsetBy: 20)
+                    let newString = text[text.startIndex..<index]
+                    titleTextView.text = String(newString)
+                }
+            }
+        }
+    }
+    
     @objc private func uploadBoard(){
         guard let category = categoryLabel.text, category != "카테고리를 선택해 주세요." else{
 //            Toast().showToast(view: self.view, message: "카테고리를 선택해 주세요.")
@@ -335,5 +354,21 @@ extension CreateBoardViewController: UICollectionViewDelegate, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 3, bottom: 0, right: 3)
+    }
+}
+extension CreateBoardViewController: UITextFieldDelegate{
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if let char = string.cString(using: String.Encoding.utf8) {
+            let isBackSpace = strcmp(char, "\\b")
+            if isBackSpace == -92 {
+                return true
+            }
+        }
+        if textField == titleTextView {
+            if titleTextView.text!.count > 20{
+                return false
+            }
+        }
+        return true
     }
 }
