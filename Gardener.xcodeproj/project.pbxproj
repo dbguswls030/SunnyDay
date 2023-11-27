@@ -32,6 +32,7 @@
 		9F9E11E029C4C3B90090B2E6 /* GardenerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11DF29C4C3B90090B2E6 /* GardenerUITests.swift */; };
 		9F9E11E229C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */; };
 		9FA37F0B2B0518920065BE3D /* ImageSildeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA37F0A2B0518920065BE3D /* ImageSildeViewController.swift */; };
+		9FA37F212B1503700065BE3D /* BoardCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA37F202B1503700065BE3D /* BoardCommentView.swift */; };
 		9FB122562A87AB6F00C346E7 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */; };
 		9FB122592A87ABDC00C346E7 /* FirebaseFirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */; };
 		9FB1229B2A8E780800C346E7 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB1229A2A8E780800C346E7 /* Toast.swift */; };
@@ -102,6 +103,7 @@
 		9F9E11DF29C4C3B90090B2E6 /* GardenerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenerUITests.swift; sourceTree = "<group>"; };
 		9F9E11E129C4C3B90090B2E6 /* GardenerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenerUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9FA37F0A2B0518920065BE3D /* ImageSildeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSildeViewController.swift; sourceTree = "<group>"; };
+		9FA37F202B1503700065BE3D /* BoardCommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardCommentView.swift; sourceTree = "<group>"; };
 		9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
 		9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseFirestoreManager.swift; sourceTree = "<group>"; };
 		9FB1229A2A8E780800C346E7 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 			children = (
 				9FCBD8862AFA612600FBBE27 /* BoardViewController.swift */,
 				9FCBD8882AFA641500FBBE27 /* BoardView.swift */,
+				9FA37F202B1503700065BE3D /* BoardCommentView.swift */,
 				9FA37F0C2B05189A0065BE3D /* Image Slide */,
 			);
 			path = board;
@@ -653,6 +656,7 @@
 				9F95B9D92A2DC8B100A5E247 /* Common.swift in Sources */,
 				9FB122562A87AB6F00C346E7 /* FirebaseStorageManager.swift in Sources */,
 				9F9E11BF29C4C3B70090B2E6 /* AppDelegate.swift in Sources */,
+				9FA37F212B1503700065BE3D /* BoardCommentView.swift in Sources */,
 				9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */,
 				9F13E0D329D2D95D00651EA0 /* ShopViewController.swift in Sources */,
 				9FDFBF5D2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift in Sources */,

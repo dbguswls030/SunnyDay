@@ -21,6 +21,10 @@ class BoardViewController: UIViewController {
         return BoardView()
     }()
     
+    private lazy var commentView: BoardCommentView = {
+       return BoardCommentView()
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
@@ -29,11 +33,18 @@ class BoardViewController: UIViewController {
     
     private func initUI(){
         self.view.backgroundColor = .white
-        self.view.addSubview(boardView)
+        self.view.addSubview(scrollView)
+        self.scrollView.addSubview(boardView)
+        
+        scrollView.snp.makeConstraints { make in
+            make.left.right.bottom.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+        }
         
         boardView.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-            make.left.right.bottom.equalToSuperview()
+            make.top.left.right.equalToSuperview()
+            make.width.equalToSuperview()
+            make.height.equalTo(GetElementHeightOfBoard().getHeight(model: model!, width: self.view.frame.width))
         }
     }
     
