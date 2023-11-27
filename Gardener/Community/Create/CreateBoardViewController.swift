@@ -82,6 +82,13 @@ class CreateBoardViewController: UIViewController {
         return textView
     }()
     
+    private lazy var contentLimitLabel: UILabel = {
+        let label = UILabel()
+        label.text = "(0/300)"
+        label.font = UIFont.systemFont(ofSize: 10)
+        return label
+    }()
+    
     private lazy var photoCollectionView: UICollectionView = {
         var layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -116,6 +123,7 @@ class CreateBoardViewController: UIViewController {
         self.scrollView.addSubview(titleTextView)
         self.scrollView.addSubview(categoryTitleBreakLine)
         self.scrollView.addSubview(contentTextView)
+        self.scrollView.addSubview(contentLimitLabel)
         self.view.addSubview(photoCollectionView)
         self.view.addSubview(activityIndicator)
         
@@ -166,7 +174,12 @@ class CreateBoardViewController: UIViewController {
             make.bottom.equalToSuperview()
             make.width.equalTo(scrollView.snp.width).offset(-LEADINGTRAIINGOFFSET * 2)
         }
-//        contentTextView.delegate = self
+        contentTextView.delegate = self
+        
+        contentLimitLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(contentTextView.snp.bottom).offset(-2)
+            make.right.equalTo(contentTextView.snp.right).offset(-2)
+        }
         
         photoCollectionView.register(ShowPhotoPickerCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "addImage")
         photoCollectionView.register(SelectedPhotoCollectionViewCell.self, forCellWithReuseIdentifier: "selectedImage")
@@ -185,6 +198,7 @@ class CreateBoardViewController: UIViewController {
     
     private func initObserver(){
         NotificationCenter.default.addObserver(self, selector: #selector(titleTextFieldDidChange), name: UITextField.textDidChangeNotification, object: titleTextView)
+        NotificationCenter.default.addObserver(self, selector: #selector(contentTextViewDidChange), name: UITextView.textDidChangeNotification, object: contentTextView)
     }
     
     @objc func titleTextFieldDidChange(_ notification: Notification){
@@ -195,6 +209,19 @@ class CreateBoardViewController: UIViewController {
                     let newString = text[text.startIndex..<index]
                     titleTextView.text = String(newString)
                 }
+            }
+        }
+    }
+    
+    @objc func contentTextViewDidChange(_ notification: Notification){
+        if let textView = notification.object as? UITextView{
+            if let text = textView.text{
+                if text.count >= 300{
+                    let index = text.index(text.startIndex, offsetBy: 300)
+                    let newString = text[text.startIndex..<index]
+                    contentTextView.text = String(newString)
+                }
+                contentLimitLabel.text = "(\(contentTextView.text!.count)/300"
             }
         }
     }
@@ -243,22 +270,6 @@ class CreateBoardViewController: UIViewController {
         picker.delegate = self
         
         self.present(picker, animated: true)
-    }
-}
-
-                                              
-extension CreateBoardViewController: UITextViewDelegate{
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty{
-            textView.textColor = .lightGray
-            textView.text = "내용을 입력해 주세요."
-        }
-    }
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == .lightGray{
-            textView.text = ""
-            textView.textColor = .black
-        }
     }
 }
 
@@ -368,6 +379,29 @@ extension CreateBoardViewController: UITextFieldDelegate{
             if titleTextView.text!.count > 20{
                 return false
             }
+        }
+        return true
+    }
+}
+extension CreateBoardViewController: UITextViewDelegate{
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty{
+            textView.textColor = .lightGray
+            textView.text = "내용을 입력해 주세요."
+        }
+    }
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == .lightGray{
+            textView.text = ""
+            textView.textColor = .black
+        }
+    }
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let contentText = textView.text ?? ""
+        guard let stringRange = Range(range, in: contentText) else { return false }
+        let convertText = contentText.replacingCharacters(in: stringRange, with: text)
+        if contentTextView.text!.count > 300{
+            return false
         }
         return true
     }
