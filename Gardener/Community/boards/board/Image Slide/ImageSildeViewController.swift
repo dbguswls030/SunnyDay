@@ -65,7 +65,7 @@ class ImageSildeViewController: UIViewController {
         self.view.addSubview(ImageScrollView)
         self.ImageScrollView.addSubview(baseView)
         self.view.addSubview(pageControl)
-        self.view .addSubview(cancelButton)
+        self.view.addSubview(cancelButton)
         
         ImageScrollView.snp.makeConstraints { make in
             make.top.equalToSuperview()

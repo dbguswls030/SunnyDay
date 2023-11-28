@@ -72,6 +72,14 @@ class BoardView: UIView {
         return collectionView
     }()
     
+    private lazy var viewCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 8, weight: .light)
+        label.tintColor = .lightGray
+        label.text = "0 명이 이 글을 봤어요"
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initUI()
@@ -89,8 +97,8 @@ class BoardView: UIView {
         self.addSubview(nickNameLabel)
         self.addSubview(dateLabel)
         self.addSubview(writerInfoBreakLine)
-        
         self.addSubview(boardContent)
+//        self.addSubview(viewCountLabel)
         
         navigationBottomBreakLine.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -131,6 +139,11 @@ class BoardView: UIView {
             make.right.equalToSuperview().offset(-20)
             make.top.equalTo(writerInfoBreakLine.snp.bottom).offset(20)
         }
+        
+//        viewCountLabel.snp.makeConstraints { make in
+//            make.top.equalTo(boardContent.snp.bottom).offset(20)
+//            make.left.equalToSuperview().offset(20)
+//        }
     }
     
     func initImageCollectionView(){
@@ -142,6 +155,11 @@ class BoardView: UIView {
             make.top.equalTo(boardContent.snp.bottom).offset(20)
             make.height.equalTo(150)
         }
+        
+//        viewCountLabel.snp.remakeConstraints { make in
+//            make.top.equalTo(imageCollectionView.snp.bottom).offset(20)
+//            make.left.equalToSuperview().offset(20)
+//        }
     }
     func setTitle(title: String){
         self.boardTitleLabel.text = title

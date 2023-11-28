@@ -44,7 +44,7 @@ class GetElementHeightOfBoard{
     }
     
     func getImagesHeight(imageUrls: [String]) -> CGFloat{
-        return imageUrls.isEmpty ? 0 : 150
+        return imageUrls.isEmpty ? 0 : 150 + 20
     }
     
     func getProfilelHeight() -> CGFloat{
@@ -66,6 +66,15 @@ class GetElementHeightOfBoard{
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
         let attributes = [NSAttributedString.Key.font: font]
         let boundingRect = (contents as NSString).boundingRect(with: size, options: options, attributes: attributes, context: nil)
+        return ceil(boundingRect.height)
+    }
+    
+    func getViewCountHeight(viewCount: String, width: CGFloat) -> CGFloat{
+        let font = UIFont.systemFont(ofSize: 8, weight: .light) // 원하는 폰트 및 크기 선택
+        let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        let attributes = [NSAttributedString.Key.font: font]
+        let boundingRect = (viewCount as NSString).boundingRect(with: size, options: options, attributes: attributes, context: nil)
         return ceil(boundingRect.height)
     }
 }

@@ -14,6 +14,8 @@ class BoardViewController: UIViewController {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
         return scrollView
     }()
     
@@ -42,7 +44,7 @@ class BoardViewController: UIViewController {
         }
         
         boardView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
+            make.top.left.right.bottom.equalToSuperview()
             make.width.equalToSuperview()
             make.height.equalTo(GetElementHeightOfBoard().getHeight(model: model!, width: self.view.frame.width))
         }
