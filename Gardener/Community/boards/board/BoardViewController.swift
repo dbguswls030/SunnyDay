@@ -24,22 +24,29 @@ class BoardViewController: UIViewController {
     }()
     
     private lazy var commentView: BoardCommentView = {
-       return BoardCommentView()
+        return BoardCommentView()
+    }()
+    
+    private lazy var commentWriteView: CommentWriteView = {
+        return CommentWriteView()
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
         initNavigationBar()
+        hideKeyboard()
     }
     
     private func initUI(){
         self.view.backgroundColor = .white
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(boardView)
+        self.view.addSubview(commentWriteView)
         
         scrollView.snp.makeConstraints { make in
-            make.left.right.bottom.equalToSuperview()
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-50)
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
         }
         
@@ -48,6 +55,12 @@ class BoardViewController: UIViewController {
             make.width.equalToSuperview()
             make.height.equalTo(GetElementHeightOfBoard().getHeight(model: model!, width: self.view.frame.width))
         }
+        
+        commentWriteView.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
+        }
+        commentWriteView.sizeToFit()
     }
     
     func setBoardModel(model: BoardModel){
@@ -116,4 +129,7 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
         vc.modalPresentationStyle = .overFullScreen
         self.present(vc, animated: true)
     }
+}
+extension BoardViewController: UITextFieldDelegate{
+    
 }

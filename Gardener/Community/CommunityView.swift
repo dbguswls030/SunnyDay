@@ -32,7 +32,6 @@ class CommunityView: UIView {
     }
     
     func initUI(){
-        print("init communityView")
         self.backgroundColor = .white
         
         self.addSubview(boardCollectionView)
