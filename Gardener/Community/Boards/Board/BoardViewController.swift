@@ -12,6 +12,10 @@ class BoardViewController: UIViewController {
     
     private weak var model: BoardModel?
     
+    private lazy var commentViewModel: CommentViewModel = {
+        return CommentViewModel()
+    }()
+    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -34,10 +38,17 @@ class BoardViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        initViewModel()
         initNavigationBar()
         hideKeyboard()
     }
     
+    private func initViewModel(){
+        guard let model = model else { return }
+        self.commentViewModel.setViewModel(boardId: model.boardId) {
+            
+        }
+    }
     private func initUI(){
         self.view.backgroundColor = .white
         self.view.addSubview(scrollView)

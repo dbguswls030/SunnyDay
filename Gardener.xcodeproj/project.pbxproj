@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		85CDA233D3286C0B1E28E996 /* Pods_Gardener_GardenerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80C115DF6914C18DF7B916A6 /* Pods_Gardener_GardenerUITests.framework */; };
+		9F0139ED2B1A780800678519 /* CommentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0139EC2B1A780800678519 /* CommentModel.swift */; };
+		9F0139EF2B1A7A2E00678519 /* CommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0139EE2B1A7A2E00678519 /* CommentViewModel.swift */; };
 		9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0414852A6557BF00DD6F2C /* SignUpViewController.swift */; };
 		9F0414882A6557DB00DD6F2C /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0414872A6557DB00DD6F2C /* SignUpView.swift */; };
 		9F13E0D129D2D95000651EA0 /* MyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D029D2D95000651EA0 /* MyViewController.swift */; };
@@ -76,6 +78,8 @@
 		7673A8386E10A1990787A4F1 /* Pods-Gardener.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gardener.release.xcconfig"; path = "Target Support Files/Pods-Gardener/Pods-Gardener.release.xcconfig"; sourceTree = "<group>"; };
 		80C115DF6914C18DF7B916A6 /* Pods_Gardener_GardenerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gardener_GardenerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		87E5E5BF433D86A777A9ADDB /* Pods-GardenerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GardenerTests.debug.xcconfig"; path = "Target Support Files/Pods-GardenerTests/Pods-GardenerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		9F0139EC2B1A780800678519 /* CommentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentModel.swift; sourceTree = "<group>"; };
+		9F0139EE2B1A7A2E00678519 /* CommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewModel.swift; sourceTree = "<group>"; };
 		9F0414852A6557BF00DD6F2C /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		9F0414872A6557DB00DD6F2C /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		9F13E0D029D2D95000651EA0 /* MyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyViewController.swift; sourceTree = "<group>"; };
@@ -153,6 +157,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9F0139E92B1A77B600678519 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				9F0139EE2B1A7A2E00678519 /* CommentViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		9F0139EA2B1A77C700678519 /* Comment */ = {
+			isa = PBXGroup;
+			children = (
+				9F0139EB2B1A77EE00678519 /* Model */,
+				9F0139E92B1A77B600678519 /* ViewModel */,
+				9FA37F202B1503700065BE3D /* BoardCommentView.swift */,
+			);
+			path = Comment;
+			sourceTree = "<group>";
+		};
+		9F0139EB2B1A77EE00678519 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				9F0139EC2B1A780800678519 /* CommentModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		9F0414842A65579300DD6F2C /* sign up */ = {
 			isa = PBXGroup;
 			children = (
@@ -191,7 +221,7 @@
 			children = (
 				9F13E0D629D2D97200651EA0 /* CommunityViewController.swift */,
 				9FDD56912AA080B500C35268 /* CommunityView.swift */,
-				9F5AD0B32AB1B592002105DE /* boards */,
+				9F5AD0B32AB1B592002105DE /* Boards */,
 				9FCF92B22A22BA5800AF2885 /* Create */,
 			);
 			path = Community;
@@ -205,7 +235,7 @@
 			path = Shop;
 			sourceTree = "<group>";
 		};
-		9F5AD0B32AB1B592002105DE /* boards */ = {
+		9F5AD0B32AB1B592002105DE /* Boards */ = {
 			isa = PBXGroup;
 			children = (
 				9F5AD0B42AB1B5D2002105DE /* Model */,
@@ -213,9 +243,9 @@
 				9FDFBF5E2ABC77B100F5E9B3 /* image Cell */,
 				9FDD56932AA0986800C35268 /* BoardCollectionViewCell.swift */,
 				9FDD56952AA09F1200C35268 /* BoardCellView.swift */,
-				9FCBD8852AFA60B800FBBE27 /* board */,
+				9FCBD8852AFA60B800FBBE27 /* Board */,
 			);
-			path = boards;
+			path = Boards;
 			sourceTree = "<group>";
 		};
 		9F5AD0B42AB1B5D2002105DE /* Model */ = {
@@ -350,16 +380,16 @@
 			path = login;
 			sourceTree = "<group>";
 		};
-		9FCBD8852AFA60B800FBBE27 /* board */ = {
+		9FCBD8852AFA60B800FBBE27 /* Board */ = {
 			isa = PBXGroup;
 			children = (
 				9FCBD8862AFA612600FBBE27 /* BoardViewController.swift */,
 				9FCBD8882AFA641500FBBE27 /* BoardView.swift */,
-				9FA37F202B1503700065BE3D /* BoardCommentView.swift */,
 				9FA37F222B1710670065BE3D /* CommentWriteView.swift */,
+				9F0139EA2B1A77C700678519 /* Comment */,
 				9FA37F0C2B05189A0065BE3D /* Image Slide */,
 			);
-			path = board;
+			path = Board;
 			sourceTree = "<group>";
 		};
 		9FCF92B22A22BA5800AF2885 /* Create */ = {
@@ -679,11 +709,13 @@
 				9F13E0D529D2D96400651EA0 /* HomeViewController.swift in Sources */,
 				9FA37F232B1710670065BE3D /* CommentWriteView.swift in Sources */,
 				9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */,
+				9F0139ED2B1A780800678519 /* CommentModel.swift in Sources */,
 				9FDD56922AA080B500C35268 /* CommunityView.swift in Sources */,
 				9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */,
 				9FB1229B2A8E780800C346E7 /* Toast.swift in Sources */,
 				9FCBD8892AFA641500FBBE27 /* BoardView.swift in Sources */,
 				9F0414882A6557DB00DD6F2C /* SignUpView.swift in Sources */,
+				9F0139EF2B1A7A2E00678519 /* CommentViewModel.swift in Sources */,
 				9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

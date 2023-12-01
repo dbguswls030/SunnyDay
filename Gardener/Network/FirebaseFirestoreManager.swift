@@ -66,17 +66,63 @@ class FirebaseFirestoreManager{
                        let contents = data["contents"] as? String,
                        let date = data["date"] as? Timestamp,
                        let uid = data["uid"] as? String,
-                       let imageUrls = data["imageUrl"] as? [String]{
+                       let imageUrls = data["imageUrl"] as? [String],
+                       let boardId = document.documentID as? String {
                         models.append(BoardModel(category: category,
                                                  title: title,
                                                  contents: contents,
                                                  date: date.dateValue(),
                                                  imageUrls: imageUrls,
-                                                 uid: uid))
+                                                 uid: uid,
+                                                 boardId: boardId))
                     }
                 }
             }
             completion(models, db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
+        }
+    }
+    
+    static func getComments(query: Query?, boardId: String, completion: @escaping ([CommentModel], Query) -> Void){
+        let db = Firestore.firestore()
+        let request: Query
+        
+        if let query = query{
+            request = query
+        }else{
+            request = db.collection("comments").document("\(boardId)").collection("comment").order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20)
+        }
+        
+        request.addSnapshotListener { snapshot, error in
+            if let error = error{
+                print("getComment erorr = \(error.localizedDescription)")
+                return
+            }
+            guard let snapshot = snapshot else{
+                print("not exist snapshot")
+                return
+            }
+            
+            guard let lastShapshot = snapshot.documents.last else{
+                return
+            }
+            
+            var models = [CommentModel]()
+            snapshot.documents.forEach { document in
+                if let data = document.data() as? [String: Any]{
+                    if let date = data["date"] as? Timestamp,
+                       let content = data["content"] as? String,
+                       let dept = data["dept"] as? Int,
+                       let userId = data["userId"] as? String,
+                       let commentId = data["commentId"] as? Int{
+                        models.append(CommentModel(date: date.dateValue(),
+                                                   content: content,
+                                                   dept: dept,
+                                                   userId: userId,
+                                                   commentId: commentId))
+                    }
+                }
+            }
+            completion(models, db.collection("comments").document("\(boardId)").collection("comment").order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20).start(afterDocument: lastShapshot))
         }
     }
 }

@@ -23,7 +23,7 @@ class BoardViewModel{
             
             self.boards += models
             self.query = query
-            
+    
             if models.count < 10{
                 self.setLastPage(data: true)
             }
