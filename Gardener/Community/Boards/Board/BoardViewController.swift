@@ -161,6 +161,9 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             }
             cell.setDate(date: commentViewModel.getDate(index: indexPath.item))
             cell.setContent(content: commentViewModel.getContent(index: indexPath.item))
+            if commentViewModel.getDept(index: indexPath.item) == 1{
+                cell.updateConstraintsWithDept()
+            }
             return cell
         }
     }
@@ -169,7 +172,12 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
         if collectionView == self.boardView.imageCollectionView{
             return CGSize(width: 150, height: 150)
         }else{
-            return CGSize(width: self.view.frame.width, height: 40 + 5 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item), width: self.view.frame.width - 10 - 45 - 12 - 10) )
+            if commentViewModel.getDept(index: indexPath.item) == 0 {
+                return CGSize(width: self.view.frame.width, height: 40 + 5 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item), width: self.view.frame.width - 10 - 45 - 12 - 10) )
+            }else{
+                
+                return CGSize(width: self.view.frame.width, height: 40 + 5 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item), width: self.view.frame.width - 20 - 90 - 24 - 10) )
+            }
         }
     }
     

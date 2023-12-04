@@ -46,6 +46,9 @@ class CommentCollectionViewCell: UICollectionViewCell {
         nickNameLabel.text = ""
         dateLabel.text = ""
         contentLabel.text = ""
+        profileImage.snp.updateConstraints { make in
+            make.left.equalToSuperview().offset(10)
+        }
     }
     
     override init(frame: CGRect) {
@@ -101,5 +104,11 @@ class CommentCollectionViewCell: UICollectionViewCell {
     
     func getContentHeight() -> CGFloat{
         return contentLabel.frame.height
+    }
+    
+    func updateConstraintsWithDept(){
+        profileImage.snp.updateConstraints { make in
+            make.left.equalToSuperview().offset(10 + 45 + 12)
+        }
     }
 }
