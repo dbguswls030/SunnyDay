@@ -21,12 +21,29 @@ class CommentViewModel{
             self.query = query
             self.comments += models
             
-            comments.forEach { model in
-                print(model.content)
-            }
-            
             completion()
         }
     }
     
+//    var date: Date
+//    var content: String
+//    var dept: Int
+//    var userId: String
+//    var commentId: Int
+    
+    func numberOfModel() -> Int{
+        return comments.count
+    }
+    
+    func getDate(index: Int) -> Date{
+        return comments[index].date
+    }
+    
+    func getContent(index: Int) -> String{
+        return comments[index].content
+    }
+    
+    func getDept(index: Int) -> Int{
+        return comments[index].dept
+    }
 }
