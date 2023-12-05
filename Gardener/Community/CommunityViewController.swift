@@ -168,7 +168,7 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 7
+        return 8
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

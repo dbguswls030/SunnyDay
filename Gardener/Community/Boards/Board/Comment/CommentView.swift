@@ -9,10 +9,16 @@ import UIKit
 import SnapKit
 
 class CommentView: UIView{
-    
+    private lazy var warningLabel: UILabel = {
+        let label = UILabel()
+        label.alpha = 0.9
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = .lightGray
+        label.text = "가장 먼저 댓글을 남겨보세요."
+        return label
+    }()
     private lazy var commentLabel: UILabel = {
         let label = UILabel()
-        label.tintColor = .black
         label.text = "댓글"
         label.font = .systemFont(ofSize: 16, weight: .bold)
         return label
@@ -20,7 +26,6 @@ class CommentView: UIView{
     
     private lazy var commentCountLabel: UILabel = {
         let label = UILabel()
-        label.tintColor = .black
         label.text = "0"
         label.font = .systemFont(ofSize: 16, weight: .semibold)
         return label
@@ -47,10 +52,15 @@ class CommentView: UIView{
     
     private func initUI(){
         self.backgroundColor = .white
-        
         self.addSubview(commentLabel)
         self.addSubview(commentCountLabel)
         self.addSubview(commentCollectionView)
+        self.addSubview(warningLabel)
+        
+        warningLabel.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+            
+        }
         
         commentLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
@@ -67,7 +77,14 @@ class CommentView: UIView{
             make.left.right.bottom.equalToSuperview()
         }
     }
-    
+    func setLabel(count: Int){
+        print(count)
+        if count == 0{
+            warningLabel.isHidden = false
+        }else{
+            warningLabel.isHidden = true
+        }
+    }
     func setCommentCount(count: Int){
         self.commentCountLabel.text = "\(count)"
     }

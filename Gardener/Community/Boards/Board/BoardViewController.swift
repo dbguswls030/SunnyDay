@@ -50,6 +50,7 @@ class BoardViewController: UIViewController {
         guard let model = model else { return }
         self.commentViewModel.setViewModel(boardId: model.boardId) {
             self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
+            self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
             self.commentView.commentCollectionView.reloadData()
 
             DispatchQueue.main.async {
@@ -80,9 +81,9 @@ class BoardViewController: UIViewController {
         }
         
         commentView.snp.makeConstraints { make in
-            make.top.equalTo(boardView.snp.bottom).offset(5)
+            make.top.equalTo(boardView.snp.bottom).offset(8)
             make.left.right.bottom.equalToSuperview()
-            make.height.equalTo(600)
+            make.height.equalTo(200)
         }
 
         commentWriteView.snp.makeConstraints { make in
