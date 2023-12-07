@@ -244,11 +244,16 @@ class CreateBoardViewController: UIViewController {
         
         self.navigationItem.rightBarButtonItem?.isEnabled = false
         self.activityIndicator.startAnimating()
-        FirebaseFirestoreManager.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: selectedImage, date: Date())) {
-            self.delegate?.popCreatBoardView()
-            self.activityIndicator.stopAnimating()
-            self.navigationController?.popViewController(animated: true)
+        if let uid = Auth.auth().currentUser?.uid{
+            FirebaseFirestoreManager.getUserInfo(uid: uid) { userModel in
+                FirebaseFirestoreManager.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: self.selectedImage, date: Date(), userInfo: userModel)) {
+                    self.delegate?.popCreatBoardView()
+                    self.activityIndicator.stopAnimating()
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
         }
+        
         
     }
     

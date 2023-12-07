@@ -10,6 +10,26 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class FirebaseFirestoreManager{
+    static func getUserInfo(uid: String, completion: @escaping (UserModel) -> Void){
+        let db = Firestore.firestore()
+        db.collection("user").document(uid).getDocument { document, error in
+            if let error = error{
+                print("failed getUserInfo : \(error.localizedDescription)")
+                return
+            }
+            
+            guard let document = document, document.exists else{ return }
+            
+            if let data = document.data() as? [String : Any]{
+                if let nickName = data["nickName"] as? String,
+                   let profileImage = data["profileImage"] as? String{
+                    completion(UserModel(nickName: nickName, profileImageURL: profileImage))
+                }
+            }
+            
+        }
+    }
+    
     static func uploadCommunityBoard(model: CreateBoard, completion: @escaping () -> Void){
         let db = Firestore.firestore()
         
@@ -21,7 +41,9 @@ class FirebaseFirestoreManager{
                                                               "contents" : model.contents,
                                                               "uid" : uid,
                                                               "date" : Timestamp(date: model.date),
-                                                              "imageUrl" : urls]) { error in
+                                                              "imageUrl" : urls,
+                                                              "nickName" : model.userInfo.nickName,
+                                                              "profileImage" : model.userInfo.profileImageURL]) { error in
                     if error != nil {
                         FirebaseStorageManager.deleteBoard(boardId: boardId, uid: uid)
 //                        Toast().showToast(view: self.view, message: "게시글 업로드를 실패했습니다.")
@@ -67,14 +89,18 @@ class FirebaseFirestoreManager{
                        let date = data["date"] as? Timestamp,
                        let uid = data["uid"] as? String,
                        let imageUrls = data["imageUrl"] as? [String],
-                       let boardId = document.documentID as? String {
+                       let boardId = document.documentID as? String,
+                    let nickName = data["nickName"] as? String,
+                    let profileImageURL = data["profileImage"] as? String{
                         models.append(BoardModel(category: category,
                                                  title: title,
                                                  contents: contents,
                                                  date: date.dateValue(),
                                                  imageUrls: imageUrls,
                                                  uid: uid,
-                                                 boardId: boardId))
+                                                 boardId: boardId,
+                                                 nickName: nickName,
+                                                 profileImageURL: profileImageURL))
                     }
                 }
             }

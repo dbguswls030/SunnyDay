@@ -78,7 +78,6 @@ class CommentView: UIView{
         }
     }
     func setLabel(count: Int){
-        print(count)
         if count == 0{
             warningLabel.isHidden = false
         }else{

@@ -169,6 +169,13 @@ class BoardView: UIView {
         self.boardContent.text = contents
     }
     
+    func setNickName(nickName: String){
+        self.nickNameLabel.text = nickName
+    }
+    
+    func setProfileImage(profileImageURL: String){
+        self.profileImage.setImage(url: profileImageURL)
+    }
     func setDate(date: Date){
         // TODO: 날짜 케이스, 분, 시간, 일
         let dateFormatter = DateFormatter()

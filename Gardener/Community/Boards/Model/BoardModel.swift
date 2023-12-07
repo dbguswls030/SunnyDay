@@ -16,8 +16,10 @@ class BoardModel{
     var imageUrls: [String]
     var uid: String
     var boardId: String
+    var nickName: String
+    var profileImageURL: String
     
-    init(category: String, title: String, contents: String, date: Date, imageUrls: [String], uid: String, boardId: String) {
+    init(category: String, title: String, contents: String, date: Date, imageUrls: [String], uid: String, boardId: String, nickName: String, profileImageURL: String) {
         self.category = category
         self.title = title
         self.contents = contents
@@ -25,5 +27,7 @@ class BoardModel{
         self.imageUrls = imageUrls
         self.uid = uid
         self.boardId = boardId
+        self.nickName = nickName
+        self.profileImageURL = profileImageURL
     }
 }

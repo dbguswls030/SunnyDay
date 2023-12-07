@@ -41,7 +41,6 @@ class BoardViewController: UIViewController {
         initCommentCollectionView()
         initUI()
         initViewModel()
-        
         initNavigationBar()
         hideKeyboard()
     }
@@ -110,6 +109,8 @@ class BoardViewController: UIViewController {
         boardView.setTitle(title: model.title)
         boardView.setDate(date: model.date)
         boardView.setContents(contents: model.contents)
+        boardView.setNickName(nickName: model.nickName)
+        boardView.setProfileImage(profileImageURL: model.profileImageURL)
     }
     
     private func initNavigationBar(){
