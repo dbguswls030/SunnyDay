@@ -77,6 +77,7 @@ class CommentView: UIView{
             make.left.right.bottom.equalToSuperview()
         }
     }
+    
     func setLabel(count: Int){
         if count == 0{
             warningLabel.isHidden = false
@@ -84,6 +85,7 @@ class CommentView: UIView{
             warningLabel.isHidden = true
         }
     }
+    
     func setCommentCount(count: Int){
         self.commentCountLabel.text = "\(count)"
     }

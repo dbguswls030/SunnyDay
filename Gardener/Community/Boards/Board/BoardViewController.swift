@@ -122,18 +122,17 @@ class BoardViewController: UIViewController {
             self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
             
-            DispatchQueue.main.async {
-                self.commentView.commentCollectionView.reloadData()
+            UIView.animate(withDuration: 0.2) {
+                DispatchQueue.main.async {
+                    self.commentView.commentCollectionView.reloadData()
+                }
+            }completion: { finish in
+                if finish{
+                    self.scrollView.setContentOffset(CGPoint(x: 0,
+                                                             y: self.scrollView.contentSize.height - self.scrollView.bounds.height),
+                                                     animated: true)
+                }
             }
-            
-
-//            DispatchQueue.main.async {
-//                let margin = self.commentViewModel.numberOfModel() * 5
-//                self.commentView.snp.updateConstraints { make in
-//                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin + 10)
-//                }
-//            }
-            
         }
     }
     
@@ -148,7 +147,7 @@ class BoardViewController: UIViewController {
             FirebaseFirestoreManager.getUserInfo(uid: uid) { userModel in
                 FirebaseFirestoreManager.uploadComment(boardId: model.boardId, commentModel: CommentModel(date: Date(), content: comment, dept: 0, userId: uid, commentId: Int(Date().timeIntervalSince1970), profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) {
                     print("uploadComment Completion")
-                   self.reinitViewModel()
+                    self.reinitViewModel()
                     self.commentWriteView.clearCommentTextView()
                     self.activityIndicator.stopAnimating()
                 }
@@ -229,6 +228,8 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             }
             cell.setDate(date: commentViewModel.getDate(index: indexPath.item))
             cell.setContent(content: commentViewModel.getContent(index: indexPath.item))
+            cell.setNickName(nickName: commentViewModel.getNickName(index: indexPath.item))
+            cell.setProfileImage(profileImageURL: commentViewModel.getProfileImageURL(index: indexPath.item))
             if commentViewModel.getDept(index: indexPath.item) == 1{
                 cell.updateConstraintsWithDept()
             }

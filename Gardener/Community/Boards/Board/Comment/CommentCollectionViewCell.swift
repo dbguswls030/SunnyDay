@@ -10,7 +10,7 @@ import SnapKit
 
 class CommentCollectionViewCell: UICollectionViewCell {
     private lazy var profileImage: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "umZza"))
+        let imageView = UIImageView()
         imageView.layer.cornerRadius = 20
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -21,7 +21,6 @@ class CommentCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.tintColor = .black
         label.font = .systemFont(ofSize: 14, weight: .semibold)
-        label.text = "어무기"
         return label
     }()
     
@@ -102,8 +101,12 @@ class CommentCollectionViewCell: UICollectionViewCell {
         self.dateLabel.text = formattedDate
     }
     
-    func getContentHeight() -> CGFloat{
-        return contentLabel.frame.height
+    func setNickName(nickName:String){
+        self.nickNameLabel.text = nickName
+    }
+    
+    func setProfileImage(profileImageURL: String){
+        self.profileImage.setImage(url: profileImageURL)
     }
     
     func updateConstraintsWithDept(){

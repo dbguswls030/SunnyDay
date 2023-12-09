@@ -44,6 +44,14 @@ class CommentViewModel{
         return comments.count
     }
     
+    func getNickName(index: Int) -> String{
+        return comments[index].nickName
+    }
+    
+    func getProfileImageURL(index: Int) -> String{
+        return comments[index].profileImageURL
+    }
+    
     func getDate(index: Int) -> Date{
         return comments[index].date
     }
