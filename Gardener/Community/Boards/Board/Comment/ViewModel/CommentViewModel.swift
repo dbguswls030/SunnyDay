@@ -13,16 +13,25 @@ class CommentViewModel{
     private var comments = [CommentModel]()
     
     func setViewModel(boardId: String, completion: @escaping () -> Void){
+        print("setViewModel")
         FirebaseFirestoreManager.getComments(query: query, boardId: boardId) { [weak self] models, query in
             guard let self = self, !models.isEmpty else{
                 return
             }
+            print("get models count \(models.count)")
             
             self.query = query
-            self.comments += models
+            self.comments = models
             
             completion()
+            
         }
+    }
+    
+    func resetViewModel(){
+        print("reset ViewModel")
+        query = nil
+        comments.removeAll()
     }
     
 //    var date: Date

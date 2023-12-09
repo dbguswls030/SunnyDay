@@ -27,11 +27,12 @@ class CommentWriteView: UIView, UITextViewDelegate{
         return textView
     }()
     
-    private lazy var sendButton: UIButton = {
+    lazy var sendButton: UIButton = {
         let button = UIButton()
         var configuration = UIButton.Configuration.plain()
         configuration.image = UIImage(systemName: "arrow.right.circle.fill", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 20))
         button.configuration = configuration
+        button.isEnabled = false
         return button
     }()
     
@@ -69,10 +70,16 @@ class CommentWriteView: UIView, UITextViewDelegate{
             make.right.equalTo(sendButton.snp.left)
             make.height.equalTo(50 - (0.5 + 16))
         }
-        
+    }
+    
+    func clearCommentTextView(){
+        commentTextView.text = ""
     }
 }
 extension CommentWriteView{
+    func getCommentContent() -> String{
+        return commentTextView.text
+    }
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty{
             textView.textColor = .lightGray
@@ -86,6 +93,11 @@ extension CommentWriteView{
         }
     }
     func textViewDidChange(_ textView: UITextView) {
+        if textView.text.count > 0{
+            sendButton.isEnabled = true
+        }else{
+            sendButton.isEnabled = false
+        }
         let size = CGSize(width: self.frame.width, height: .infinity)
         let estimatedSize = textView.sizeThatFits(size)
         
@@ -101,5 +113,4 @@ extension CommentWriteView{
             }
         }
     }
-    
 }

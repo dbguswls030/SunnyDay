@@ -253,8 +253,6 @@ class CreateBoardViewController: UIViewController {
                 }
             }
         }
-        
-        
     }
     
     @objc private func showCategoryList(){

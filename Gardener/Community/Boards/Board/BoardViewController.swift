@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import FirebaseAuth
 
 class BoardViewController: UIViewController {
     
@@ -14,6 +15,16 @@ class BoardViewController: UIViewController {
     
     private lazy var commentViewModel: CommentViewModel = {
         return CommentViewModel()
+    }()
+    
+    private lazy var activityIndicator: UIActivityIndicatorView  = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.frame = .init(x: 0, y: 0, width: 50, height: 50)
+        activityIndicator.center = self.view.center
+        activityIndicator.stopAnimating()
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .medium
+        return activityIndicator
     }()
     
     private lazy var scrollView: UIScrollView = {
@@ -38,7 +49,7 @@ class BoardViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initCommentCollectionView()
+        print("viewDidLoad")
         initUI()
         initViewModel()
         initNavigationBar()
@@ -47,29 +58,33 @@ class BoardViewController: UIViewController {
     
     private func initViewModel(){
         guard let model = model else { return }
-        self.commentViewModel.setViewModel(boardId: model.boardId) {
+        print("initViewModel")
+        self.commentViewModel.setViewModel(boardId: model.boardId) { [weak self] in
+            guard let self = self else { return }
             self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
-            self.commentView.commentCollectionView.reloadData()
-
+            self.initCommentCollectionView()
+            
             DispatchQueue.main.async {
                 let margin = self.commentViewModel.numberOfModel() * 5
                 self.commentView.snp.updateConstraints { make in
-                    make.height.equalTo(45 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
+                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin + 10)
                 }
             }
         }
     }
+    
     private func initUI(){
         self.view.backgroundColor = .white
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(boardView)
         self.scrollView.addSubview(commentView)
         self.view.addSubview(commentWriteView)
+        self.view.addSubview(activityIndicator)
         
         scrollView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-50)
+            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top).offset(-50)
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
         }
         
@@ -84,12 +99,61 @@ class BoardViewController: UIViewController {
             make.left.right.bottom.equalToSuperview()
             make.height.equalTo(200)
         }
-
+        
         commentWriteView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
         commentWriteView.sizeToFit()
+        commentWriteView.sendButton.addTarget(self, action: #selector(writeComment), for: .touchUpInside)
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.centerY.centerX.equalToSuperview()
+        }
+    }
+    
+    private func reinitViewModel(){
+        guard let model = model else { return }
+        self.commentViewModel.resetViewModel()
+        print("reinitVIewModel")
+        self.commentViewModel.setViewModel(boardId: model.boardId) { [weak self] in
+            guard let self = self else { return }
+            print(self.commentViewModel.numberOfModel())
+            self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
+            self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
+            
+            DispatchQueue.main.async {
+                self.commentView.commentCollectionView.reloadData()
+            }
+            
+
+//            DispatchQueue.main.async {
+//                let margin = self.commentViewModel.numberOfModel() * 5
+//                self.commentView.snp.updateConstraints { make in
+//                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin + 10)
+//                }
+//            }
+            
+        }
+    }
+    
+    @objc private func writeComment(){
+        print("touchUpButton")
+        guard let model = model else { return }
+        self.activityIndicator.startAnimating()
+        self.commentWriteView.sendButton.isEnabled = false
+        
+        let comment = self.commentWriteView.getCommentContent()
+        if let uid = Auth.auth().currentUser?.uid{
+            FirebaseFirestoreManager.getUserInfo(uid: uid) { userModel in
+                FirebaseFirestoreManager.uploadComment(boardId: model.boardId, commentModel: CommentModel(date: Date(), content: comment, dept: 0, userId: uid, commentId: Int(Date().timeIntervalSince1970), profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) {
+                    print("uploadComment Completion")
+                   self.reinitViewModel()
+                    self.commentWriteView.clearCommentTextView()
+                    self.activityIndicator.stopAnimating()
+                }
+            }
+        }
     }
     
     func setBoardModel(model: BoardModel){
@@ -133,6 +197,7 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
     
     func initCommentCollectionView(){
+        print("initCollectionView")
         commentView.commentCollectionView.register(CommentCollectionViewCell.self, forCellWithReuseIdentifier: "commentCell")
         commentView.commentCollectionView.delegate = self
         commentView.commentCollectionView.dataSource = self
@@ -145,6 +210,7 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             }
             return model.imageUrls.count
         }else{
+            print("dataSource, \(commentViewModel.numberOfModel())")
             return commentViewModel.numberOfModel()
         }
     }
