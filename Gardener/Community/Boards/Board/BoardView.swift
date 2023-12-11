@@ -41,7 +41,7 @@ class BoardView: UIView {
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.text = "작성시간"
-        label.tintColor = .lightGray
+        label.textColor = .lightGray
         label.font = .systemFont(ofSize: 12, weight: .light)
         return label
     }()

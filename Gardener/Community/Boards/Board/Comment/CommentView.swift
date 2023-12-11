@@ -59,7 +59,6 @@ class CommentView: UIView{
         
         warningLabel.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
-            
         }
         
         commentLabel.snp.makeConstraints { make in

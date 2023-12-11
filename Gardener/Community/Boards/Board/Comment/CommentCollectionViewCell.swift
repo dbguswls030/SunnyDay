@@ -8,7 +8,17 @@
 import UIKit
 import SnapKit
 
+protocol ReplyButtonDelegate: AnyObject{
+    func touchUpReplyButton(_ sender: UIReplyButton)
+}
+class UIReplyButton: UIButton{
+    var nickName: String?
+    var parentId: Int?
+}
 class CommentCollectionViewCell: UICollectionViewCell {
+    
+//    weak var delegate: ReplyButtonDelegate?
+    
     private lazy var profileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 20
@@ -26,7 +36,7 @@ class CommentCollectionViewCell: UICollectionViewCell {
     
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
-        label.tintColor = .lightGray
+        label.textColor = .lightGray
         label.font = .systemFont(ofSize: 12, weight: .light)
         return label
     }()
@@ -38,6 +48,40 @@ class CommentCollectionViewCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.sizeToFit()
         return label
+    }()
+    
+    lazy var replyButton: UIReplyButton = {
+        let button = UIReplyButton()
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(systemName: "bubble.right", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 10))
+        configuration.imagePlacement = .all
+        var buttonTitle = AttributedString.init("답글쓰기")
+        buttonTitle.font = .systemFont(ofSize: 11, weight: .regular)
+        configuration.attributedTitle = buttonTitle
+        configuration.contentInsets = .init(top: 2, leading: 1, bottom: 2, trailing: 1)
+        configuration.imagePadding = 5
+        configuration.imagePlacement = .leading
+        button.configuration = configuration
+        button.setTitleColor(.lightGray, for: .normal)
+        button.tintColor = .lightGray
+        return button
+    }()
+    
+    private lazy var likeButton: UIButton = {
+        let button = UIButton()
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(systemName: "heart", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 10))
+        configuration.imagePlacement = .all
+        var buttonTitle = AttributedString.init("좋아요")
+        buttonTitle.font = .systemFont(ofSize: 11, weight: .regular)
+        configuration.attributedTitle = buttonTitle
+        configuration.contentInsets = .init(top: 2, leading: 1, bottom: 2, trailing: 1)
+        configuration.imagePadding = 5
+        configuration.imagePlacement = .leading
+        button.configuration = configuration
+        button.setTitleColor(.lightGray, for: .normal)
+        button.tintColor = .lightGray
+        return button
     }()
     
     override func prepareForReuse() {
@@ -64,6 +108,8 @@ class CommentCollectionViewCell: UICollectionViewCell {
         self.addSubview(nickNameLabel)
         self.addSubview(dateLabel)
         self.addSubview(contentLabel)
+        self.addSubview(likeButton)
+        self.addSubview(replyButton)
         
         profileImage.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -85,7 +131,20 @@ class CommentCollectionViewCell: UICollectionViewCell {
             make.left.equalTo(profileImage.snp.right).offset(12)
             make.top.equalTo(profileImage.snp.bottom).offset(5)
             make.right.equalToSuperview().offset(10)
+            
+        }
+        
+        likeButton.snp.makeConstraints { make in
+            make.top.equalTo(contentLabel.snp.bottom).offset(10)
+            make.left.equalTo(contentLabel.snp.left)
+            make.height.equalTo(20)
             make.bottom.equalToSuperview()
+        }
+        
+        replyButton.snp.makeConstraints { make in
+            make.centerY.equalTo(likeButton.snp.centerY)
+            make.left.equalTo(likeButton.snp.right).offset(10)
+            make.height.equalTo(20)
         }
     }
     func setContent(content: String){

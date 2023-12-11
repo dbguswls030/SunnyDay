@@ -11,6 +11,9 @@ import FirebaseAuth
 
 class BoardViewController: UIViewController {
     
+    lazy var replyFlag = false
+    lazy var commentId: Int? = nil
+    
     private weak var model: BoardModel?
     
     private lazy var commentViewModel: CommentViewModel = {
@@ -47,9 +50,12 @@ class BoardViewController: UIViewController {
         return CommentWriteView()
     }()
     
+    private lazy var replyNoticeView: ReplyNoticeView = {
+        return ReplyNoticeView()
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("viewDidLoad")
         initUI()
         initViewModel()
         initNavigationBar()
@@ -58,7 +64,6 @@ class BoardViewController: UIViewController {
     
     private func initViewModel(){
         guard let model = model else { return }
-        print("initViewModel")
         self.commentViewModel.setViewModel(boardId: model.boardId) { [weak self] in
             guard let self = self else { return }
             self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
@@ -84,7 +89,7 @@ class BoardViewController: UIViewController {
         
         scrollView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
-            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top).offset(-50)
+            make.bottom.equalTo(commentWriteView.snp.top)
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
         }
         
@@ -112,13 +117,50 @@ class BoardViewController: UIViewController {
         }
     }
     
-    private func reinitViewModel(){
+    private func initReplyNoticeView(){
+        self.view.addSubview(replyNoticeView)
+        
+        replyNoticeView.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(commentWriteView.snp.top)
+        }
+        
+        replyNoticeView.cancelButton.addTarget(self, action: #selector(deinitReplyNoticeView), for: .touchUpInside)
+        
+        
+        scrollView.snp.remakeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(replyNoticeView.snp.top)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+        }
+//        scrollView.snp.updateConstraints { make in
+//            make.bottom.equalTo(replyNoticeView.snp.top)
+//        }
+    }
+    
+    @objc private func deinitReplyNoticeView(){
+        scrollView.snp.remakeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(commentWriteView.snp.top)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+        }
+        replyNoticeView.removeFromSuperview()
+        
+        commentWriteView.resetTextView()
+        resetReplyMode()
+    }
+    
+    private func resetReplyMode(){
+        self.commentId = nil
+        self.replyFlag = false
+    }
+    
+    private func reinitViewModel(isReply: Bool){
         guard let model = model else { return }
         self.commentViewModel.resetViewModel()
-        print("reinitVIewModel")
         self.commentViewModel.setViewModel(boardId: model.boardId) { [weak self] in
             guard let self = self else { return }
-            print(self.commentViewModel.numberOfModel())
+
             self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
             
@@ -128,27 +170,36 @@ class BoardViewController: UIViewController {
                 }
             }completion: { finish in
                 if finish{
-                    self.scrollView.setContentOffset(CGPoint(x: 0,
-                                                             y: self.scrollView.contentSize.height - self.scrollView.bounds.height),
-                                                     animated: true)
+                    if !isReply{
+                        self.scrollView.setContentOffset(CGPoint(x: 0,
+                                                                 y: self.scrollView.contentSize.height - self.scrollView.bounds.height),
+                                                         animated: true)
+                    }
                 }
             }
         }
     }
     
     @objc private func writeComment(){
-        print("touchUpButton")
         guard let model = model else { return }
         self.activityIndicator.startAnimating()
         self.commentWriteView.sendButton.isEnabled = false
-        
+        let dept = replyFlag == false ? 0 : 1
+        let parentId: Int
+        if commentId == nil{
+            parentId = Int(Date().timeIntervalSince1970)
+        }else{
+            parentId = commentId!
+        }
         let comment = self.commentWriteView.getCommentContent()
         if let uid = Auth.auth().currentUser?.uid{
             FirebaseFirestoreManager.getUserInfo(uid: uid) { userModel in
-                FirebaseFirestoreManager.uploadComment(boardId: model.boardId, commentModel: CommentModel(date: Date(), content: comment, dept: 0, userId: uid, commentId: Int(Date().timeIntervalSince1970), profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) {
-                    print("uploadComment Completion")
-                    self.reinitViewModel()
+                FirebaseFirestoreManager.uploadComment(boardId: model.boardId, commentModel: CommentModel(date: Date(), content: comment, dept: dept, userId: uid, commentId: parentId, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) {
+                    self.reinitViewModel(isReply: self.replyFlag)
                     self.commentWriteView.clearCommentTextView()
+                    if self.replyFlag == true{
+                        self.deinitReplyNoticeView()
+                    }
                     self.activityIndicator.stopAnimating()
                 }
             }
@@ -196,7 +247,6 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
     
     func initCommentCollectionView(){
-        print("initCollectionView")
         commentView.commentCollectionView.register(CommentCollectionViewCell.self, forCellWithReuseIdentifier: "commentCell")
         commentView.commentCollectionView.delegate = self
         commentView.commentCollectionView.dataSource = self
@@ -209,7 +259,6 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             }
             return model.imageUrls.count
         }else{
-            print("dataSource, \(commentViewModel.numberOfModel())")
             return commentViewModel.numberOfModel()
         }
     }
@@ -228,8 +277,14 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             }
             cell.setDate(date: commentViewModel.getDate(index: indexPath.item))
             cell.setContent(content: commentViewModel.getContent(index: indexPath.item))
-            cell.setNickName(nickName: commentViewModel.getNickName(index: indexPath.item))
+            let nickName = commentViewModel.getNickName(index: indexPath.item)
+            cell.setNickName(nickName: nickName)
             cell.setProfileImage(profileImageURL: commentViewModel.getProfileImageURL(index: indexPath.item))
+            let commentId = commentViewModel.getCommentId(index: indexPath.item)
+            
+            cell.replyButton.nickName = nickName
+            cell.replyButton.parentId = commentId
+            cell.replyButton.addTarget(self, action: #selector(touchUpReplyButton), for: .touchUpInside)
             if commentViewModel.getDept(index: indexPath.item) == 1{
                 cell.updateConstraintsWithDept()
             }
@@ -242,10 +297,9 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             return CGSize(width: 150, height: 150)
         }else{
             if commentViewModel.getDept(index: indexPath.item) == 0 {
-                return CGSize(width: self.view.frame.width, height: 40 + 5 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item), width: self.view.frame.width - 10 - 45 - 12 - 10) )
+                return CGSize(width: self.view.frame.width, height: 40 + 5 + 10 + 20 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item) , width: self.view.frame.width - 10 - 45 - 12 - 10) )
             }else{
-                
-                return CGSize(width: self.view.frame.width, height: 40 + 5 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item), width: self.view.frame.width - 20 - 90 - 24 - 10) )
+                return CGSize(width: self.view.frame.width, height: 40 + 5 + 10 + 20 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item), width: self.view.frame.width - 20 - 90 - 24 - 10) )
             }
         }
     }
@@ -258,6 +312,20 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: true)
         }
+    }
+}
+
+extension BoardViewController: ReplyButtonDelegate{
+    @objc func touchUpReplyButton(_ sender: UIReplyButton){
+        guard let nickName = sender.nickName else { return }
+        commentWriteView.focusCommentTextView()
+        commentWriteView.setReply(nickName: nickName)
+        
+        self.commentId = sender.parentId
+        self.replyFlag = true
+        
+        initReplyNoticeView()
+        replyNoticeView.setNoticeLabel(nickName: nickName)
     }
 }
 

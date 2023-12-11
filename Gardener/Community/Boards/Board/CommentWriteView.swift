@@ -76,10 +76,27 @@ class CommentWriteView: UIView, UITextViewDelegate{
         commentTextView.text = ""
     }
 }
+
 extension CommentWriteView{
+    
+    func setReply(nickName: String){
+        commentTextView.text = "@\(nickName) "
+        commentTextView.textColor = .black
+    }
+    
+    func resetTextView(){
+        commentTextView.textColor = .lightGray
+        commentTextView.text = "댓글을 입력해 주세요."
+    }
+    
+    func focusCommentTextView(){
+        commentTextView.becomeFirstResponder()
+    }
+    
     func getCommentContent() -> String{
         return commentTextView.text
     }
+    
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty{
             textView.textColor = .lightGray
