@@ -233,6 +233,21 @@ class BoardViewController: UIViewController {
         self.title = "자유"
         self.navigationItem.backBarButtonItem = backButton
     }
+    
+    @objc private func deleteComment(_ sender: UIDeleteButton){
+        guard let index = sender.index else { return }
+        showPopUp(confirmButtonTitle: "삭제") {
+            // TODO: 댓글 숨기기 api
+            
+            //        commentViewModel.removeModel(index: index)
+            //        commentView.commentCollectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
+            DispatchQueue.main.async {
+                self.dismiss(animated: false)
+            }
+        }
+        
+
+    }
 }
 
 extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
@@ -281,13 +296,18 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             cell.setNickName(nickName: nickName)
             cell.setProfileImage(profileImageURL: commentViewModel.getProfileImageURL(index: indexPath.item))
             let commentId = commentViewModel.getCommentId(index: indexPath.item)
-            
-            cell.replyButton.nickName = nickName
-            cell.replyButton.parentId = commentId
+            cell.replyButton.initReplyButton(nickName: nickName, parentId: commentId)
             cell.replyButton.addTarget(self, action: #selector(touchUpReplyButton), for: .touchUpInside)
+            if let uid = Auth.auth().currentUser?.uid{
+                cell.setHiddenDeleteButton(isHidden: uid == commentViewModel.getUid(index: indexPath.item))
+                cell.deleteButton.initDeleteButton(index: indexPath.item)
+                cell.deleteButton.addTarget(self, action: #selector(deleteComment), for: .touchUpInside)
+            }
+            
             if commentViewModel.getDept(index: indexPath.item) == 1{
                 cell.updateConstraintsWithDept()
             }
+            
             return cell
         }
     }

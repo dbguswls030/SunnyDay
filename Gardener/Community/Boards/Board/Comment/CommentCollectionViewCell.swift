@@ -14,6 +14,18 @@ protocol ReplyButtonDelegate: AnyObject{
 class UIReplyButton: UIButton{
     var nickName: String?
     var parentId: Int?
+    
+    func initReplyButton(nickName: String, parentId: Int){
+        self.nickName = nickName
+        self.parentId = parentId
+    }
+}
+class UIDeleteButton: UIButton{
+    var index: Int?
+    
+    func initDeleteButton(index: Int){
+        self.index = index
+    }
 }
 class CommentCollectionViewCell: UICollectionViewCell {
     
@@ -84,6 +96,17 @@ class CommentCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
+    lazy var deleteButton: UIDeleteButton = {
+        let button = UIDeleteButton()
+        button.tintColor = .lightGray
+        button.alpha = 0.8
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(systemName: "trash", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 10))
+        button.configuration = configuration
+        button.isHidden = true
+        return button
+    }()
+    
     override func prepareForReuse() {
         profileImage.image = nil
         nickNameLabel.text = ""
@@ -92,6 +115,7 @@ class CommentCollectionViewCell: UICollectionViewCell {
         profileImage.snp.updateConstraints { make in
             make.left.equalToSuperview().offset(10)
         }
+        deleteButton.isHidden = true
     }
     
     override init(frame: CGRect) {
@@ -110,6 +134,13 @@ class CommentCollectionViewCell: UICollectionViewCell {
         self.addSubview(contentLabel)
         self.addSubview(likeButton)
         self.addSubview(replyButton)
+        self.addSubview(deleteButton)
+        
+        deleteButton.snp.makeConstraints { make in
+            make.right.equalToSuperview()
+            make.top.equalToSuperview()
+            make.width.height.equalTo(45)
+        }
         
         profileImage.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -147,6 +178,15 @@ class CommentCollectionViewCell: UICollectionViewCell {
             make.height.equalTo(20)
         }
     }
+    
+    func setHiddenDeleteButton(isHidden: Bool){
+        if isHidden == false{
+            deleteButton.isHidden = true
+        }else{
+            deleteButton.isHidden = false
+        }
+    }
+    
     func setContent(content: String){
         self.contentLabel.text = content
         self.contentLabel.sizeToFit()

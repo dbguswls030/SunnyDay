@@ -26,6 +26,10 @@ class CommentViewModel{
         }
     }
     
+    func removeModel(index: Int){
+        comments.remove(at: index)
+    }
+    
     func resetViewModel(){
         query = nil
         comments.removeAll()
@@ -33,6 +37,10 @@ class CommentViewModel{
     
     func numberOfModel() -> Int{
         return comments.count
+    }
+    
+    func getUid(index: Int) -> String{
+        return comments[index].userId
     }
     
     func getNickName(index: Int) -> String{
