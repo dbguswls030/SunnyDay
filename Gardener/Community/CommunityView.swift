@@ -18,7 +18,6 @@ class CommunityView: UIView {
         // TODO: 색상 고르기
         collectionView.backgroundColor = .systemGray6
         collectionView.showsVerticalScrollIndicator = false
-//        collectionView.decelerationRate = .fast
         return collectionView
     }()
     

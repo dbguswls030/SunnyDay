@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import FirebaseFirestoreSwift
 
 class FirebaseFirestoreManager{
     static func getUserInfo(uid: String, completion: @escaping (UserModel) -> Void){
@@ -109,7 +110,7 @@ class FirebaseFirestoreManager{
     }
     
     static func getComments(query: Query?, boardId: String, completion: @escaping ([CommentModel], Query) -> Void){
-        print("getComment")
+    
         let db = Firestore.firestore()
         let request: Query
         
@@ -118,7 +119,7 @@ class FirebaseFirestoreManager{
         }else{
             request = db.collection("comments").document("\(boardId)").collection("comment").order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20)
         }
-        
+
         request.addSnapshotListener { snapshot, error in
             if let error = error{
                 print("getComment erorr = \(error.localizedDescription)")
@@ -135,25 +136,14 @@ class FirebaseFirestoreManager{
             
             var models = [CommentModel]()
             snapshot.documents.forEach { document in
-                if let data = document.data() as? [String: Any]{
-                    if let date = data["date"] as? Timestamp,
-                       let content = data["content"] as? String,
-                       let dept = data["dept"] as? Int,
-                       let userId = data["userId"] as? String,
-                       let commentId = data["commentId"] as? Int,
-                    let nickName = data["nickName"] as? String,
-                    let profileImage = data["profileImage"] as? String{
-                        models.append(CommentModel(date: date.dateValue(),
-                                                   content: content,
-                                                   dept: dept,
-                                                   userId: userId,
-                                                   commentId: commentId,
-                                                  profileImageURL: profileImage,
-                                                  nickName: nickName))
-                    }
+                do{
+                    let model = try document.data(as: CommentModel.self)
+                    models.append(model)    
+                }catch{
+                    print("falied GetComments")
+                    return
                 }
             }
-            
             completion(models, db.collection("comments").document("\(boardId)").collection("comment").order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20).start(afterDocument: lastShapshot))
         }
     }
@@ -162,23 +152,16 @@ class FirebaseFirestoreManager{
         let db = Firestore.firestore()
         let commentId = UUID().uuidString + String(Date().timeIntervalSince1970)
     
-        print("uploadComment")
-        db.collection("comments").document(boardId).collection("comment").document(commentId).setData(
-            ["date" : commentModel.date,
-             "content" : commentModel.content,
-             "dept" : commentModel.dept,
-             "userId" : commentModel.userId,
-             "commentId" : commentModel.commentId,
-             "profileImage" : commentModel.profileImageURL,
-             "nickName": commentModel.nickName]) { error in
-                 if let error = error {
-                     print("failed uploadComment : \(error.localizedDescription)")
-                     return
-                 }
-        }
-        DispatchQueue.main.async {
-            print("uploadComment completion")
-            completion()
+        
+        let docRef = db.collection("comments").document(boardId).collection("comment").document(commentId)
+        do{
+            try docRef.setData(from: commentModel)
+            DispatchQueue.main.async {
+                completion()
+            }
+        }catch{
+            print("falied uploadComment")
+            return
         }
     }
 }

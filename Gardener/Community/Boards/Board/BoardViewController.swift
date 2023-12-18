@@ -182,6 +182,7 @@ class BoardViewController: UIViewController {
     
     @objc private func writeComment(){
         guard let model = model else { return }
+        self.dismissKeyboard()
         self.activityIndicator.startAnimating()
         self.commentWriteView.sendButton.isEnabled = false
         let dept = replyFlag == false ? 0 : 1
@@ -194,7 +195,8 @@ class BoardViewController: UIViewController {
         let comment = self.commentWriteView.getCommentContent()
         if let uid = Auth.auth().currentUser?.uid{
             FirebaseFirestoreManager.getUserInfo(uid: uid) { userModel in
-                FirebaseFirestoreManager.uploadComment(boardId: model.boardId, commentModel: CommentModel(date: Date(), content: comment, dept: dept, userId: uid, commentId: parentId, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) {
+                FirebaseFirestoreManager.uploadComment(boardId: model.boardId, commentModel: CommentModel(commentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) {
+                    
                     self.reinitViewModel(isReply: self.replyFlag)
                     self.commentWriteView.clearCommentTextView()
                     if self.replyFlag == true{
@@ -237,7 +239,7 @@ class BoardViewController: UIViewController {
     @objc private func deleteComment(_ sender: UIDeleteButton){
         guard let index = sender.index else { return }
         showPopUp(confirmButtonTitle: "삭제") {
-            // TODO: 댓글 숨기기 api
+            // TODO: 댓글 숨기기
             
             //        commentViewModel.removeModel(index: index)
             //        commentView.commentCollectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
