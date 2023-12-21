@@ -11,8 +11,13 @@ import FirebaseAuth
 import FirebaseFirestoreSwift
 
 class FirebaseFirestoreManager{
-    static func getUserInfo(uid: String, completion: @escaping (UserModel) -> Void){
-        let db = Firestore.firestore()
+    
+    static let shared = FirebaseFirestoreManager()
+    
+    let db = Firestore.firestore()
+    
+    func getUserInfo(uid: String, completion: @escaping (UserModel) -> Void){
+    
         db.collection("user").document(uid).getDocument { document, error in
             if let error = error{
                 print("failed getUserInfo : \(error.localizedDescription)")
@@ -31,13 +36,13 @@ class FirebaseFirestoreManager{
         }
     }
     
-    static func uploadCommunityBoard(model: CreateBoard, completion: @escaping () -> Void){
-        let db = Firestore.firestore()
+    func uploadCommunityBoard(model: CreateBoard, completion: @escaping () -> Void){
+        
         
         if let uid = Auth.auth().currentUser?.uid{
             let boardId = UUID().uuidString + String(Date().timeIntervalSince1970)
             FirebaseStorageManager.uploadBoardImages(images: model.images, boardId: boardId, uid: uid) { urls in
-                db.collection("community").addDocument(data: ["category" : model.category,
+                self.db.collection("community").addDocument(data: ["category" : model.category,
                                                               "title" : model.title,
                                                               "contents" : model.contents,
                                                               "uid" : uid,
@@ -58,14 +63,14 @@ class FirebaseFirestoreManager{
         }
     }
     
-    static func getCommunityBoards(query: Query?, completion: @escaping ([BoardModel], Query) -> Void){
-        let db = Firestore.firestore()
+    func getCommunityBoards(query: Query?, completion: @escaping ([BoardModel], Query) -> Void){
+        
         let request: Query
         
         if let query = query{
             request = query
         }else{
-            request = db.collection("community").order(by: "date", descending: true).limit(to: 10)
+            request = self.db.collection("community").order(by: "date", descending: true).limit(to: 10)
         }
 
         request.addSnapshotListener { snapshot, error in
@@ -105,19 +110,20 @@ class FirebaseFirestoreManager{
                     }
                 }
             }
-            completion(models, db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
+            completion(models, self.db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
         }
     }
     
-    static func getComments(query: Query?, boardId: String, completion: @escaping ([CommentModel], Query) -> Void){
-    
-        let db = Firestore.firestore()
+    func getComments(query: Query?, boardId: String, completion: @escaping ([CommentModel], Query) -> Void){
         let request: Query
         
         if let query = query{
             request = query
         }else{
-            request = db.collection("comments").document("\(boardId)").collection("comment").order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20)
+            // isHidden이 false 이거나, isHidden이 true이고 isEmptyReply가 false인 것들을 보여준다
+            request = self.db.collection("comments").document("\(boardId)").collection("comment").whereFilter(Filter.orFilter(
+                [Filter.whereField("isHidden", isEqualTo: false),
+                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20)
         }
 
         request.addSnapshotListener { snapshot, error in
@@ -144,25 +150,25 @@ class FirebaseFirestoreManager{
                     return
                 }
             }
-            completion(models, db.collection("comments").document("\(boardId)").collection("comment").order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20).start(afterDocument: lastShapshot))
+            completion(models, self.db.collection("comments").document("\(boardId)").collection("comment").whereFilter(Filter.orFilter(
+                [Filter.whereField("isHidden", isEqualTo: false),
+                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20))
         }
     }
     
-    static func uploadComment(boardId: String, commentModel: CommentModel, completion: @escaping () -> Void){
-        let db = Firestore.firestore()
+    func uploadComment(boardId: String, commentModel: CommentModel, completion: @escaping () -> Void){
+        
         let commentId = UUID().uuidString + String(Date().timeIntervalSince1970)
     
         
-        let docRef = db.collection("comments").document(boardId).collection("comment").document(commentId)
+        let docRef = self.db.collection("comments").document(boardId).collection("comment").document(commentId)
         do{
-            try docRef.setData(from: commentModel)
-            DispatchQueue.main.async {
-                completion()
-            }
+            try docRef.setData(from: commentModel)   
         }catch{
             print("falied uploadComment")
             return
         }
+        completion()
     }
 }
 

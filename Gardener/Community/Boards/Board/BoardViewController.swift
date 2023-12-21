@@ -68,12 +68,12 @@ class BoardViewController: UIViewController {
             guard let self = self else { return }
             self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
-            self.initCommentCollectionView()
             
+            self.initCommentCollectionView()
             DispatchQueue.main.async {
                 let margin = self.commentViewModel.numberOfModel() * 5
                 self.commentView.snp.updateConstraints { make in
-                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin + 10)
+                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
                 }
             }
         }
@@ -160,23 +160,37 @@ class BoardViewController: UIViewController {
         self.commentViewModel.resetViewModel()
         self.commentViewModel.setViewModel(boardId: model.boardId) { [weak self] in
             guard let self = self else { return }
-
             self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
+
+            self.commentView.commentCollectionView.reloadData()
             
-            UIView.animate(withDuration: 0.2) {
-                DispatchQueue.main.async {
-                    self.commentView.commentCollectionView.reloadData()
-                }
-            }completion: { finish in
-                if finish{
-                    if !isReply{
-                        self.scrollView.setContentOffset(CGPoint(x: 0,
-                                                                 y: self.scrollView.contentSize.height - self.scrollView.bounds.height),
-                                                         animated: true)
-                    }
+            DispatchQueue.main.async {
+                let margin = self.commentViewModel.numberOfModel() * 5
+                self.commentView.snp.updateConstraints { make in
+                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
                 }
             }
+            UIView.animate(withDuration: 0.2) {
+                
+//                DispatchQueue.main.async {
+//                    self.commentView.commentCollectionView.reloadData()
+//                }
+            }completion: { finish in
+                if finish{
+//                    let margin = self.commentViewModel.numberOfModel() * 5
+//                    self.commentView.snp.updateConstraints { make in
+//                        make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
+//                    }
+                    // TODO: 댓글 또는 대댓글 작성 이후 화면 이동
+                    //                    if !isReply{
+                    //                        self.scrollView.setContentOffset(CGPoint(x: 0,
+                    //                                                                 y: self.scrollView.contentSize.height - self.scrollView.bounds.height),
+                    //                                                         animated: true)
+                    //                    }
+                }
+            }
+            
         }
     }
     
@@ -194,9 +208,9 @@ class BoardViewController: UIViewController {
         }
         let comment = self.commentWriteView.getCommentContent()
         if let uid = Auth.auth().currentUser?.uid{
-            FirebaseFirestoreManager.getUserInfo(uid: uid) { userModel in
-                FirebaseFirestoreManager.uploadComment(boardId: model.boardId, commentModel: CommentModel(commentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) {
-                    
+            FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { userModel in
+                FirebaseFirestoreManager.shared.uploadComment(boardId: model.boardId, commentModel: CommentModel(commentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
+                    guard let self = self else { return }
                     self.reinitViewModel(isReply: self.replyFlag)
                     self.commentWriteView.clearCommentTextView()
                     if self.replyFlag == true{
@@ -207,6 +221,7 @@ class BoardViewController: UIViewController {
             }
         }
     }
+    
     
     func setBoardModel(model: BoardModel){
         self.model = model
@@ -317,11 +332,11 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == self.boardView.imageCollectionView{
             return CGSize(width: 150, height: 150)
-        }else{
+        }else{// 40 5 10 20
             if commentViewModel.getDept(index: indexPath.item) == 0 {
-                return CGSize(width: self.view.frame.width, height: 40 + 5 + 10 + 20 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item) , width: self.view.frame.width - 10 - 45 - 12 - 10) )
+                return CGSize(width: self.view.frame.width, height: 45 + 5 + 10 + 20 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item) , width: self.view.frame.width - 10 - 45 - 12 - 10) )
             }else{
-                return CGSize(width: self.view.frame.width, height: 40 + 5 + 10 + 20 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item), width: self.view.frame.width - 20 - 90 - 24 - 10) )
+                return CGSize(width: self.view.frame.width, height: 45 + 5 + 10 + 20 + GetElementHeightOfComment().getContentsHeight(contents: commentViewModel.getContent(index: indexPath.item), width: self.view.frame.width - 20 - 90 - 24 - 10) )
             }
         }
     }

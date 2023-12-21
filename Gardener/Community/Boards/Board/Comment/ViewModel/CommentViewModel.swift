@@ -13,17 +13,17 @@ class CommentViewModel{
     private var comments = [CommentModel]()
 
     func setViewModel(boardId: String, completion: @escaping () -> Void){
-        FirebaseFirestoreManager.getComments(query: query, boardId: boardId) { [weak self] models, query in
+        FirebaseFirestoreManager.shared.getComments(query: self.query, boardId: boardId) { [weak self] models, query in
             guard let self = self, !models.isEmpty else{
                 return
             }
-            
             self.query = query
             self.comments = models
-        
+
             completion()
         }
     }
+
     
     func removeModel(index: Int){
         comments.remove(at: index)

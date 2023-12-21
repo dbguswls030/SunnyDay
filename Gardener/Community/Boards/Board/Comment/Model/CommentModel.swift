@@ -15,10 +15,10 @@ struct CommentModel: Codable{
     let userId: String
     let profileImageURL: String
     let nickName: String
-    
+    let isHidden: Bool
+    let isEmptyReply: Bool
     
     init(commentId: Int, content: String, dept: Int, userId: String, profileImageURL: String, nickName: String){
-        print("init")
         self.commentId = commentId
         self.content = content
         self.dept = dept
@@ -26,6 +26,8 @@ struct CommentModel: Codable{
         self.userId = userId
         self.profileImageURL = profileImageURL
         self.nickName = nickName
+        self.isHidden = false
+        self.isEmptyReply = true
     }
     
     
@@ -38,6 +40,8 @@ struct CommentModel: Codable{
         self.commentId = try container.decode(Int.self, forKey: .commentId)
         self.nickName = try container.decode(String.self, forKey: .nickName)
         self.profileImageURL = try container.decode(String.self, forKey: .profileImageURL)
+        self.isHidden = try container.decode(Bool.self, forKey: .isHidden)
+        self.isEmptyReply = try container.decode(Bool.self, forKey: .isEmptyReply)
     }
     
     enum CodingKeys: String, CodingKey{
@@ -48,5 +52,7 @@ struct CommentModel: Codable{
         case commentId
         case nickName
         case profileImageURL
+        case isHidden
+        case isEmptyReply
     }
 }

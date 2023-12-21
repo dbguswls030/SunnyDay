@@ -15,7 +15,7 @@ class BoardViewModel{
     private var lastPage = false
     
     func setBoards(completion: @escaping () -> Void){
-        FirebaseFirestoreManager.getCommunityBoards(query: self.query) { [weak self] models, query in
+        FirebaseFirestoreManager.shared.getCommunityBoards(query: self.query) { [weak self] models, query in
             guard let self = self, !models.isEmpty else{
                 return
             }

@@ -161,7 +161,7 @@ class CommentCollectionViewCell: UICollectionViewCell {
         contentLabel.snp.makeConstraints { make in
             make.left.equalTo(profileImage.snp.right).offset(12)
             make.top.equalTo(profileImage.snp.bottom).offset(5)
-            make.right.equalToSuperview().offset(10)
+            make.right.equalToSuperview().offset(-10)
             
         }
         
