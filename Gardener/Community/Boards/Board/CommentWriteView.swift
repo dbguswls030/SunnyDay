@@ -71,10 +71,6 @@ class CommentWriteView: UIView, UITextViewDelegate{
             make.height.equalTo(50 - (0.5 + 16))
         }
     }
-    
-    func clearCommentTextView(){
-        commentTextView.text = ""
-    }
 }
 
 extension CommentWriteView{

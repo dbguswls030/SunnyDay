@@ -56,21 +56,34 @@ class BoardViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("viewDidLoad")
         initUI()
+        initCommentCollectionView()
         initViewModel()
         initNavigationBar()
         hideKeyboard()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+    }
     
     private func initViewModel(){
+        print("initViewModel")
         guard let model = model else { return }
+        
         self.commentViewModel.setViewModel(boardId: model.boardId) { [weak self] in
             guard let self = self else { return }
+            if commentViewModel.numberOfModel() == 0{
+                return
+            }
+            print("initViewModel")
+            print("setViewModel completion.....")
             self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
-            
-            self.initCommentCollectionView()
+            self.commentView.commentCollectionView.reloadData()
             DispatchQueue.main.async {
+                print("아아")
                 let margin = self.commentViewModel.numberOfModel() * 5
                 self.commentView.snp.updateConstraints { make in
                     make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
@@ -127,7 +140,6 @@ class BoardViewController: UIViewController {
         
         replyNoticeView.cancelButton.addTarget(self, action: #selector(deinitReplyNoticeView), for: .touchUpInside)
         
-        
         scrollView.snp.remakeConstraints { make in
             make.left.right.equalToSuperview()
             make.bottom.equalTo(replyNoticeView.snp.top)
@@ -155,44 +167,29 @@ class BoardViewController: UIViewController {
         self.replyFlag = false
     }
     
-    private func reinitViewModel(isReply: Bool){
-        guard let model = model else { return }
-        self.commentViewModel.resetViewModel()
-        self.commentViewModel.setViewModel(boardId: model.boardId) { [weak self] in
-            guard let self = self else { return }
-            self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
-            self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
-
-            self.commentView.commentCollectionView.reloadData()
-            
-            DispatchQueue.main.async {
-                let margin = self.commentViewModel.numberOfModel() * 5
-                self.commentView.snp.updateConstraints { make in
-                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
-                }
-            }
-            UIView.animate(withDuration: 0.2) {
-                
-//                DispatchQueue.main.async {
-//                    self.commentView.commentCollectionView.reloadData()
+//    private func reinitViewModel(){
+//        guard let model = model else { return }
+//        self.commentViewModel.resetViewModel()
+//        print("reinit")
+//        self.commentViewModel.resetViewModel(boardId: model.boardId) { [weak self] in
+//            guard let self = self else { return }
+//            print("reinitViewModel")
+//            self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
+//            self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
+//            print("before reloadData")
+//            self.commentView.commentCollectionView.reloadData()
+//            
+//            DispatchQueue.main.async {
+//                let margin = self.commentViewModel.numberOfModel() * 5
+//                self.commentView.snp.updateConstraints { make in
+//                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
 //                }
-            }completion: { finish in
-                if finish{
-//                    let margin = self.commentViewModel.numberOfModel() * 5
-//                    self.commentView.snp.updateConstraints { make in
-//                        make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
-//                    }
-                    // TODO: 댓글 또는 대댓글 작성 이후 화면 이동
-                    //                    if !isReply{
-                    //                        self.scrollView.setContentOffset(CGPoint(x: 0,
-                    //                                                                 y: self.scrollView.contentSize.height - self.scrollView.bounds.height),
-                    //                                                         animated: true)
-                    //                    }
-                }
-            }
-            
-        }
-    }
+//            }
+//        }
+//    }
+    
+    
+    
     
     @objc private func writeComment(){
         guard let model = model else { return }
@@ -208,11 +205,13 @@ class BoardViewController: UIViewController {
         }
         let comment = self.commentWriteView.getCommentContent()
         if let uid = Auth.auth().currentUser?.uid{
-            FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { userModel in
+            FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { [weak self] userModel in
+                guard let self = self else { return }
                 FirebaseFirestoreManager.shared.uploadComment(boardId: model.boardId, commentModel: CommentModel(commentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
                     guard let self = self else { return }
-                    self.reinitViewModel(isReply: self.replyFlag)
-                    self.commentWriteView.clearCommentTextView()
+                    
+//                    self.reinitViewModel()
+                    self.commentWriteView.resetTextView()
                     if self.replyFlag == true{
                         self.deinitReplyNoticeView()
                     }
@@ -252,18 +251,39 @@ class BoardViewController: UIViewController {
     }
     
     @objc private func deleteComment(_ sender: UIDeleteButton){
+        print("touch deleteButton")
         guard let index = sender.index else { return }
-        showPopUp(confirmButtonTitle: "삭제") {
-            // TODO: 댓글 숨기기
-            
-            //        commentViewModel.removeModel(index: index)
-            //        commentView.commentCollectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
-            DispatchQueue.main.async {
-                self.dismiss(animated: false)
+        guard let model = model else {return}
+        let boardId = model.boardId
+        activityIndicator.startAnimating()
+        let commentId = commentViewModel.getCommentId(index: index)
+        showPopUp(confirmButtonTitle: "삭제") { [weak self] in
+            guard let self = self else{
+                return
+            }
+            if let documentId = self.commentViewModel.getDocumentId(index: index){
+                FirebaseFirestoreManager.shared.deleteComment(boardId: boardId, documentId: documentId) {
+                    //                        self.commentViewModel.removeModel(index: index)
+                    //                        self.commentView.commentCollectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
+                    FirebaseFirestoreManager.shared.updateCommentThenDeleteComment(boardId: boardId, commentId: commentId) {
+                        // 댓글이 있었는데 없어졌을 떄
+                        if self.commentViewModel.numberOfModel() == 0{
+                            self.commentView.commentCollectionView.reloadData()
+                            self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
+                            self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
+                            self.commentView.snp.updateConstraints { make in
+                                make.height.equalTo(200)
+                            }
+                        }
+//                        self.reinitViewModel()
+                        self.activityIndicator.stopAnimating()
+                        DispatchQueue.main.async {
+                            self.dismiss(animated: false)
+                        }
+                    }
+                }
             }
         }
-        
-
     }
 }
 
@@ -291,6 +311,7 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             }
             return model.imageUrls.count
         }else{
+            print("commentViewModel.numberOfModel() \(commentViewModel.numberOfModel())")
             return commentViewModel.numberOfModel()
         }
     }
@@ -311,10 +332,21 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             cell.setContent(content: commentViewModel.getContent(index: indexPath.item))
             let nickName = commentViewModel.getNickName(index: indexPath.item)
             cell.setNickName(nickName: nickName)
-            cell.setProfileImage(profileImageURL: commentViewModel.getProfileImageURL(index: indexPath.item))
+            
+            if commentViewModel.getIsHiddenValue(index: indexPath.item) == true{
+                cell.setDefaultProfileImage()
+            }else{
+                cell.setProfileImage(profileImageURL: commentViewModel.getProfileImageURL(index: indexPath.item))
+            }
             let commentId = commentViewModel.getCommentId(index: indexPath.item)
-            cell.replyButton.initReplyButton(nickName: nickName, parentId: commentId)
-            cell.replyButton.addTarget(self, action: #selector(touchUpReplyButton), for: .touchUpInside)
+            
+            // TODO: 대댓글
+//            if commentViewModel.getIsHiddenValue(index: indexPath.item) == false{
+//                cell.replyButton.initReplyButton(nickName: nickName, parentId: commentId)
+//                cell.replyButton.addTarget(self, action: #selector(touchUpReplyButton), for: .touchUpInside)
+//            }
+            
+            
             if let uid = Auth.auth().currentUser?.uid{
                 cell.setHiddenDeleteButton(isHidden: uid == commentViewModel.getUid(index: indexPath.item))
                 cell.deleteButton.initDeleteButton(index: indexPath.item)
@@ -324,7 +356,6 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             if commentViewModel.getDept(index: indexPath.item) == 1{
                 cell.updateConstraintsWithDept()
             }
-            
             return cell
         }
     }

@@ -316,7 +316,6 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
                             self?.selectedImage.append(image)
                             if self?.selectedImage.count == results.count{
                                 dispatchGroup.leave()
-                                
                             }
                         }
                     }

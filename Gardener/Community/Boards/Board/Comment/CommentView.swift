@@ -86,6 +86,7 @@ class CommentView: UIView{
     }
     
     func setCommentCount(count: Int){
+        print("댓글 갯수 수정 \(count)")
         self.commentCountLabel.text = "\(count)"
     }
 }

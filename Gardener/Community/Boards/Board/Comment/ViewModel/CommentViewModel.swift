@@ -13,14 +13,40 @@ class CommentViewModel{
     private var comments = [CommentModel]()
 
     func setViewModel(boardId: String, completion: @escaping () -> Void){
-        FirebaseFirestoreManager.shared.getComments(query: self.query, boardId: boardId) { [weak self] models, query in
-            guard let self = self, !models.isEmpty else{
+        FirebaseFirestoreManager.shared.getComments(query: self.query, boardId: boardId) { [weak self] result in
+            guard let self = self else{
                 return
             }
-            self.query = query
-            self.comments = models
-
-            completion()
+            switch result{
+            case .success((let models, let query)):
+                self.query = query
+                self.comments = models
+                print("invoke setViewModel !!")
+                completion()
+            case .failure(let error):
+                print("error")
+                completion()
+                return
+            }
+        }
+    }
+    
+    func resetViewModel(boardId: String, completion: @escaping () -> Void){
+        FirebaseFirestoreManager.shared.getComments(query: self.query, boardId: boardId) { [weak self] result in
+            guard let self = self else{
+                return
+            }
+            switch result{
+            case .success((let models, let error)):
+                self.query = query
+                self.comments = models
+                print("invoke setViewModel !! reset")
+                completion()
+            case.failure(let error):
+                print(error)
+                completion()
+                return
+            }
         }
     }
 
@@ -30,12 +56,21 @@ class CommentViewModel{
     }
     
     func resetViewModel(){
+        print("resetViewModel")
         query = nil
         comments.removeAll()
     }
     
     func numberOfModel() -> Int{
         return comments.count
+    }
+    
+    func getDocumentId(index: Int) -> String?{
+        return comments[index].documentId
+    }
+    
+    func getIsHiddenValue(index: Int) -> Bool{
+        return comments[index].isHidden
     }
     
     func getUid(index: Int) -> String{

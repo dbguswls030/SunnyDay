@@ -76,6 +76,9 @@ class CommentCollectionViewCell: UICollectionViewCell {
         button.configuration = configuration
         button.setTitleColor(.lightGray, for: .normal)
         button.tintColor = .lightGray
+        
+        // TODO: 대댓글
+        button.isHidden = true
         return button
     }()
     
@@ -116,6 +119,7 @@ class CommentCollectionViewCell: UICollectionViewCell {
             make.left.equalToSuperview().offset(10)
         }
         deleteButton.isHidden = true
+        deleteButton.removeTarget(nil, action: nil, for: .allEvents)
     }
     
     override init(frame: CGRect) {
@@ -177,6 +181,10 @@ class CommentCollectionViewCell: UICollectionViewCell {
             make.left.equalTo(likeButton.snp.right).offset(10)
             make.height.equalTo(20)
         }
+    }
+    
+    func setDefaultProfileImage(){
+        self.profileImage.image = UIImage(named: "defaultProfileImage")
     }
     
     func setHiddenDeleteButton(isHidden: Bool){
