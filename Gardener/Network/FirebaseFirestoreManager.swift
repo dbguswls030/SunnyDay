@@ -16,6 +16,19 @@ class FirebaseFirestoreManager{
     
     let db = Firestore.firestore()
     
+    func setUserInfo(uid: String, model: UserModel, completion: @escaping (Result<Bool, Error>) -> Void){
+        let docRef = db.collection("user").document(uid)
+        do{
+            try docRef.setData(from: model)
+            completion(.success(true))
+        }catch let error{
+            print("failed set User")
+            completion(.failure(error))
+            return
+        }
+    }
+    
+    
     func getUserInfo(uid: String, completion: @escaping (UserModel) -> Void){
     
         db.collection("user").document(uid).getDocument { document, error in
@@ -123,7 +136,7 @@ class FirebaseFirestoreManager{
             // isHidden이 false 이거나, isHidden이 true이고 isEmptyReply가 false인 것들을 보여준다
             request = self.db.collection("comments").document("\(boardId)").collection("comment").whereFilter(Filter.orFilter(
                 [Filter.whereField("isHidden", isEqualTo: false),
-                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20)
+                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20)
         }
 
         request.addSnapshotListener { snapshot, error in
@@ -155,14 +168,14 @@ class FirebaseFirestoreManager{
                     }
                     models.append(model)
                 }catch{
-                    print("falied GetComments")
+                    print("failed GetComments")
                     completion(.success(([],nil)))
                     return
                 }
             }
             completion(.success((models, self.db.collection("comments").document("\(boardId)").collection("comment").whereFilter(Filter.orFilter(
                 [Filter.whereField("isHidden", isEqualTo: false),
-                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "commentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20).start(afterDocument: lastShapshot))))
+                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20).start(afterDocument: lastShapshot))))
         }
     }
     
@@ -173,14 +186,14 @@ class FirebaseFirestoreManager{
         do{
             try docRef.setData(from: commentModel)
             if commentModel.dept == 1{
-                self.updateIsEmptyReplyForFalseInComment(boardId: boardId, commentId: commentModel.commentId) {
+                self.updateIsEmptyReplyForFalseInComment(boardId: boardId, parentId: commentModel.parentId) {
                     completion()
                 }
             }else{
                 completion()
             }
         }catch{
-            print("falied uploadComment")
+            print("failed uploadComment")
             return
         }
     }
@@ -196,10 +209,10 @@ class FirebaseFirestoreManager{
         
     }
     
-    func updateCommentThenDeleteComment(boardId: String, commentId: Int, completion: @escaping () -> Void){
+    func updateCommentThenDeleteComment(boardId: String, parentId: Int, completion: @escaping () -> Void){
         let docRef = self.db.collection("comments").document(boardId).collection("comment")
         // commentId이 같고 dept가 1인 것 중에 isHidden이 false인 갯수가 0일 때
-        docRef.whereField("commentId", isEqualTo: commentId).whereField("dept", isEqualTo: 1).whereField("isHidden", isEqualTo: false).count.getAggregation(source: .server) { [weak self] snapshot, error in
+        docRef.whereField("parentId", isEqualTo: parentId).whereField("dept", isEqualTo: 1).whereField("isHidden", isEqualTo: false).count.getAggregation(source: .server) { [weak self] snapshot, error in
             guard let self = self else {return}
             if let error = error{
                 print("updateCommentThenDeleteComment erorr = \(error.localizedDescription)")
@@ -212,8 +225,8 @@ class FirebaseFirestoreManager{
             
             if snapshot.count == 0{
                 print("reply count == 0")
-                // TODO: commentId가 같고 dept가 0인 거에 isEmptyReply를 true
-                self.updateIsEmptyReplyForTrueInComment(boardId: boardId, commentId: commentId) {
+                // TODO: parentId가 같고 dept가 0인 거에 isEmptyReply를 true
+                self.updateIsEmptyReplyForTrueInComment(boardId: boardId, parentId: parentId) {
                     completion()
                 }
             }else{
@@ -223,9 +236,9 @@ class FirebaseFirestoreManager{
         }
     }
     
-    func updateIsEmptyReplyForFalseInComment(boardId: String, commentId: Int, completion: @escaping () -> Void){
+    func updateIsEmptyReplyForFalseInComment(boardId: String, parentId: Int, completion: @escaping () -> Void){
         let docRef = self.db.collection("comments").document(boardId).collection("comment")
-        docRef.whereField("commentId", isEqualTo: commentId).whereField("dept", isEqualTo: 0).getDocuments { snapshot, error in
+        docRef.whereField("parentId", isEqualTo: parentId).whereField("dept", isEqualTo: 0).getDocuments { snapshot, error in
             if let error = error{
                 print("updateIsEmptyReplyForFalseInComment erorr = \(error.localizedDescription)")
                 return
@@ -241,9 +254,9 @@ class FirebaseFirestoreManager{
         }
     }
     
-    func updateIsEmptyReplyForTrueInComment(boardId: String, commentId: Int, completion: @escaping () -> Void){
+    func updateIsEmptyReplyForTrueInComment(boardId: String, parentId: Int, completion: @escaping () -> Void){
         let docRef = self.db.collection("comments").document(boardId).collection("comment")
-        docRef.whereField("commentId", isEqualTo: commentId).whereField("dept", isEqualTo: 0).getDocuments { snapshot, error in
+        docRef.whereField("parentId", isEqualTo: parentId).whereField("dept", isEqualTo: 0).getDocuments { snapshot, error in
             if let error = error{
                 print("updateIsEmptyReplyForTrueInComment erorr = \(error.localizedDescription)")
                 return

@@ -97,7 +97,7 @@ class CommentViewModel{
         return comments[index].dept
     }
     
-    func getCommentId(index: Int) -> Int{
-        return comments[index].commentId
+    func getParentId(index: Int) -> Int{
+        return comments[index].parentId
     }
 }

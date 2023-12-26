@@ -24,6 +24,7 @@ class FirebaseStorageManager{
         firebaseReference.putData(imageData, metadata: metaData) { metaData, error in
             if let error = error{
                 print("putdata Error\(error.localizedDescription)")
+                return
             }
             firebaseReference.downloadURL { url, _ in
                 completion(url)
@@ -101,7 +102,7 @@ class FirebaseStorageManager{
     static func deleteBoard(boardId: String, uid: String){
         Storage.storage().reference().child("\(uid)").child("community").child("\(boardId)").listAll { result, error in
             if error != nil{
-                print("get list falied")
+                print("get list failed")
                 return
             }
             if let result = result{

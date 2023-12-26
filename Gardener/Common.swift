@@ -106,7 +106,6 @@ class PopUpViewController: UIViewController{
     }()
     
     private func initUI(){
-        
         self.view.backgroundColor = .black.withAlphaComponent(0.3)
         self.view.addSubview(contentView)
         self.contentView.addSubview(titleLabel)
@@ -176,5 +175,25 @@ extension UIViewController{
 
         self.present(vc, animated: false)
         
+    }
+}
+
+extension UIViewController{
+    func showActivityIndicator(){
+        let overlayView = UIView(frame: view.bounds)
+        overlayView.backgroundColor = UIColor(white: 0, alpha: 0.3)
+        
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.center = overlayView.center
+        overlayView.addSubview(activityIndicator)
+        
+        self.view.addSubview(overlayView)
+        activityIndicator.startAnimating()
+    }
+    
+    func hideActivityIndicator(){
+        self.view.subviews.filter { $0.backgroundColor == UIColor(white: 0, alpha: 0.3) }.forEach {
+            $0.removeFromSuperview()
+        }
     }
 }

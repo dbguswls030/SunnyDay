@@ -207,7 +207,7 @@ class BoardViewController: UIViewController {
         if let uid = Auth.auth().currentUser?.uid{
             FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { [weak self] userModel in
                 guard let self = self else { return }
-                FirebaseFirestoreManager.shared.uploadComment(boardId: model.boardId, commentModel: CommentModel(commentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
+                FirebaseFirestoreManager.shared.uploadComment(boardId: model.boardId, commentModel: CommentModel(parentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
                     guard let self = self else { return }
                     
 //                    self.reinitViewModel()
@@ -256,7 +256,7 @@ class BoardViewController: UIViewController {
         guard let model = model else {return}
         let boardId = model.boardId
         activityIndicator.startAnimating()
-        let commentId = commentViewModel.getCommentId(index: index)
+        let parentId = commentViewModel.getParentId(index: index)
         showPopUp(confirmButtonTitle: "삭제") { [weak self] in
             guard let self = self else{
                 return
@@ -265,7 +265,7 @@ class BoardViewController: UIViewController {
                 FirebaseFirestoreManager.shared.deleteComment(boardId: boardId, documentId: documentId) {
                     //                        self.commentViewModel.removeModel(index: index)
                     //                        self.commentView.commentCollectionView.deleteItems(at: [IndexPath(item: index, section: 0)])
-                    FirebaseFirestoreManager.shared.updateCommentThenDeleteComment(boardId: boardId, commentId: commentId) {
+                    FirebaseFirestoreManager.shared.updateCommentThenDeleteComment(boardId: boardId, parentId: parentId) {
                         // 댓글이 있었는데 없어졌을 떄
                         if self.commentViewModel.numberOfModel() == 0{
                             self.commentView.commentCollectionView.reloadData()
@@ -338,11 +338,11 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             }else{
                 cell.setProfileImage(profileImageURL: commentViewModel.getProfileImageURL(index: indexPath.item))
             }
-            let commentId = commentViewModel.getCommentId(index: indexPath.item)
+            let parentId = commentViewModel.getParentId(index: indexPath.item)
             
             // TODO: 대댓글
 //            if commentViewModel.getIsHiddenValue(index: indexPath.item) == false{
-//                cell.replyButton.initReplyButton(nickName: nickName, parentId: commentId)
+//                cell.replyButton.initReplyButton(nickName: nickName, parentId: parentId)
 //                cell.replyButton.addTarget(self, action: #selector(touchUpReplyButton), for: .touchUpInside)
 //            }
             

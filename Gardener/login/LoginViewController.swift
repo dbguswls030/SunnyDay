@@ -105,34 +105,45 @@ extension LoginViewController: UITextFieldDelegate{
 }
 extension LoginViewController{
     @objc func verifyPhoneNumber(_ sender: Any?){
+        self.dismissKeyboard()
+        self.showActivityIndicator()
         PhoneAuthProvider.provider().verifyPhoneNumber("+1 5555555", uiDelegate: nil){ verification, error in
             if let error = error {
                 print("phoneNumber verifing error \(error.localizedDescription)")
+                self.hideActivityIndicator()
                 return
             }
+            
             self.loginView.hideLogoImage()
             self.loginView.showWarningLabel()
             self.loginView.submitButton.setTitle("인증번호 다시 받기", for: .normal)
             self.loginView.showCeritificationView()
             self.verificationId = verification ?? ""
+            self.hideActivityIndicator()
         }
     }
     
     @objc func start(_ sender: Any?){
         self.dismissKeyboard()
+        
         let credential = PhoneAuthProvider.provider().credential(withVerificationID: self.verificationId, verificationCode: "123456")
-        Auth.auth().signIn(with: credential){ success, error in
+        Auth.auth().signIn(with: credential){ [weak self] success, error in
+            guard let self = self else {return}
             if let error = error {
                 // TODO: 인증번호 오류 시 팝업
                 print("verification error : \(error.localizedDescription)")
+                
                 return
             }
             
             print("firebase signIn success")
             if let uid = success?.user.uid{
-                Firestore.firestore().collection("user").document(uid).getDocument { document, error in
+                Firestore.firestore().collection("user").document(uid).getDocument { [weak self] document, error in
+                    guard let self = self else {return}
                     if let error = error{
                         print("getDocument erorr : \(error.localizedDescription)")
+                        
+                        return
                     }
                     
                     // 로그아웃 후 재 로그인 시

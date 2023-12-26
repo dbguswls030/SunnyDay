@@ -83,14 +83,23 @@ class SignUpViewController: UIViewController {
         guard let uploadProfileImage = self.signView.profileImage.imageView?.image else { return }
         print("isExist uploadProfileImage")
         if let user = Auth.auth().currentUser{
-            FirebaseStorageManager.uploadProfileImage(image: uploadProfileImage, pathRoot: user.uid) { url in
+            FirebaseStorageManager.uploadProfileImage(image: uploadProfileImage, pathRoot: user.uid) { [weak self] url in
+                guard let self = self else {return}
                 if let url = url {
-                    print("download url = \(url)")
-                    db.collection("user").document(user.uid).setData(["nickName" : String(describing: self.signView.nickNameTextField.text!),
-                                                                      "profileImage" : url.absoluteString])
-                    let vc = MainTabBarController()
-                    vc.modalPresentationStyle = .fullScreen
-                    self.present(vc, animated: true)
+                    FirebaseFirestoreManager.shared.setUserInfo(uid: user.uid, model: UserModel(nickName: self.signView.nickNameTextField.text!, profileImageURL: url.absoluteString)) { result in
+                        switch result{
+                        case .success(let bool):
+                            let vc = MainTabBarController()
+                            vc.modalPresentationStyle = .fullScreen
+                            self.present(vc, animated: true)
+                        case .failure(let error):
+                            print("d")
+                        }
+                    }
+//                    print("download url = \(url)")
+//                    db.collection("user").document(user.uid).setData(["nickName" : String(describing: self.signView.nickNameTextField.text!),
+//                                                                      "profileImage" : url.absoluteString])
+                    
                 }
             }
         }
