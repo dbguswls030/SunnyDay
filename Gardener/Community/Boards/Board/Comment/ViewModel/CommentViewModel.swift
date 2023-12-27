@@ -66,7 +66,7 @@ class CommentViewModel{
     }
     
     func getDocumentId(index: Int) -> String?{
-        return comments[index].documentId
+        return comments[index].commentId
     }
     
     func getIsHiddenValue(index: Int) -> Bool{

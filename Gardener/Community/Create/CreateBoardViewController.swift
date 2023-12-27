@@ -228,28 +228,37 @@ class CreateBoardViewController: UIViewController {
     
     @objc private func uploadBoard(){
         guard let category = categoryLabel.text, category != "카테고리를 선택해 주세요." else{
+            print("카테고리를 선택해 주세요.")
 //            Toast().showToast(view: self.view, message: "카테고리를 선택해 주세요.")
             return
         }
         
         guard let contents = contentTextView.text, contents.count > 1, contents != "내용을 입력해 주세요." else{
 //            Toast().showToast(view: self.view, message: "내용을 최소 두 글자 이상 입력해주세요.")
+            print("내용을 최소 두 글자 이상 입력해주세요.")
             return
         }
         
         guard let title = titleTextView.text, title.count > 1 else{
 //            Toast().showToast(view: self.view, message: "제목을 최소 두 글자 이상 입력해주세요.")
+            print("제목을 최소 두글자 이상 입력해 주세요")
             return
         }
         
         self.navigationItem.rightBarButtonItem?.isEnabled = false
         self.activityIndicator.startAnimating()
         if let uid = Auth.auth().currentUser?.uid{
-            FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { userModel in
-                FirebaseFirestoreManager.shared.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: self.selectedImage, date: Date(), userInfo: userModel)) {
-                    self.delegate?.popCreatBoardView()
-                    self.activityIndicator.stopAnimating()
-                    self.navigationController?.popViewController(animated: true)
+            FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { [weak self] userModel in
+                guard let self = self else { return }
+                let boardId = UUID().uuidString + String(Date().timeIntervalSince1970)
+                FirebaseStorageManager.shared.uploadBoardImages(images: self.selectedImage, boardId: boardId, uid: uid) { [weak self] contentImageURLs in
+                    guard let self = self else { return }
+                    FirebaseFirestoreManager.shared.uploadBoard(model: BoardModel(boardId: boardId, category: category, title: title, contents: contents, uid: uid, nickName: userModel.nickName, profileImageURL: userModel.profileImageURL, contentImageURLs: contentImageURLs)) { [weak self] in
+                        guard let self = self else { return }
+                        self.delegate?.popCreatBoardView()
+                        self.activityIndicator.stopAnimating()
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
         }

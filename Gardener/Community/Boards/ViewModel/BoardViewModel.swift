@@ -15,10 +15,11 @@ class BoardViewModel{
     private var lastPage = false
     
     func setBoards(completion: @escaping () -> Void){
-        FirebaseFirestoreManager.shared.getCommunityBoards(query: self.query) { [weak self] models, query in
+        FirebaseFirestoreManager.shared.getBoards(query: self.query) { [weak self] models, query in
             guard let self = self, !models.isEmpty else{
                 return
             }
+            print("setBoards")
             setPaging(data: false)
             
             self.boards += models
@@ -72,14 +73,14 @@ class BoardViewModel{
     }
     
     func getImageUrls(index: Int) -> [String]{
-        return boards[index].imageUrls
+        return boards[index].contentImageURLs
     }
     
     func getHeight(index: Int, width: CGFloat) -> CGFloat{
         return 20 + getCategoryHeight(index: index, width: width) + 15 + getTitleHeight(index: index, width: width) + 10 + getContentsHeight(index: index, width: width) + 15 + getImagesHeight(index: index) + getDateHeight(index: index, width: width) + 20
     }
     func getImagesHeight(index: Int) -> CGFloat{
-        return boards[index].imageUrls.isEmpty ? 0 : 150 + 15
+        return boards[index].contentImageURLs.isEmpty ? 0 : 150 + 15
     }
     func getTitleHeight(index: Int, width: CGFloat) -> CGFloat{
         let font = UIFont.systemFont(ofSize: 17, weight: .semibold) // 원하는 폰트 및 크기 선택
@@ -109,7 +110,7 @@ class BoardViewModel{
     }
     
     func getDateHeight(index: Int, width: CGFloat) -> CGFloat{
-        let font = UIFont.systemFont(ofSize: 10, weight: .ultraLight) // 원하는 폰트 및 크기 선택
+        let font = UIFont.systemFont(ofSize: 11) // 원하는 폰트 및 크기 선택
         let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
         let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
         let attributes = [NSAttributedString.Key.font: font]
@@ -119,5 +120,4 @@ class BoardViewModel{
         let boundingRect = (formattedDate as NSString).boundingRect(with: size, options: options, attributes: attributes, context: nil)
         return ceil(boundingRect.height)
     }
-
 }

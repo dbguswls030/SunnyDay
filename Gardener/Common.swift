@@ -179,9 +179,9 @@ extension UIViewController{
 }
 
 extension UIViewController{
-    func showActivityIndicator(){
+    func showActivityIndicator(alpha: CGFloat){
         let overlayView = UIView(frame: view.bounds)
-        overlayView.backgroundColor = UIColor(white: 0, alpha: 0.3)
+        overlayView.backgroundColor = UIColor(white: 0, alpha: alpha)
         
         let activityIndicator = UIActivityIndicatorView(style: .medium)
         activityIndicator.center = overlayView.center
@@ -191,9 +191,34 @@ extension UIViewController{
         activityIndicator.startAnimating()
     }
     
-    func hideActivityIndicator(){
-        self.view.subviews.filter { $0.backgroundColor == UIColor(white: 0, alpha: 0.3) }.forEach {
+    func hideActivityIndicator(alpha: CGFloat){
+        self.view.subviews.filter { $0.backgroundColor == UIColor(white: 0, alpha: alpha) }.forEach {
             $0.removeFromSuperview()
+        }
+    }
+}
+
+extension Date{
+    func convertDateToTime() -> String{
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
+        guard let convertDate = dateFormatter.date(from: dateFormatter.string(from: self)) else {
+            return "알 수 없음"
+        }
+        
+        let intervalTime = Int(floor(Date().timeIntervalSince(convertDate) / 60))
+        if intervalTime < 1 {
+            return "방금 전"
+        }else if intervalTime < 60 {
+            return "\(intervalTime)분 전"
+        }else if intervalTime < 60 * 24{
+            return "\(intervalTime/60)시간 전"
+        }else if intervalTime < 60 * 24 * 365{
+            return "\(intervalTime/60/24)일 전"
+        }else{
+            return "\(intervalTime/60/24/365)년 전"
         }
     }
 }

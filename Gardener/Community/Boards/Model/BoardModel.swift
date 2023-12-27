@@ -7,27 +7,58 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 
-class BoardModel{
+struct BoardModel: Codable{
+    var boardId: String
     var category: String
     var title: String
     var contents: String
     var date: Date
-    var imageUrls: [String]
+    var contentImageURLs: [String]
     var uid: String
-    var boardId: String
     var nickName: String
     var profileImageURL: String
+    var likeCount: Int
     
-    init(category: String, title: String, contents: String, date: Date, imageUrls: [String], uid: String, boardId: String, nickName: String, profileImageURL: String) {
+    init(boardId: String, category: String, title: String, contents: String, uid: String, nickName: String, profileImageURL: String, contentImageURLs: [String]) {
+        self.boardId = boardId
         self.category = category
         self.title = title
         self.contents = contents
-        self.date = date
-        self.imageUrls = imageUrls
+        self.date = Date()
+        self.contentImageURLs = contentImageURLs
         self.uid = uid
-        self.boardId = boardId
         self.nickName = nickName
         self.profileImageURL = profileImageURL
+        self.likeCount = 0
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.title = try container.decode(String.self, forKey: .title)
+        self.category = try container.decode(String.self, forKey: .category)
+        self.contents = try container.decode(String.self, forKey: .contents)
+        self.date = try container.decode(Date.self, forKey: .date)
+        self.contentImageURLs = try container.decode([String].self, forKey: .contentImageURLs)
+        self.uid = try container.decode(String.self, forKey: .uid)
+        self.boardId = try container.decode(String.self, forKey: .boardId)
+        self.nickName = try container.decode(String.self, forKey: .nickName)
+        self.profileImageURL = try container.decode(String.self, forKey: .profileImageURL)
+        self.likeCount = try container.decode(Int.self, forKey: .likeCount)
+        self.boardId = try container.decode(String.self, forKey: .boardId)
+    }
+    
+    enum CodingKeys: String, CodingKey{
+        case title
+        case category
+        case contents
+        case date
+        case contentImageURLs
+        case uid
+        case boardId
+        case nickName
+        case profileImageURL
+        case likeCount
     }
 }

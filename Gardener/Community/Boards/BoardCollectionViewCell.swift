@@ -40,7 +40,7 @@ class BoardCollectionViewCell: UICollectionViewCell {
         setTitle(title: model.title)
         setContents(contents: model.contents)
         setDate(date: model.date)
-        setImageUrl(urls: model.imageUrls)
+        setImageUrl(urls: model.contentImageURLs)
     }
     private func setCategroy(categroy: String){
         boardCellView.categroy.text = categroy
@@ -56,10 +56,7 @@ class BoardCollectionViewCell: UICollectionViewCell {
     
     private func setDate(date: Date){
         // TODO: 날짜 케이스, 분, 시간, 일
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let formattedDate = dateFormatter.string(from: date)
-        boardCellView.date.text = formattedDate
+        boardCellView.date.text = date.convertDateToTime()
     }
  
     private func setImageUrl(urls: [String]){
@@ -80,7 +77,7 @@ class BoardCollectionViewCell: UICollectionViewCell {
 extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let model = model else { return 0 }
-        return model.imageUrls.count
+        return model.contentImageURLs.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -88,7 +85,7 @@ extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDat
             return UICollectionViewCell()
         }
         cell.initUI()
-        cell.setImageUrl(url: model.imageUrls[indexPath.item])
+        cell.setImageUrl(url: model.contentImageURLs[indexPath.item])
         cell.isUserInteractionEnabled = false
         return cell
     }

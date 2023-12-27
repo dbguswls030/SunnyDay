@@ -79,21 +79,23 @@ class SignUpViewController: UIViewController {
     }
     
     @objc private func setProfile(_ sender: Any){
-        let db = Firestore.firestore()
+        self.showActivityIndicator(alpha: 0.2)
         guard let uploadProfileImage = self.signView.profileImage.imageView?.image else { return }
         print("isExist uploadProfileImage")
         if let user = Auth.auth().currentUser{
-            FirebaseStorageManager.uploadProfileImage(image: uploadProfileImage, pathRoot: user.uid) { [weak self] url in
+            FirebaseStorageManager.shared.uploadProfileImage(image: uploadProfileImage, pathRoot: user.uid) { [weak self] url in
                 guard let self = self else {return}
                 if let url = url {
                     FirebaseFirestoreManager.shared.setUserInfo(uid: user.uid, model: UserModel(nickName: self.signView.nickNameTextField.text!, profileImageURL: url.absoluteString)) { result in
                         switch result{
                         case .success(let bool):
+                            self.hideActivityIndicator(alpha: 0.2)
                             let vc = MainTabBarController()
                             vc.modalPresentationStyle = .fullScreen
                             self.present(vc, animated: true)
                         case .failure(let error):
-                            print("d")
+                            self.hideActivityIndicator(alpha: 0.2)
+                            print("falied setUserInfo error = \(error.localizedDescription)")
                         }
                     }
 //                    print("download url = \(url)")

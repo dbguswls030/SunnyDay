@@ -10,7 +10,7 @@ import FirebaseFirestoreSwift
 import FirebaseFirestore
 
 struct CommentModel: Codable{
-    @DocumentID var documentId: String?
+    @DocumentID var commentId: String?
     let parentId: Int
     let date: Date
     var content: String
@@ -45,7 +45,7 @@ struct CommentModel: Codable{
         self.profileImageURL = try container.decode(String.self, forKey: .profileImageURL)
         self.isHidden = try container.decode(Bool.self, forKey: .isHidden)
         self.isEmptyReply = try container.decode(Bool.self, forKey: .isEmptyReply)  
-        _documentId = try container.decode(DocumentID<String>.self, forKey: .documentId)
+        _commentId = try container.decode(DocumentID<String>.self, forKey: .commentId)
     }
     
     enum CodingKeys: String, CodingKey{
@@ -58,6 +58,6 @@ struct CommentModel: Codable{
         case profileImageURL
         case isHidden
         case isEmptyReply
-        case documentId
+        case commentId
     }
 }

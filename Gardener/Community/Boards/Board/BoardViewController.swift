@@ -14,7 +14,7 @@ class BoardViewController: UIViewController {
     lazy var replyFlag = false
     lazy var commentId: Int? = nil
     
-    private weak var model: BoardModel?
+    private var model: BoardModel?
     
     private lazy var commentViewModel: CommentViewModel = {
         return CommentViewModel()
@@ -290,7 +290,7 @@ class BoardViewController: UIViewController {
 extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
     func initImageCollectionView(){
-        if model?.imageUrls.count != 0{
+        if model?.contentImageURLs.count != 0{
             boardView.imageCollectionView.register(BoardImageCollectionViewCell.self, forCellWithReuseIdentifier: "boardImageCell")
             boardView.imageCollectionView.dataSource = self
             boardView.imageCollectionView.delegate = self
@@ -309,7 +309,7 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             guard let model = model else{
                 return 0
             }
-            return model.imageUrls.count
+            return model.contentImageURLs.count
         }else{
             print("commentViewModel.numberOfModel() \(commentViewModel.numberOfModel())")
             return commentViewModel.numberOfModel()
@@ -322,7 +322,7 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
                 return UICollectionViewCell()
             }
             cell.initUI()
-            cell.setImageUrl(url: model.imageUrls[indexPath.item])
+            cell.setImageUrl(url: model.contentImageURLs[indexPath.item])
             return cell
         }else{
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "commentCell", for: indexPath) as? CommentCollectionViewCell else {
@@ -376,7 +376,7 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
         if collectionView == self.boardView.imageCollectionView{
             let vc = ImageSildeViewController()
             vc.cur = indexPath.item
-            vc.imageUrls = model?.imageUrls
+            vc.imageUrls = model?.contentImageURLs
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: true)
         }
@@ -401,7 +401,7 @@ class GetElementHeightOfBoard{
     // 폰트크기 : 글제목20, 글내용 16
     // 높이 : 사진150, 프로필사진 45
     public func getHeight(model: BoardModel, width: CGFloat) -> CGFloat{
-        return 0.5 + 20 + getTitleHeight(title: model.title, width: width) + 20 + getProfilelHeight() + 10 + 0.5 + 20 + getContentsHeight(contents: model.contents, width: width) + 20 + getImagesHeight(imageUrls: model.imageUrls)
+        return 0.5 + 20 + getTitleHeight(title: model.title, width: width) + 20 + getProfilelHeight() + 10 + 0.5 + 20 + getContentsHeight(contents: model.contents, width: width) + 20 + getImagesHeight(imageUrls: model.contentImageURLs)
     }
     
     func getImagesHeight(imageUrls: [String]) -> CGFloat{

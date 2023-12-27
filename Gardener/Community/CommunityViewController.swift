@@ -44,8 +44,8 @@ class CommunityViewController: UIViewController{
     }
 
     private func initViewModel(){
-        self.viewModel.setBoards {
-//            self.viewModel.setPaging(data: true)
+        self.viewModel.setBoards { [weak self] in
+            guard let self = self else {return}
             DispatchQueue.main.async {
                 self.communityView.boardCollectionView.reloadData()
             }
@@ -95,18 +95,12 @@ class CommunityViewController: UIViewController{
     }
     
     @objc private func refreshCollectionView(){
-        refreshViewModelAndCollectionView()
+        refreshViewModel()
         refresh.endRefreshing()
     }
     
-    func refreshViewModelAndCollectionView(){
+    func refreshViewModel(){
         self.viewModel.reloadViewModel()
-        self.viewModel.setBoards {
-//            self.viewModel.setPaging(data: true)
-            DispatchQueue.main.async {
-                self.communityView.boardCollectionView.reloadData()
-            }
-        }
     }
     
     private func showBoardContent(index: Int){
@@ -123,7 +117,7 @@ class CommunityViewController: UIViewController{
 
 extension CommunityViewController: SendDelegateWhenPop{
     func popCreatBoardView(){
-        refreshViewModelAndCollectionView()
+        refreshViewModel()
     }
 }
 
@@ -180,7 +174,8 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
             if contentOffsetY > collectionViewContentSizeY - paginationY{
                 let startIndex = viewModel.numberOfBoards()
                 self.viewModel.setPaging(data: true)
-                self.viewModel.setBoards {
+                self.viewModel.setBoards { [weak self] in
+                    guard let self = self else {return}
                     let endIndex = self.viewModel.numberOfBoards()
                     let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
                     self.communityView.boardCollectionView.performBatchUpdates ({

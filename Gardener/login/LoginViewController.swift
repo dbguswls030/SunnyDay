@@ -106,11 +106,11 @@ extension LoginViewController: UITextFieldDelegate{
 extension LoginViewController{
     @objc func verifyPhoneNumber(_ sender: Any?){
         self.dismissKeyboard()
-        self.showActivityIndicator()
+        self.showActivityIndicator(alpha: 0.2)
         PhoneAuthProvider.provider().verifyPhoneNumber("+1 5555555", uiDelegate: nil){ verification, error in
             if let error = error {
                 print("phoneNumber verifing error \(error.localizedDescription)")
-                self.hideActivityIndicator()
+                self.hideActivityIndicator(alpha: 0.2)
                 return
             }
             
@@ -119,20 +119,20 @@ extension LoginViewController{
             self.loginView.submitButton.setTitle("인증번호 다시 받기", for: .normal)
             self.loginView.showCeritificationView()
             self.verificationId = verification ?? ""
-            self.hideActivityIndicator()
+            self.hideActivityIndicator(alpha: 0.2)
         }
     }
     
     @objc func start(_ sender: Any?){
         self.dismissKeyboard()
-        
+        self.showActivityIndicator(alpha: 0.2)
         let credential = PhoneAuthProvider.provider().credential(withVerificationID: self.verificationId, verificationCode: "123456")
         Auth.auth().signIn(with: credential){ [weak self] success, error in
             guard let self = self else {return}
             if let error = error {
                 // TODO: 인증번호 오류 시 팝업
                 print("verification error : \(error.localizedDescription)")
-                
+                self.hideActivityIndicator(alpha: 0.2)
                 return
             }
             
@@ -142,10 +142,10 @@ extension LoginViewController{
                     guard let self = self else {return}
                     if let error = error{
                         print("getDocument erorr : \(error.localizedDescription)")
-                        
+                        self.hideActivityIndicator(alpha: 0.2)
                         return
                     }
-                    
+                    self.showActivityIndicator(alpha: 0.2)
                     // 로그아웃 후 재 로그인 시
                     if let document = document, document.exists{
                         print("success get document ")

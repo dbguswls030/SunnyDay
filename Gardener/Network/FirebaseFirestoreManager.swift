@@ -30,62 +30,44 @@ class FirebaseFirestoreManager{
     
     
     func getUserInfo(uid: String, completion: @escaping (UserModel) -> Void){
-    
         db.collection("user").document(uid).getDocument { document, error in
             if let error = error{
                 print("failed getUserInfo : \(error.localizedDescription)")
                 return
             }
-            
             guard let document = document, document.exists else{ return }
             
-            if let data = document.data() as? [String : Any]{
-                if let nickName = data["nickName"] as? String,
-                   let profileImage = data["profileImage"] as? String{
-                    completion(UserModel(nickName: nickName, profileImageURL: profileImage))
-                }
+            do{
+                let model = try document.data(as: UserModel.self)
+                completion(model)
+            }catch let error{
+                print("falied getUserInfo")
+                return
             }
-            
         }
     }
     
-    func uploadCommunityBoard(model: CreateBoard, completion: @escaping () -> Void){
-        
-        
+    func uploadBoard(model: BoardModel, completion: @escaping () -> Void){
         if let uid = Auth.auth().currentUser?.uid{
-            let boardId = UUID().uuidString + String(Date().timeIntervalSince1970)
-            FirebaseStorageManager.uploadBoardImages(images: model.images, boardId: boardId, uid: uid) { urls in
-                self.db.collection("community").addDocument(data: ["category" : model.category,
-                                                              "title" : model.title,
-                                                              "contents" : model.contents,
-                                                              "uid" : uid,
-                                                              "date" : Timestamp(date: model.date),
-                                                              "imageUrl" : urls,
-                                                              "nickName" : model.userInfo.nickName,
-                                                              "profileImage" : model.userInfo.profileImageURL]) { error in
-                    if error != nil {
-                        FirebaseStorageManager.deleteBoard(boardId: boardId, uid: uid)
-//                        Toast().showToast(view: self.view, message: "게시글 업로드를 실패했습니다.")
-                        return
-                    }else{
-//                        Toast().showToast(view: self.view, message: "게시글 업로드를 성공하였습니다.")
-                        completion()
-                    }
-                }
+            let docRef = self.db.collection("community").document()
+            do{
+                try docRef.setData(from: model)
+            }catch let error{
+                print("falied uploadBoard \(error.localizedDescription)")
+                FirebaseStorageManager.shared.deleteBoardContentImages(boardId: model.boardId, uid: model.uid)
+                return
             }
+            completion()
         }
     }
     
-    func getCommunityBoards(query: Query?, completion: @escaping ([BoardModel], Query) -> Void){
-        
+    func getBoards(query: Query?, completion: @escaping ([BoardModel], Query) -> Void){
         let request: Query
-        
         if let query = query{
             request = query
         }else{
             request = self.db.collection("community").order(by: "date", descending: true).limit(to: 10)
         }
-
         request.addSnapshotListener { snapshot, error in
             if let error = error{
                 print("getCommunity erorr = \(error.localizedDescription)")
@@ -101,31 +83,20 @@ class FirebaseFirestoreManager{
             
             var models = [BoardModel]()
             snapshot.documents.forEach { document in
-                if let data = document.data() as? [String: Any]{
-                    if let category = data["category"] as? String,
-                       let title = data["title"] as? String,
-                       let contents = data["contents"] as? String,
-                       let date = data["date"] as? Timestamp,
-                       let uid = data["uid"] as? String,
-                       let imageUrls = data["imageUrl"] as? [String],
-                       let boardId = document.documentID as? String,
-                    let nickName = data["nickName"] as? String,
-                    let profileImageURL = data["profileImage"] as? String{
-                        models.append(BoardModel(category: category,
-                                                 title: title,
-                                                 contents: contents,
-                                                 date: date.dateValue(),
-                                                 imageUrls: imageUrls,
-                                                 uid: uid,
-                                                 boardId: boardId,
-                                                 nickName: nickName,
-                                                 profileImageURL: profileImageURL))
-                    }
+                do{
+                    var model = try document.data(as: BoardModel.self)
+                    models.append(model)
+                }catch let error{
+                    print("falied getBoards error \(error.localizedDescription)")
+                    return
                 }
             }
+            print("getBoards before completion")
             completion(models, self.db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
         }
     }
+    
+    
     
     func getComments(query: Query?, boardId: String, completion: @escaping (Result<([CommentModel], Query?), Error>) -> Void){
         let request: Query
