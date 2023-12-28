@@ -27,16 +27,6 @@ class CreateBoardViewController: UIViewController {
 
     private var selectedImage: [UIImage] = []
     
-    private lazy var activityIndicator: UIActivityIndicatorView  = {
-        let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.frame = .init(x: 0, y: 0, width: 50, height: 50)
-        activityIndicator.center = self.view.center
-        activityIndicator.stopAnimating()
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.style = .medium
-        return activityIndicator
-    }()
-    
     private lazy var topBreakLine: BreakLine = {
        return BreakLine()
     }()
@@ -125,7 +115,6 @@ class CreateBoardViewController: UIViewController {
         self.scrollView.addSubview(contentTextView)
         self.scrollView.addSubview(contentLimitLabel)
         self.view.addSubview(photoCollectionView)
-        self.view.addSubview(activityIndicator)
         
         topBreakLine.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
@@ -191,9 +180,6 @@ class CreateBoardViewController: UIViewController {
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
             make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
-        activityIndicator.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
     }
     
     private func initObserver(){
@@ -246,7 +232,7 @@ class CreateBoardViewController: UIViewController {
         }
         
         self.navigationItem.rightBarButtonItem?.isEnabled = false
-        self.activityIndicator.startAnimating()
+        showActivityIndicator(alpha: 0.0)
         if let uid = Auth.auth().currentUser?.uid{
             FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { [weak self] userModel in
                 guard let self = self else { return }
@@ -256,7 +242,7 @@ class CreateBoardViewController: UIViewController {
                     FirebaseFirestoreManager.shared.uploadBoard(model: BoardModel(boardId: boardId, category: category, title: title, contents: contents, uid: uid, nickName: userModel.nickName, profileImageURL: userModel.profileImageURL, contentImageURLs: contentImageURLs)) { [weak self] in
                         guard let self = self else { return }
                         self.delegate?.popCreatBoardView()
-                        self.activityIndicator.stopAnimating()
+                        self.hideActivityIndicator(alpha: 0.0)
                         self.navigationController?.popViewController(animated: true)
                     }
                 }

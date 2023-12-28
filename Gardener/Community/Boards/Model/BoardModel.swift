@@ -20,6 +20,7 @@ struct BoardModel: Codable{
     var nickName: String
     var profileImageURL: String
     var likeCount: Int
+    var commentCount: Int
     
     init(boardId: String, category: String, title: String, contents: String, uid: String, nickName: String, profileImageURL: String, contentImageURLs: [String]) {
         self.boardId = boardId
@@ -32,6 +33,7 @@ struct BoardModel: Codable{
         self.nickName = nickName
         self.profileImageURL = profileImageURL
         self.likeCount = 0
+        self.commentCount = 0
     }
     
     init(from decoder: Decoder) throws {
@@ -47,6 +49,7 @@ struct BoardModel: Codable{
         self.profileImageURL = try container.decode(String.self, forKey: .profileImageURL)
         self.likeCount = try container.decode(Int.self, forKey: .likeCount)
         self.boardId = try container.decode(String.self, forKey: .boardId)
+        self.commentCount = try container.decode(Int.self, forKey: .commentCount)
     }
     
     enum CodingKeys: String, CodingKey{
@@ -60,5 +63,6 @@ struct BoardModel: Codable{
         case nickName
         case profileImageURL
         case likeCount
+        case commentCount
     }
 }

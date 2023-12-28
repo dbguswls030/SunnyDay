@@ -12,44 +12,19 @@ class CommentViewModel{
     private var query: Query? = nil
     private var comments = [CommentModel]()
 
-    func setViewModel(boardId: String, completion: @escaping () -> Void){
-        FirebaseFirestoreManager.shared.getComments(query: self.query, boardId: boardId) { [weak self] result in
+    func setComments(boardId: String, completion: @escaping () -> Void){
+        FirebaseFirestoreManager.shared.getComments(query: self.query, boardId: boardId) { [weak self] models, query in
             guard let self = self else{
                 return
             }
-            switch result{
-            case .success((let models, let query)):
-                self.query = query
-                self.comments = models
-                print("invoke setViewModel !!")
+            self.query = query
+            self.comments = models
+            print("invoke setViewModel !!")
+//            if models.count != 0{
                 completion()
-            case .failure(let error):
-                print("error")
-                completion()
-                return
-            }
+//            }
         }
     }
-    
-    func resetViewModel(boardId: String, completion: @escaping () -> Void){
-        FirebaseFirestoreManager.shared.getComments(query: self.query, boardId: boardId) { [weak self] result in
-            guard let self = self else{
-                return
-            }
-            switch result{
-            case .success((let models, let error)):
-                self.query = query
-                self.comments = models
-                print("invoke setViewModel !! reset")
-                completion()
-            case.failure(let error):
-                print(error)
-                completion()
-                return
-            }
-        }
-    }
-
     
     func removeModel(index: Int){
         comments.remove(at: index)

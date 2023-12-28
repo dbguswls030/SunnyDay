@@ -48,17 +48,15 @@ class FirebaseFirestoreManager{
     }
     
     func uploadBoard(model: BoardModel, completion: @escaping () -> Void){
-        if let uid = Auth.auth().currentUser?.uid{
-            let docRef = self.db.collection("community").document()
-            do{
-                try docRef.setData(from: model)
-            }catch let error{
-                print("falied uploadBoard \(error.localizedDescription)")
-                FirebaseStorageManager.shared.deleteBoardContentImages(boardId: model.boardId, uid: model.uid)
-                return
-            }
-            completion()
+        let docRef = self.db.collection("community").document()
+        do{
+            try docRef.setData(from: model)
+        }catch let error{
+            print("falied uploadBoard \(error.localizedDescription)")
+            FirebaseStorageManager.shared.deleteBoardContentImages(boardId: model.boardId, uid: model.uid)
+            return
         }
+        completion()
     }
     
     func getBoards(query: Query?, completion: @escaping ([BoardModel], Query) -> Void){
@@ -68,9 +66,10 @@ class FirebaseFirestoreManager{
         }else{
             request = self.db.collection("community").order(by: "date", descending: true).limit(to: 10)
         }
-        request.addSnapshotListener { snapshot, error in
+        var listener: ListenerRegistration?
+        listener = request.addSnapshotListener { snapshot, error in
             if let error = error{
-                print("getCommunity erorr = \(error.localizedDescription)")
+                print("getBoards erorr = \(error.localizedDescription)")
                 return
             }
             guard let snapshot = snapshot else{
@@ -78,29 +77,42 @@ class FirebaseFirestoreManager{
                 return
             }
             guard let lastShapshot = snapshot.documents.last else{
+                print("getBoards not exist last document")
+                if listener != nil{
+                    print("listener remove")
+                    listener?.remove()
+                }
                 return
             }
             
             var models = [BoardModel]()
             snapshot.documents.forEach { document in
                 do{
-                    var model = try document.data(as: BoardModel.self)
+                    let model = try document.data(as: BoardModel.self)
                     models.append(model)
                 }catch let error{
                     print("falied getBoards error \(error.localizedDescription)")
+                    if listener != nil{
+                        print("listener remove")
+                        listener?.remove()
+                    }
                     return
                 }
             }
             print("getBoards before completion")
+            if listener != nil{
+                print("listener remove")
+                listener?.remove()
+            }
             completion(models, self.db.collection("community").order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
         }
+        
     }
     
     
     
-    func getComments(query: Query?, boardId: String, completion: @escaping (Result<([CommentModel], Query?), Error>) -> Void){
+    func getComments(query: Query?, boardId: String, completion: @escaping ([CommentModel], Query?) -> Void){
         let request: Query
-        
         if let query = query{
             request = query
         }else{
@@ -109,23 +121,25 @@ class FirebaseFirestoreManager{
                 [Filter.whereField("isHidden", isEqualTo: false),
                  Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20)
         }
-
-        request.addSnapshotListener { snapshot, error in
+        var listener: ListenerRegistration?
+        listener = request.addSnapshotListener { snapshot, error in
             if let error = error{
                 print("getComment erorr = \(error.localizedDescription)")
-                completion(.failure(error))
                 return
             }
             
             guard let snapshot = snapshot else{
                 print("not exist snapshot")
-                completion(.failure(error!))
                 return
             }
             
             guard let lastShapshot = snapshot.documents.last else{
                 print("not exist lastShapshot")
-                completion(.success(([],nil)))
+                if listener != nil{
+                    print("listener remove")
+                    listener?.remove()
+                }
+                completion([],nil)
                 return
             }
             
@@ -140,13 +154,21 @@ class FirebaseFirestoreManager{
                     models.append(model)
                 }catch{
                     print("failed GetComments")
-                    completion(.success(([],nil)))
+                    if listener != nil{
+                        print("listener remove")
+                        listener?.remove()
+                    }
                     return
                 }
             }
-            completion(.success((models, self.db.collection("comments").document("\(boardId)").collection("comment").whereFilter(Filter.orFilter(
+            print("getComments before completion")
+            if listener != nil{
+                print("listener remove")
+                listener?.remove()
+            }
+            completion(models, self.db.collection("comments").document("\(boardId)").collection("comment").whereFilter(Filter.orFilter(
                 [Filter.whereField("isHidden", isEqualTo: false),
-                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20).start(afterDocument: lastShapshot))))
+                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20).start(afterDocument: lastShapshot))
         }
     }
     

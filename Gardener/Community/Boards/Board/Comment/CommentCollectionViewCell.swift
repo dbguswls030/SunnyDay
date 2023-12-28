@@ -76,9 +76,6 @@ class CommentCollectionViewCell: UICollectionViewCell {
         button.configuration = configuration
         button.setTitleColor(.lightGray, for: .normal)
         button.tintColor = .lightGray
-        
-        // TODO: 대댓글
-        button.isHidden = true
         return button
     }()
     

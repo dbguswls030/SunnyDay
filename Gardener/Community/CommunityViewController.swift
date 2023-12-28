@@ -38,18 +38,24 @@ class CommunityViewController: UIViewController{
         super.viewDidLoad()
         initUI()
         initBoardCollectionView()
-        initViewModel()
+        initBoardViewModel()
         initNavigationBar()
         initCreateBoardButton()
     }
 
-    private func initViewModel(){
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+    }
+    
+    private func initBoardViewModel(){
         self.viewModel.setBoards { [weak self] in
             guard let self = self else {return}
-            DispatchQueue.main.async {
-                self.communityView.boardCollectionView.reloadData()
+            DispatchQueue.main.async { [weak self] in
+                self?.communityView.boardCollectionView.reloadData()
             }
         }
+        
     }
     
     private func initUI(){
@@ -101,6 +107,7 @@ class CommunityViewController: UIViewController{
     
     func refreshViewModel(){
         self.viewModel.reloadViewModel()
+        initBoardViewModel()
     }
     
     private func showBoardContent(index: Int){
@@ -174,7 +181,9 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
             if contentOffsetY > collectionViewContentSizeY - paginationY{
                 let startIndex = viewModel.numberOfBoards()
                 self.viewModel.setPaging(data: true)
+            
                 self.viewModel.setBoards { [weak self] in
+                    print("scrollViewDidScroll")
                     guard let self = self else {return}
                     let endIndex = self.viewModel.numberOfBoards()
                     let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
