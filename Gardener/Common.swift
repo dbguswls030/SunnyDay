@@ -28,6 +28,10 @@ extension UIControl{
     }
 }
 
+protocol SendDelegateWhenPop: AnyObject{
+    func popCreatBoard()
+    func popDeleteBoard()
+}
 
 enum BoardCategory: String, CaseIterable{
     case free = "자유"

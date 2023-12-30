@@ -19,10 +19,7 @@ class CommentViewModel{
             }
             self.query = query
             self.comments = models
-            print("invoke setViewModel !!")
-//            if models.count != 0{
-                completion()
-//            }
+            completion()
         }
     }
     

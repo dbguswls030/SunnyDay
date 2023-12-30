@@ -15,6 +15,7 @@ class BoardViewController: UIViewController {
     lazy var commentId: Int? = nil
     
     private var model: BoardModel?
+    weak var delegate: SendDelegateWhenPop?
     
     private lazy var commentViewModel: CommentViewModel = {
         return CommentViewModel()
@@ -57,7 +58,6 @@ class BoardViewController: UIViewController {
         guard let model = model else { return }
         self.commentViewModel.setComments(boardId: model.boardId) { [weak self] in
             guard let self = self else { return }
-            print("setComments completion.....")
             if self.commentViewModel.numberOfModel() == 0 {
                 return
             }
@@ -207,11 +207,51 @@ class BoardViewController: UIViewController {
         let backButton = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         backButton.tintColor = .black
         self.title = "자유"
+//        ellipsis
+        
+        let optionButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(touchUpOptionButton))
+        optionButton.tintColor = .black
+        self.navigationItem.rightBarButtonItem = optionButton
         self.navigationItem.backBarButtonItem = backButton
     }
     
+    @objc private func touchUpOptionButton(_ sender: UIBarButtonItem){
+        let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let editBoard = UIAlertAction(title: "글 수정하기", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            
+            
+        }
+        
+        let deleteBoard = UIAlertAction(title: "삭제하기", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            guard let documentId = self.model?.documentId else { return }
+            showActivityIndicator(alpha: 0.0)
+            showPopUp(title: "정말 게시글을 삭제하시겠습니까?", confirmButtonTitle: "삭제") { [weak self] in
+                guard let self = self else { return }
+                FirebaseFirestoreManager.shared.deleteBoard(documentId: documentId) { [weak self] in
+                    guard let self = self else { return }
+                    self.hideActivityIndicator(alpha: 0.0)
+                    self.delegate?.popDeleteBoard()
+                    DispatchQueue.main.async {
+                        self.dismiss(animated: false)
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }
+        }
+        
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        
+        actionSheetController.addAction(editBoard)
+        actionSheetController.addAction(deleteBoard)
+        actionSheetController.addAction(cancel)
+        
+        self.present(actionSheetController, animated: true)
+    }
+    
     @objc private func deleteComment(_ sender: UIDeleteButton){
-        print("touch deleteButton")
         guard let index = sender.index else { return }
         guard let model = model else {return}
         let boardId = model.boardId
@@ -346,8 +386,10 @@ extension BoardViewController: ReplyButtonDelegate{
         
         self.commentId = sender.parentId
         self.replyFlag = true
+        DispatchQueue.main.async {
+            self.initReplyNoticeView()
+        }
         
-        initReplyNoticeView()
         replyNoticeView.setNoticeLabel(nickName: nickName)
     }
 }

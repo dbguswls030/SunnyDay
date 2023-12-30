@@ -113,6 +113,7 @@ class CommunityViewController: UIViewController{
     private func showBoardContent(index: Int){
         let boardViewController = BoardViewController()
         boardViewController.setBoardModel(model: viewModel.getBoard(index: index))
+        boardViewController.delegate = self
         boardViewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(boardViewController, animated: true)
     }
@@ -123,7 +124,10 @@ class CommunityViewController: UIViewController{
 }
 
 extension CommunityViewController: SendDelegateWhenPop{
-    func popCreatBoardView(){
+    func popCreatBoard(){
+        refreshViewModel()
+    }
+    func popDeleteBoard(){
         refreshViewModel()
     }
 }

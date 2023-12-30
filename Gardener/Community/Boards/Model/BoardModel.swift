@@ -10,6 +10,7 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 struct BoardModel: Codable{
+    @DocumentID var documentId: String?
     var boardId: String
     var category: String
     var title: String
@@ -21,6 +22,7 @@ struct BoardModel: Codable{
     var profileImageURL: String
     var likeCount: Int
     var commentCount: Int
+    var isDelete: Bool
     
     init(boardId: String, category: String, title: String, contents: String, uid: String, nickName: String, profileImageURL: String, contentImageURLs: [String]) {
         self.boardId = boardId
@@ -34,6 +36,7 @@ struct BoardModel: Codable{
         self.profileImageURL = profileImageURL
         self.likeCount = 0
         self.commentCount = 0
+        self.isDelete = false
     }
     
     init(from decoder: Decoder) throws {
@@ -50,6 +53,8 @@ struct BoardModel: Codable{
         self.likeCount = try container.decode(Int.self, forKey: .likeCount)
         self.boardId = try container.decode(String.self, forKey: .boardId)
         self.commentCount = try container.decode(Int.self, forKey: .commentCount)
+        self.isDelete = try container.decode(Bool.self, forKey: .isDelete)
+        _documentId = try container.decode(DocumentID<String>.self, forKey: .documentId)
     }
     
     enum CodingKeys: String, CodingKey{
@@ -64,5 +69,7 @@ struct BoardModel: Codable{
         case profileImageURL
         case likeCount
         case commentCount
+        case isDelete
+        case documentId
     }
 }

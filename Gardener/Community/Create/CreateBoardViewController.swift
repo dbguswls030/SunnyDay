@@ -15,10 +15,6 @@ import FirebaseStorage
 
 // TODO: 업로드 시 indicator 
 
-protocol SendDelegateWhenPop: AnyObject{
-    func popCreatBoardView()
-}
-
 class CreateBoardViewController: UIViewController {
     
     weak var delegate: SendDelegateWhenPop?
@@ -241,7 +237,7 @@ class CreateBoardViewController: UIViewController {
                     guard let self = self else { return }
                     FirebaseFirestoreManager.shared.uploadBoard(model: BoardModel(boardId: boardId, category: category, title: title, contents: contents, uid: uid, nickName: userModel.nickName, profileImageURL: userModel.profileImageURL, contentImageURLs: contentImageURLs)) { [weak self] in
                         guard let self = self else { return }
-                        self.delegate?.popCreatBoardView()
+                        self.delegate?.popCreatBoard()
                         self.hideActivityIndicator(alpha: 0.0)
                         self.navigationController?.popViewController(animated: true)
                     }
