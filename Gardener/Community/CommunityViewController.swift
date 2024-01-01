@@ -45,6 +45,7 @@ class CommunityViewController: UIViewController{
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.viewModel.reloadViewModel()
         initBoardViewModel()
     }
     
@@ -55,7 +56,6 @@ class CommunityViewController: UIViewController{
                 self?.communityView.boardCollectionView.reloadData()
             }
         }
-        
     }
     
     private func initUI(){
