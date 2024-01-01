@@ -59,6 +59,39 @@ class FirebaseFirestoreManager{
         completion()
     }
     
+    func updateBoard(documentId: String, model: BoardModel, completion: @escaping () -> Void){
+        let docRef = self.db.collection("community").document(documentId)
+        docRef.updateData(["category" : model.category, "contents" : model.contents, "title" : model.title,
+                           "contentImageURLs" : model.contentImageURLs]) { error in
+            if let error = error{
+                print("falied updateBoard \(error.localizedDescription)")
+                FirebaseStorageManager.shared.deleteBoardContentImages(boardId: model.boardId, uid: model.uid)
+                return
+            }
+            completion()
+        }
+    }
+    func getBoard(documentId: String, completion: @escaping (BoardModel) -> Void){
+        let docRef = self.db.collection("community").document(documentId)
+        docRef.getDocument { document, error in
+            if let error = error{
+                print("falied getBoard \(error.localizedDescription)")
+                return
+            }
+            guard let document = document else {
+                print("documnet is not exist")
+                return
+            }
+            var model: BoardModel
+            do{
+                model = try document.data(as: BoardModel.self)
+            }catch let error{
+                print("falied convert document to Data")
+                return
+            }
+            completion(model)
+        }
+    }
     func getBoards(query: Query?, completion: @escaping ([BoardModel], Query) -> Void){
         let request: Query
         if let query = query{
@@ -136,7 +169,6 @@ class FirebaseFirestoreManager{
             guard let lastShapshot = snapshot.documents.last else{
                 print("not exist lastShapshot")
                 listener?.remove()
-                completion([],nil)
                 return
             }
             

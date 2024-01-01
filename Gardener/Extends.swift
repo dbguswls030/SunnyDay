@@ -11,7 +11,7 @@ import Kingfisher
 import FirebaseStorage
 
 extension UIImageView{
-    func setImage(url: String){
+    func setImageView(url: String){
         let cache = ImageCache.default
         cache.retrieveImage(forKey: url, options: nil) { result in
             switch result{
@@ -32,6 +32,23 @@ extension UIImageView{
                 }
             case .failure(let error):
                 print(error)
+            }
+        }
+    }
+}
+
+extension UIImage{
+    func setImage(url: String, completion: @escaping (UIImage?) -> Void){
+        DispatchQueue.global().async {
+            let url = URL(string: url)
+            do{
+                let data = try Data(contentsOf: url!)
+                DispatchQueue.main.async {
+                    completion(UIImage(data: data))
+                }
+            }catch let error{
+                print(error.localizedDescription)
+                return
             }
         }
     }

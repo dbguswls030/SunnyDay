@@ -206,7 +206,7 @@ class CommentCollectionViewCell: UICollectionViewCell {
     }
     
     func setProfileImage(profileImageURL: String){
-        self.profileImage.setImage(url: profileImageURL)
+        self.profileImage.setImageView(url: profileImageURL)
     }
     
     func updateConstraintsWithDept(){

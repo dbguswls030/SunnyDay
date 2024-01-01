@@ -21,7 +21,7 @@ class CreateBoardViewController: UIViewController {
     
     private final let LEADINGTRAIINGOFFSET = 15
 
-    private var selectedImage: [UIImage] = []
+    internal var selectedImage: [UIImage] = []
     
     private lazy var topBreakLine: BreakLine = {
        return BreakLine()
@@ -31,7 +31,7 @@ class CreateBoardViewController: UIViewController {
         return UIScrollView()
     }()
     
-    private lazy var categoryLabel: UILabel = {
+    internal lazy var categoryLabel: UILabel = {
         var label = UILabel()
         label.text = "카테고리를 선택해 주세요."
         label.font = .systemFont(ofSize: 17)
@@ -51,14 +51,14 @@ class CreateBoardViewController: UIViewController {
         return BreakLine()
     }()
     
-    private lazy var titleTextView: UITextField = {
+    internal lazy var titleTextView: UITextField = {
         var textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         textField.placeholder = "제목을 입력해 주세요.(최대 20자)"
         return textField
     }()
     
-    private lazy var contentTextView: UITextView = {
+    internal lazy var contentTextView: UITextView = {
         var textView = UITextView()
         textView.isScrollEnabled = false
         textView.font = .systemFont(ofSize: 16)
@@ -68,14 +68,14 @@ class CreateBoardViewController: UIViewController {
         return textView
     }()
     
-    private lazy var contentLimitLabel: UILabel = {
+    internal lazy var contentLimitLabel: UILabel = {
         let label = UILabel()
         label.text = "(0/300)"
         label.font = UIFont.systemFont(ofSize: 10)
         return label
     }()
     
-    private lazy var photoCollectionView: UICollectionView = {
+    internal lazy var photoCollectionView: UICollectionView = {
         var layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 8
@@ -93,7 +93,7 @@ class CreateBoardViewController: UIViewController {
         hideKeyboard()
     }
     
-    private func initNavigationBar(){
+    internal func initNavigationBar(){
         self.navigationItem.title = "글쓰기"
         self.navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(systemName: "arrow.up"), style: .done, target: self, action: #selector(uploadBoard)), animated: true)
         self.navigationItem.rightBarButtonItem?.tintColor = .black
@@ -258,7 +258,7 @@ class CreateBoardViewController: UIViewController {
         dismissKeyboard()
         var configuration = PHPickerConfiguration(photoLibrary: .shared())
         configuration.filter = .images
-        configuration.selectionLimit = 5
+        configuration.selectionLimit = 5 - selectedImage.count
         
         let picker = PHPickerViewController(configuration: configuration)
         picker.delegate = self
@@ -293,31 +293,33 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
         dismiss(animated: true)
 
         if !results.isEmpty{
-            selectedImage.removeAll()
+//            selectedImage.removeAll()
             let dispatchGroup = DispatchGroup()
             dispatchGroup.enter()
-            for result in results {
+            for (offset,result) in results.enumerated() {
                 DispatchQueue.main.async {
                     self.navigationItem.rightBarButtonItem?.isEnabled = false
                 }
                 let itemProvider = result.itemProvider
                 if itemProvider.canLoadObject(ofClass: UIImage.self){
                     itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (image, error) in
+                        if error != nil { print("error")
+                            return }
                         if let image = image as? UIImage{
                             self?.selectedImage.append(image)
-                            if self?.selectedImage.count == results.count{
+                            if offset == results.count - 1{
                                 dispatchGroup.leave()
                             }
                         }
                     }
                 }
             }
+            
             dispatchGroup.notify(queue: .global(), work: DispatchWorkItem{
                 DispatchQueue.main.async {
                     self.photoCollectionView.reloadData()
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                 }
-                
             })
         }
     }

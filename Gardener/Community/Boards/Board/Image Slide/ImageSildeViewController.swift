@@ -102,7 +102,7 @@ class ImageSildeViewController: UIViewController {
             imageView.contentMode = .scaleAspectFit
             let xPosition = ImageScrollView.frame.width * CGFloat(i)
             imageView.frame = CGRect(x: xPosition, y: 0, width: ImageScrollView.bounds.width, height: ImageScrollView.bounds.height)
-            imageView.setImage(url: imageUrls[i])
+            imageView.setImageView(url: imageUrls[i])
             ImageScrollView.addSubview(imageView)
             ImageScrollView.contentSize.width = imageView.frame.width * CGFloat(i + 1)
         }

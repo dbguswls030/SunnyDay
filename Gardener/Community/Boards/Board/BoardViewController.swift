@@ -49,13 +49,20 @@ class BoardViewController: UIViewController {
         super.viewDidLoad()
         initUI()
         initCommentCollectionView()
-        initViewModel()
+        
         initNavigationBar()
         hideKeyboard()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        print("viewWillAppear")
+        initViewModel()
+    }
     
     private func initViewModel(){
-        guard let model = model else { return }
+        guard let model = model else {
+            print("model is empty")
+            return
+        }
         self.commentViewModel.setComments(boardId: model.boardId) { [weak self] in
             guard let self = self else { return }
             if self.commentViewModel.numberOfModel() == 0 {
@@ -148,10 +155,7 @@ class BoardViewController: UIViewController {
         self.commentViewModel.resetViewModel()
         initViewModel()
     }
-    
-    
-    
-    
+
     @objc private func writeComment(){
         guard let model = model else { return }
         self.dismissKeyboard()
@@ -220,8 +224,12 @@ class BoardViewController: UIViewController {
         
         let editBoard = UIAlertAction(title: "글 수정하기", style: .default) { [weak self] _ in
             guard let self = self else { return }
-            
-            
+            let vc = EditContentViewController()
+            vc.model = model
+            vc.editDelegate = self
+            vc.setData()
+            vc.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(vc, animated: true)
         }
         
         let deleteBoard = UIAlertAction(title: "삭제하기", style: .destructive) { [weak self] _ in
@@ -445,5 +453,17 @@ class GetElementHeightOfComment{
         let attributes = [NSAttributedString.Key.font: font]
         let boundingRect = (contents as NSString).boundingRect(with: size, options: options, attributes: attributes, context: nil)
         return ceil(boundingRect.height)
+    }
+}
+
+extension BoardViewController: DelegateEditBoard{
+    func endEditBoard(model: BoardModel) {
+        self.model = model
+        
+        setData()
+        DispatchQueue.main.async {
+            self.boardView.imageCollectionView.reloadData()
+        }
+        
     }
 }

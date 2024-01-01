@@ -33,6 +33,10 @@ protocol SendDelegateWhenPop: AnyObject{
     func popDeleteBoard()
 }
 
+protocol DelegateEditBoard: AnyObject{
+    func endEditBoard(model: BoardModel)
+}
+
 enum BoardCategory: String, CaseIterable{
     case free = "자유"
     case question = "질문/답변"

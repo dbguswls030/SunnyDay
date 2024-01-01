@@ -38,14 +38,14 @@ class CommunityViewController: UIViewController{
         super.viewDidLoad()
         initUI()
         initBoardCollectionView()
-        initBoardViewModel()
+        
         initNavigationBar()
         initCreateBoardButton()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        initBoardViewModel()
     }
     
     private func initBoardViewModel(){

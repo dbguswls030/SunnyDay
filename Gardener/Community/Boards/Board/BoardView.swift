@@ -174,13 +174,9 @@ class BoardView: UIView {
     }
     
     func setProfileImage(profileImageURL: String){
-        self.profileImage.setImage(url: profileImageURL)
+        self.profileImage.setImageView(url: profileImageURL)
     }
     func setDate(date: Date){
-        // TODO: 날짜 케이스, 분, 시간, 일
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let formattedDate = dateFormatter.string(from: date)
-        self.dateLabel.text = formattedDate
+        self.dateLabel.text = date.convertDateToTime()
     }
 }
