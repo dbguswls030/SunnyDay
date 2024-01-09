@@ -71,8 +71,30 @@ class FirebaseFirestoreManager{
             completion()
         }
     }
+    
+    func checkLikeBoard(documentId: String, userId: String, completion: @escaping (Bool) -> Void){
+        let docRef = self.db.collection("community").document(documentId).collection("likeBoard").document(userId)
+        docRef.getDocument { snapshot, error in
+            if let error = error{
+                print("falied checkLikeBoard \(error.localizedDescription)")
+                return
+            }
+            guard let document = snapshot else {
+                print("checkLikeBoard is not exist document")
+                return
+            }
+            
+            if document.exists{
+                completion(true)
+            }else{
+                completion(false)
+            }
+        }
+    }
+    
     func getBoard(documentId: String, completion: @escaping (BoardModel) -> Void){
         let docRef = self.db.collection("community").document(documentId)
+        
         docRef.getDocument { document, error in
             if let error = error{
                 print("falied getBoard \(error.localizedDescription)")
@@ -286,6 +308,20 @@ class FirebaseFirestoreManager{
             print("before completion updateIsEmptyReplyForTrueInComment")
             completion()
         }
+    }
+    
+    func likeBoard(boardId: String, userId: String, completion: @escaping () -> Void){
+        let docRef = self.db.collection("community").document(boardId)
+        docRef.collection("likeBoard").document(userId).setData([:])
+        docRef.updateData(["likeCount" : FieldValue.increment(Int64(1))])
+        completion()
+    }
+    
+    func unLikeBoard(boardId: String, userId: String, completion: @escaping () -> Void){
+        let docRef = self.db.collection("community").document(boardId)
+        docRef.collection("likeBoard").document(userId).delete()
+        docRef.updateData(["likeCount" : FieldValue.increment(Int64(-1))])
+        completion()
     }
 }
 

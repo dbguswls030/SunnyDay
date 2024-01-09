@@ -29,7 +29,6 @@ extension UIControl{
 }
 
 protocol SendDelegateWhenPop: AnyObject{
-    func popCreatBoard()
     func popDeleteBoard()
 }
 

@@ -17,8 +17,6 @@ import FirebaseStorage
 
 class CreateBoardViewController: UIViewController {
     
-    weak var delegate: SendDelegateWhenPop?
-    
     private final let LEADINGTRAIINGOFFSET = 15
 
     internal var selectedImage: [UIImage] = []
@@ -237,7 +235,6 @@ class CreateBoardViewController: UIViewController {
                     guard let self = self else { return }
                     FirebaseFirestoreManager.shared.uploadBoard(model: BoardModel(boardId: boardId, category: category, title: title, contents: contents, uid: uid, nickName: userModel.nickName, profileImageURL: userModel.profileImageURL, contentImageURLs: contentImageURLs)) { [weak self] in
                         guard let self = self else { return }
-                        self.delegate?.popCreatBoard()
                         self.hideActivityIndicator(alpha: 0.0)
                         self.navigationController?.popViewController(animated: true)
                     }

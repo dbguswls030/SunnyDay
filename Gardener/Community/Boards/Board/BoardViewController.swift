@@ -49,16 +49,16 @@ class BoardViewController: UIViewController {
         super.viewDidLoad()
         initUI()
         initCommentCollectionView()
-        
         initNavigationBar()
         hideKeyboard()
+        setLikeButtonState()
     }
     override func viewWillAppear(_ animated: Bool) {
-        print("viewWillAppear")
-        initViewModel()
+        initCommentViewModel()
+        addLikeBoardButtonTarget()
     }
     
-    private func initViewModel(){
+    private func initCommentViewModel(){
         guard let model = model else {
             print("model is empty")
             return
@@ -77,6 +77,15 @@ class BoardViewController: UIViewController {
                 self.commentView.snp.updateConstraints { make in
                     make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
                 }
+            }
+        }
+    }
+    
+    private func setLikeButtonState(){
+        guard let model = model else {return}
+        if let userId = Auth.auth().currentUser?.uid {
+            FirebaseFirestoreManager.shared.checkLikeBoard(documentId: model.documentId!, userId: userId) { [weak self] isLike in
+                self?.boardView.setLikeButton(isLike: isLike)
             }
         }
     }
@@ -153,7 +162,7 @@ class BoardViewController: UIViewController {
     
     private func reinitViewModel(){
         self.commentViewModel.resetViewModel()
-        initViewModel()
+        initCommentViewModel()
     }
 
     @objc private func writeComment(){
@@ -205,6 +214,7 @@ class BoardViewController: UIViewController {
         boardView.setContents(contents: model.contents)
         boardView.setNickName(nickName: model.nickName)
         boardView.setProfileImage(profileImageURL: model.profileImageURL)
+        boardView.setLikeCount(likeCount: model.likeCount)
     }
     
     private func initNavigationBar(){
@@ -212,14 +222,44 @@ class BoardViewController: UIViewController {
         backButton.tintColor = .black
         self.title = "자유"
 //        ellipsis
-        
-        let optionButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(touchUpOptionButton))
-        optionButton.tintColor = .black
-        self.navigationItem.rightBarButtonItem = optionButton
         self.navigationItem.backBarButtonItem = backButton
+        guard let model = model else { return }
+        if model.uid == Auth.auth().currentUser?.uid{
+            let optionButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(touchUpOptionButton))
+            optionButton.tintColor = .black
+            self.navigationItem.rightBarButtonItem = optionButton
+        }
+    }
+    
+    private func addLikeBoardButtonTarget(){
+        boardView.likeButton.addTarget(self, action: #selector(likeBoard), for: .touchUpInside)
+    }
+    
+    @objc private func likeBoard(){
+        guard let documentId = model!.documentId else{ return }
+        if let uid = Auth.auth().currentUser?.uid{
+            if boardView.likeButton.isSelected == false{
+                FirebaseFirestoreManager.shared.likeBoard(boardId: documentId, userId: uid) { [weak self] in
+                    FirebaseFirestoreManager.shared.getBoard(documentId: documentId) { [weak self] model in
+                        self?.model = model
+                        self?.boardView.setLikeCount(likeCount: model.likeCount)
+                        self?.boardView.toggleLikeButton()
+                    }
+                }
+            }else{
+                FirebaseFirestoreManager.shared.unLikeBoard(boardId: documentId, userId: uid) { [weak self] in
+                    FirebaseFirestoreManager.shared.getBoard(documentId: documentId) { [weak self] model in
+                        self?.model = model
+                        self?.boardView.setLikeCount(likeCount: model.likeCount)
+                        self?.boardView.toggleLikeButton()
+                    }
+                }
+            }
+        }
     }
     
     @objc private func touchUpOptionButton(_ sender: UIBarButtonItem){
+        guard let model = model else { return }
         let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let editBoard = UIAlertAction(title: "글 수정하기", style: .default) { [weak self] _ in
@@ -406,7 +446,7 @@ class GetElementHeightOfBoard{
     // 폰트크기 : 글제목20, 글내용 16
     // 높이 : 사진150, 프로필사진 45
     public func getHeight(model: BoardModel, width: CGFloat) -> CGFloat{
-        return 0.5 + 20 + getTitleHeight(title: model.title, width: width) + 20 + getProfilelHeight() + 10 + 0.5 + 20 + getContentsHeight(contents: model.contents, width: width) + 20 + getImagesHeight(imageUrls: model.contentImageURLs)
+        return 0.5 + 20 + getTitleHeight(title: model.title, width: width) + 20 + getProfilelHeight() + 10 + 0.5 + 20 + getContentsHeight(contents: model.contents, width: width) + 20 + getImagesHeight(imageUrls: model.contentImageURLs) + 70
     }
     
     func getImagesHeight(imageUrls: [String]) -> CGFloat{

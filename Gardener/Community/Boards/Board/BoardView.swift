@@ -18,12 +18,11 @@ class BoardView: UIView {
         let label = UILabel()
         label.tintColor = .black
         label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.text = "고구마를 먹었습니다."
         return label
     }()
     
     private lazy var profileImage: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "umZza"))
+        let imageView = UIImageView()
         imageView.layer.cornerRadius = 20
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -80,6 +79,32 @@ class BoardView: UIView {
         return label
     }()
     
+    lazy var likeButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "suit.heart", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 14, weight: .semibold)), for: .normal)
+        button.setImage(UIImage(systemName: "suit.heart.fill", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 14, weight: .semibold)), for: .selected)
+        button.tintColor = .lightGray
+        button.layer.cornerRadius = 20
+        button.layer.borderWidth = 1.5
+        button.layer.borderColor = UIColor.systemGray5.cgColor
+//        button.addTarget(self, action: #selector(toggleLikeButton), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var likeImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(systemName: "heart", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 8, weight: .semibold)))
+        imageView.tintColor = .green
+        return imageView
+    }()
+    
+    private lazy var likeCountLabel: UILabel = {
+        let label = UILabel()
+        label.text = "0"
+        label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        label.textColor = .lightGray
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initUI()
@@ -98,6 +123,9 @@ class BoardView: UIView {
         self.addSubview(dateLabel)
         self.addSubview(writerInfoBreakLine)
         self.addSubview(boardContent)
+        self.addSubview(likeButton)
+        self.addSubview(likeImageView)
+        self.addSubview(likeCountLabel)
 //        self.addSubview(viewCountLabel)
         
         navigationBottomBreakLine.snp.makeConstraints { make in
@@ -111,6 +139,7 @@ class BoardView: UIView {
             make.right.equalToSuperview().offset(-15)
             make.top.equalTo(navigationBottomBreakLine.snp.bottom).offset(20)
         }
+        boardTitleLabel.sizeToFit()
         
         profileImage.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(10)
@@ -140,6 +169,24 @@ class BoardView: UIView {
             make.top.equalTo(writerInfoBreakLine.snp.bottom).offset(20)
         }
         
+        likeButton.snp.makeConstraints { make in
+            make.top.equalTo(boardContent.snp.bottom).offset(30)
+            make.left.equalToSuperview().offset(20)
+            make.height.equalTo(40)
+            make.width.equalTo(50)
+        }
+        
+        likeCountLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(likeButton.snp.centerY)
+            make.right.equalToSuperview().offset(-20)
+        }
+        
+        likeImageView.snp.makeConstraints { make in
+            make.centerY.equalTo(likeButton.snp.centerY)
+            make.right.equalTo(likeCountLabel.snp.left).offset(-5)
+            make.height.width.equalTo(20)
+        }
+        
 //        viewCountLabel.snp.makeConstraints { make in
 //            make.top.equalTo(boardContent.snp.bottom).offset(20)
 //            make.left.equalToSuperview().offset(20)
@@ -156,11 +203,46 @@ class BoardView: UIView {
             make.height.equalTo(150)
         }
         
+        likeButton.snp.remakeConstraints { make in
+            make.top.equalTo(imageCollectionView.snp.bottom).offset(30)
+            make.left.equalToSuperview().offset(20)
+            make.height.equalTo(40)
+            make.width.equalTo(50)
+        }
+        
 //        viewCountLabel.snp.remakeConstraints { make in
 //            make.top.equalTo(imageCollectionView.snp.bottom).offset(20)
 //            make.left.equalToSuperview().offset(20)
 //        }
     }
+    
+    func toggleLikeButton(){
+        self.likeButton.isSelected.toggle()
+        if self.likeButton.isSelected{
+            self.likeButton.tintColor = .green
+            self.likeButton.layer.borderColor = UIColor.green.cgColor
+        }else{
+            self.likeButton.tintColor = .lightGray
+            self.likeButton.layer.borderColor = UIColor.systemGray5.cgColor
+        }
+    }
+    
+    func setLikeButton(isLike: Bool){
+        if isLike == true{
+            DispatchQueue.main.async {
+                self.likeButton.isSelected = true
+                self.likeButton.tintColor = .green
+                self.likeButton.layer.borderColor = UIColor.green.cgColor
+            }
+        }else{
+            DispatchQueue.main.async {
+                self.likeButton.isSelected = false
+                self.likeButton.tintColor = .lightGray
+                self.likeButton.layer.borderColor = UIColor.systemGray5.cgColor
+            }
+        }
+    }
+    
     func setTitle(title: String){
         self.boardTitleLabel.text = title
     }
@@ -176,7 +258,12 @@ class BoardView: UIView {
     func setProfileImage(profileImageURL: String){
         self.profileImage.setImageView(url: profileImageURL)
     }
+    
     func setDate(date: Date){
         self.dateLabel.text = date.convertDateToTime()
+    }
+    
+    func setLikeCount(likeCount: Int){
+        self.likeCountLabel.text = "\(likeCount)"
     }
 }

@@ -38,13 +38,16 @@ class CommunityViewController: UIViewController{
         super.viewDidLoad()
         initUI()
         initBoardCollectionView()
-        
         initNavigationBar()
         initCreateBoardButton()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        refreshViewModel()
+    }
+    
+    func refreshViewModel(){
         self.viewModel.reloadViewModel()
         initBoardViewModel()
     }
@@ -96,18 +99,12 @@ class CommunityViewController: UIViewController{
     @objc private func showCreatBoardView(){
         let vc = CreateBoardViewController()
         vc.hidesBottomBarWhenPushed = true
-        vc.delegate = self
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc private func refreshCollectionView(){
         refreshViewModel()
         refresh.endRefreshing()
-    }
-    
-    func refreshViewModel(){
-        self.viewModel.reloadViewModel()
-        initBoardViewModel()
     }
     
     private func showBoardContent(index: Int){
@@ -124,9 +121,6 @@ class CommunityViewController: UIViewController{
 }
 
 extension CommunityViewController: SendDelegateWhenPop{
-    func popCreatBoard(){
-        refreshViewModel()
-    }
     func popDeleteBoard(){
         refreshViewModel()
     }
