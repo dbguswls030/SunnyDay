@@ -53,7 +53,7 @@ class CommunityViewController: UIViewController{
     }
     
     private func initBoardViewModel(){
-        self.viewModel.setBoards { [weak self] in
+        self.viewModel.setBoardModel { [weak self] in
             guard let self = self else {return}
             DispatchQueue.main.async { [weak self] in
                 self?.communityView.boardCollectionView.reloadData()
@@ -180,7 +180,7 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
                 let startIndex = viewModel.numberOfBoards()
                 self.viewModel.setPaging(data: true)
             
-                self.viewModel.setBoards { [weak self] in
+                self.viewModel.setBoardModel { [weak self] in
                     print("scrollViewDidScroll")
                     guard let self = self else {return}
                     let endIndex = self.viewModel.numberOfBoards()

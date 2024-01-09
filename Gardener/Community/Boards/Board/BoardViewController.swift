@@ -63,7 +63,7 @@ class BoardViewController: UIViewController {
             print("model is empty")
             return
         }
-        self.commentViewModel.setComments(documentId: documentId) { [weak self] in
+        self.commentViewModel.setCommentModel(documentId: documentId) { [weak self] in
             guard let self = self else { return }
             if self.commentViewModel.numberOfModel() == 0 {
                 return
@@ -305,7 +305,6 @@ class BoardViewController: UIViewController {
     @objc private func deleteComment(_ sender: UIDeleteButton){
         guard let index = sender.index else { return }
         guard let model = model, let boardDocumentId = model.documentId else {return}
-        let boardId = model.boardId
         showActivityIndicator(alpha: 0.0)
         let parentId = commentViewModel.getParentId(index: index)
         showPopUp(confirmButtonTitle: "삭제") { [weak self] in

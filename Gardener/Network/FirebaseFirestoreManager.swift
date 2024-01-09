@@ -150,12 +150,12 @@ class FirebaseFirestoreManager{
     }
     
     // MARK: 게시글 댓글
-    
     func uploadComment(documentId: String, commentModel: CommentModel, completion: @escaping () -> Void){
         let commentId = UUID().uuidString + String(Date().timeIntervalSince1970)
         let docRef = self.db.collection("community").document(documentId).collection("comment").document(commentId)
         do{
             try docRef.setData(from: commentModel)
+            self.db.collection("community").document(documentId).updateData(["commentCount" : FieldValue.increment(Int64(1))])
             if commentModel.dept == 1{
                 self.updateIsEmptyReplyForFalseInComment(documentId: documentId, parentId: commentModel.parentId) {
                     completion()
@@ -225,9 +225,13 @@ class FirebaseFirestoreManager{
             if let error = error {
                 print("failed deleteComment error = \(error.localizedDescription)")
             }
-            completion()
+            self.db.collection("community").document(boardDocumentId).updateData(["commentCount" : FieldValue.increment(Int64(-1))]) { error in
+                if let error = error{
+                    print("failed decrement commentCount \(error.localizedDescription)")
+                }
+                completion()
+            }
         }
-        
     }
     
     func updateCommentThenDeleteComment(documentId: String, parentId: Int, completion: @escaping () -> Void){
@@ -294,6 +298,7 @@ class FirebaseFirestoreManager{
         }
     }
     
+    
     // MARK: 게시글 좋아요
     func checkLikeBoard(documentId: String, userId: String, completion: @escaping (Bool) -> Void){
         let docRef = self.db.collection("community").document(documentId).collection("likeBoard").document(userId)
@@ -316,15 +321,15 @@ class FirebaseFirestoreManager{
     }
     
     func likeBoard(documentId: String, userId: String, completion: @escaping () -> Void){
-        let docRef = self.db.collection("community").document(documentId).collection("likeBoard").document(userId)
-        docRef.setData([:])
+        let docRef = self.db.collection("community").document(documentId)
+        docRef.collection("likeBoard").document(userId).setData([:])
         docRef.updateData(["likeCount" : FieldValue.increment(Int64(1))])
         completion()
     }
     
     func unLikeBoard(documentId: String, userId: String, completion: @escaping () -> Void){
-        let docRef = self.db.collection("community").document(documentId).collection("likeBoard").document(userId)
-        docRef.delete()
+        let docRef = self.db.collection("community").document(documentId)
+        docRef.collection("likeBoard").document(userId).delete()
         docRef.updateData(["likeCount" : FieldValue.increment(Int64(-1))])
         completion()
     }
