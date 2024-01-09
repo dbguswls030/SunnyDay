@@ -59,11 +59,11 @@ class BoardViewController: UIViewController {
     }
     
     private func initCommentViewModel(){
-        guard let model = model else {
+        guard let model = model, let documentId = model.documentId  else {
             print("model is empty")
             return
         }
-        self.commentViewModel.setComments(boardId: model.boardId) { [weak self] in
+        self.commentViewModel.setComments(documentId: documentId) { [weak self] in
             guard let self = self else { return }
             if self.commentViewModel.numberOfModel() == 0 {
                 return
@@ -181,7 +181,7 @@ class BoardViewController: UIViewController {
         if let uid = Auth.auth().currentUser?.uid{
             FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { [weak self] userModel in
                 guard let self = self else { return }
-                FirebaseFirestoreManager.shared.uploadComment(boardId: model.boardId, commentModel: CommentModel(parentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
+                FirebaseFirestoreManager.shared.uploadComment(documentId: model.documentId!, commentModel: CommentModel(parentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
                     guard let self = self else { return }
                     self.reinitViewModel()
                     self.commentWriteView.resetTextView()
@@ -190,6 +190,9 @@ class BoardViewController: UIViewController {
                     }
                     self.hideActivityIndicator(alpha: 0.0)
                 }
+//                FirebaseFirestoreManager.shared.uploadComment(boardId: model.boardId, commentModel: CommentModel(parentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
+//                    
+//                }
             }
         }
     }
@@ -239,7 +242,7 @@ class BoardViewController: UIViewController {
         guard let documentId = model!.documentId else{ return }
         if let uid = Auth.auth().currentUser?.uid{
             if boardView.likeButton.isSelected == false{
-                FirebaseFirestoreManager.shared.likeBoard(boardId: documentId, userId: uid) { [weak self] in
+                FirebaseFirestoreManager.shared.likeBoard(documentId: documentId, userId: uid) { [weak self] in
                     FirebaseFirestoreManager.shared.getBoard(documentId: documentId) { [weak self] model in
                         self?.model = model
                         self?.boardView.setLikeCount(likeCount: model.likeCount)
@@ -247,7 +250,7 @@ class BoardViewController: UIViewController {
                     }
                 }
             }else{
-                FirebaseFirestoreManager.shared.unLikeBoard(boardId: documentId, userId: uid) { [weak self] in
+                FirebaseFirestoreManager.shared.unLikeBoard(documentId: documentId, userId: uid) { [weak self] in
                     FirebaseFirestoreManager.shared.getBoard(documentId: documentId) { [weak self] model in
                         self?.model = model
                         self?.boardView.setLikeCount(likeCount: model.likeCount)
@@ -301,7 +304,7 @@ class BoardViewController: UIViewController {
     
     @objc private func deleteComment(_ sender: UIDeleteButton){
         guard let index = sender.index else { return }
-        guard let model = model else {return}
+        guard let model = model, let boardDocumentId = model.documentId else {return}
         let boardId = model.boardId
         showActivityIndicator(alpha: 0.0)
         let parentId = commentViewModel.getParentId(index: index)
@@ -309,9 +312,9 @@ class BoardViewController: UIViewController {
             guard let self = self else{
                 return
             }
-            if let documentId = self.commentViewModel.getDocumentId(index: index){
-                FirebaseFirestoreManager.shared.deleteComment(boardId: boardId, documentId: documentId) {
-                    FirebaseFirestoreManager.shared.updateCommentThenDeleteComment(boardId: boardId, parentId: parentId) {
+            if let commentDocumentId = self.commentViewModel.getDocumentId(index: index){
+                FirebaseFirestoreManager.shared.deleteComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId) {
+                    FirebaseFirestoreManager.shared.updateCommentThenDeleteComment(documentId: boardDocumentId, parentId: parentId) {
                         self.reinitViewModel()
                         // 댓글이 있었는데 없어졌을 떄
                         if self.commentViewModel.numberOfModel() == 0{

@@ -12,8 +12,8 @@ class CommentViewModel{
     private var query: Query? = nil
     private var comments = [CommentModel]()
 
-    func setComments(boardId: String, completion: @escaping () -> Void){
-        FirebaseFirestoreManager.shared.getComments(query: self.query, boardId: boardId) { [weak self] models, query in
+    func setComments(documentId: String, completion: @escaping () -> Void){
+        FirebaseFirestoreManager.shared.getComments(query: self.query, documentId: documentId) { [weak self] models, query in
             guard let self = self else{
                 return
             }
