@@ -8,6 +8,10 @@
 import UIKit
 import SnapKit
 
+class ImageTapGestureRecognizer: UITapGestureRecognizer{
+    var index: Int?
+}
+
 class CommunityViewController: UIViewController{
     
     private lazy var viewModel: BoardViewModel = {
@@ -34,16 +38,25 @@ class CommunityViewController: UIViewController{
         super.viewDidLoad()
         initUI()
         initBoardCollectionView()
-        initViewModel()
         initNavigationBar()
         initCreateBoardButton()
     }
 
-    private func initViewModel(){
-        self.viewModel.setBoards {
-//            self.viewModel.setPaging(data: true)
-            DispatchQueue.main.async {
-                self.communityView.boardCollectionView.reloadData()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        refreshViewModel()
+    }
+    
+    func refreshViewModel(){
+        self.viewModel.reloadViewModel()
+        initBoardViewModel()
+    }
+    
+    private func initBoardViewModel(){
+        self.viewModel.setBoards { [weak self] in
+            guard let self = self else {return}
+            DispatchQueue.main.async { [weak self] in
+                self?.communityView.boardCollectionView.reloadData()
             }
         }
     }
@@ -86,33 +99,38 @@ class CommunityViewController: UIViewController{
     @objc private func showCreatBoardView(){
         let vc = CreateBoardViewController()
         vc.hidesBottomBarWhenPushed = true
-        vc.delegate = self
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc private func refreshCollectionView(){
-        refreshViewModelAndCollectionView()
+        refreshViewModel()
         refresh.endRefreshing()
     }
     
-    func refreshViewModelAndCollectionView(){
-        self.viewModel.reloadViewModel()
-        self.viewModel.setBoards {
-//            self.viewModel.setPaging(data: true)
-            DispatchQueue.main.async {
-                self.communityView.boardCollectionView.reloadData()
-            }
-        }
+    private func showBoardContent(index: Int){
+        let boardViewController = BoardViewController()
+        boardViewController.setBoardModel(model: viewModel.getBoard(index: index))
+        boardViewController.delegate = self
+        boardViewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(boardViewController, animated: true)
+    }
+    
+    @objc func showBoardContentByImageCollectionView(sender: ImageTapGestureRecognizer){
+        showBoardContent(index: sender.index!)
     }
 }
 
 extension CommunityViewController: SendDelegateWhenPop{
-    func sendFunction(){
-        refreshViewModelAndCollectionView()
+    func popDeleteBoard(){
+        refreshViewModel()
     }
 }
 
-extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
+extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIGestureRecognizerDelegate{
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
+    }
     
     private func initBoardCollectionView(){
         communityView.boardCollectionView.refreshControl = refresh
@@ -133,7 +151,15 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
         cell.initUI()
         cell.setModel(model: viewModel.getBoard(index: indexPath.item))
         cell.boardCellView.imageCollectionView.reloadData()
+        let tapRecognize = ImageTapGestureRecognizer(target: self, action: #selector(showBoardContentByImageCollectionView))
+        tapRecognize.delegate = self
+        tapRecognize.index = indexPath.item
+        cell.boardCellView.imageCollectionView.addGestureRecognizer(tapRecognize)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        showBoardContent(index: indexPath.item)
     }
    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -141,7 +167,7 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 7
+        return 8
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -153,7 +179,10 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
             if contentOffsetY > collectionViewContentSizeY - paginationY{
                 let startIndex = viewModel.numberOfBoards()
                 self.viewModel.setPaging(data: true)
-                self.viewModel.setBoards {
+            
+                self.viewModel.setBoards { [weak self] in
+                    print("scrollViewDidScroll")
+                    guard let self = self else {return}
                     let endIndex = self.viewModel.numberOfBoards()
                     let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
                     self.communityView.boardCollectionView.performBatchUpdates ({

@@ -638,6 +638,12 @@ PODS:
     - "gRPC-C++ (~> 1.44.0)"
     - leveldb-library (~> 1.22)
     - nanopb (< 2.30910.0, >= 2.30908.0)
+  - FirebaseFirestoreSwift (10.16.0):
+    - FirebaseCore (~> 10.0)
+    - FirebaseCoreExtension (~> 10.0)
+    - FirebaseFirestore (~> 10.0)
+    - FirebaseSharedSwift (~> 10.0)
+  - FirebaseSharedSwift (10.19.0)
   - FirebaseStorage (10.11.0):
     - FirebaseAppCheckInterop (~> 10.0)
     - FirebaseAuthInterop (~> 10.0)
@@ -748,6 +754,7 @@ PODS:
 DEPENDENCIES:
   - FirebaseAuth
   - FirebaseFirestore
+  - FirebaseFirestoreSwift
   - FirebaseStorage
   - GoogleSignIn
   - KakaoSDKAuth
@@ -769,6 +776,8 @@ SPEC REPOS:
     - FirebaseCoreExtension
     - FirebaseCoreInternal
     - FirebaseFirestore
+    - FirebaseFirestoreSwift
+    - FirebaseSharedSwift
     - FirebaseStorage
     - GoogleSignIn
     - GoogleUtilities
@@ -798,6 +807,8 @@ SPEC CHECKSUMS:
   FirebaseCoreExtension: cacdad57fdb60e0b86dcbcac058ec78237946759
   FirebaseCoreInternal: d2b4acb827908e72eca47a9fd896767c3053921e
   FirebaseFirestore: 584d0e1b0f7f1666c516c5157ff06e785bd8836f
+  FirebaseFirestoreSwift: a7a0c64b8e16b14dfca3405e447c647182318709
+  FirebaseSharedSwift: f34eeb7d3ea87a34497629b6ca41657beadef76a
   FirebaseStorage: 8d8f23ca3688c2edb1950bd38e44f82a325ceb6f
   GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
   GoogleUtilities: 9aa0ad5a7bc171f8bae016300bfcfa3fb8425749
@@ -815,6 +826,6 @@ SPEC CHECKSUMS:
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 92f39cbb32b6e5d4f1aa9f8f02efd0a0fcbb2dbf
+PODFILE CHECKSUM: dd32275bbf454287e2d9ed7e80c61ef7151d265b
 
 COCOAPODS: 1.12.0

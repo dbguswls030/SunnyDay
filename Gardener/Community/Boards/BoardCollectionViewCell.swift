@@ -20,6 +20,7 @@ class BoardCollectionViewCell: UICollectionViewCell {
 //        super.prepareForReuse()
         model = nil
         boardCellView.prepareReuseInitUI()
+        boardCellView.imageCollectionView.gestureRecognizers = nil
 //        for indexPath in boardCellView.imageCollectionView.indexPathsForVisibleItems {
 //            if let cell = boardCellView.imageCollectionView.cellForItem(at: indexPath) as? BoardImageCollectionViewCell {
 //                cell.imageView.image = nil
@@ -39,36 +40,33 @@ class BoardCollectionViewCell: UICollectionViewCell {
         setTitle(title: model.title)
         setContents(contents: model.contents)
         setDate(date: model.date)
-        setImageUrl(urls: model.imageUrls)
+        setImageUrl(urls: model.contentImageURLs)
     }
-    func setCategroy(categroy: String){
+    private func setCategroy(categroy: String){
         boardCellView.categroy.text = categroy
     }
     
-    func setTitle(title: String){
+    private func setTitle(title: String){
         boardCellView.title.text = title
     }
     
-    func setContents(contents: String){
+    private func setContents(contents: String){
         boardCellView.contents.text = contents
     }
     
-    func setDate(date: Date){
+    private func setDate(date: Date){
         // TODO: 날짜 케이스, 분, 시간, 일
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        let formattedDate = dateFormatter.string(from: date)
-        boardCellView.date.text = formattedDate
+        boardCellView.date.text = date.convertDateToTime()
     }
  
-    func setImageUrl(urls: [String]){
+    private func setImageUrl(urls: [String]){
         guard !urls.isEmpty else {
             return
         }
         initCollectionView()
     }
     
-    func initCollectionView(){
+    private func initCollectionView(){
         boardCellView.imageCollectionView.register(BoardImageCollectionViewCell.self, forCellWithReuseIdentifier: "boardImageCell")
         boardCellView.imageCollectionView.dataSource = self
         boardCellView.imageCollectionView.delegate = self
@@ -79,7 +77,7 @@ class BoardCollectionViewCell: UICollectionViewCell {
 extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let model = model else { return 0 }
-        return model.imageUrls.count
+        return model.contentImageURLs.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -87,8 +85,8 @@ extension BoardCollectionViewCell: UICollectionViewDelegate, UICollectionViewDat
             return UICollectionViewCell()
         }
         cell.initUI()
-        cell.setImageUrl(url: model.imageUrls[indexPath.item])
-        
+        cell.setImageUrl(url: model.contentImageURLs[indexPath.item])
+        cell.isUserInteractionEnabled = false
         return cell
     }
 

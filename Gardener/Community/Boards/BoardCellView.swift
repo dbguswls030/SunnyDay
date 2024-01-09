@@ -54,7 +54,8 @@ class BoardCellView: UIView {
     lazy var date: UILabel = {
         var label = UILabel()
         label.text = "날짜"
-        label.font = UIFont.systemFont(ofSize: 10, weight: .ultraLight)
+        label.font = UIFont.systemFont(ofSize: 11)
+        label.textColor = .lightGray
         label.sizeToFit()
         return label
     }()

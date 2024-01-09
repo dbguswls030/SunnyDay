@@ -9,7 +9,8 @@ import Foundation
 import FirebaseStorage
 
 class FirebaseStorageManager{
-    static func uploadProfileImage(image: UIImage, pathRoot: String, completion: @escaping (URL?) -> Void){
+    static let shared = FirebaseStorageManager()
+    func uploadProfileImage(image: UIImage, pathRoot: String, completion: @escaping (URL?) -> Void){
         // Warning: 용량 제한
         guard let imageData = image.jpegData(compressionQuality: 0.4) else {
             print("[uploadProfileImage] failed convert image to imageData")
@@ -24,6 +25,7 @@ class FirebaseStorageManager{
         firebaseReference.putData(imageData, metadata: metaData) { metaData, error in
             if let error = error{
                 print("putdata Error\(error.localizedDescription)")
+                return
             }
             firebaseReference.downloadURL { url, _ in
                 completion(url)
@@ -50,7 +52,7 @@ class FirebaseStorageManager{
         }
     }
     
-    static func uploadBoardImages(images: [UIImage], boardId: String, uid: String, completion: @escaping ([String]) -> Void){
+    func uploadBoardImages(images: [UIImage], boardId: String, uid: String, completion: @escaping ([String]) -> Void){
         if images.isEmpty{
             completion([])
             return
@@ -98,10 +100,10 @@ class FirebaseStorageManager{
         }
     }
     
-    static func deleteBoard(boardId: String, uid: String){
+    func deleteBoardContentImages(boardId: String, uid: String){
         Storage.storage().reference().child("\(uid)").child("community").child("\(boardId)").listAll { result, error in
             if error != nil{
-                print("get list falied")
+                print("get list failed")
                 return
             }
             if let result = result{

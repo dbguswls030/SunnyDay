@@ -15,27 +15,11 @@ import FirebaseStorage
 
 // TODO: 업로드 시 indicator 
 
-protocol SendDelegateWhenPop: AnyObject{
-    func sendFunction()
-}
-
 class CreateBoardViewController: UIViewController {
-    
-    weak var delegate: SendDelegateWhenPop?
     
     private final let LEADINGTRAIINGOFFSET = 15
 
-    private var selectedImage: [UIImage] = []
-    
-    private lazy var activityIndicator: UIActivityIndicatorView  = {
-        let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.frame = .init(x: 0, y: 0, width: 50, height: 50)
-        activityIndicator.center = self.view.center
-        activityIndicator.stopAnimating()
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.style = .medium
-        return activityIndicator
-    }()
+    internal var selectedImage: [UIImage] = []
     
     private lazy var topBreakLine: BreakLine = {
        return BreakLine()
@@ -45,7 +29,7 @@ class CreateBoardViewController: UIViewController {
         return UIScrollView()
     }()
     
-    private lazy var categoryLabel: UILabel = {
+    internal lazy var categoryLabel: UILabel = {
         var label = UILabel()
         label.text = "카테고리를 선택해 주세요."
         label.font = .systemFont(ofSize: 17)
@@ -65,14 +49,14 @@ class CreateBoardViewController: UIViewController {
         return BreakLine()
     }()
     
-    private lazy var titleTextView: UITextField = {
+    internal lazy var titleTextView: UITextField = {
         var textField = UITextField()
         textField.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        textField.placeholder = "제목을 입력해 주세요."
+        textField.placeholder = "제목을 입력해 주세요.(최대 20자)"
         return textField
     }()
     
-    private lazy var contentTextView: UITextView = {
+    internal lazy var contentTextView: UITextView = {
         var textView = UITextView()
         textView.isScrollEnabled = false
         textView.font = .systemFont(ofSize: 16)
@@ -82,7 +66,14 @@ class CreateBoardViewController: UIViewController {
         return textView
     }()
     
-    private lazy var photoCollectionView: UICollectionView = {
+    internal lazy var contentLimitLabel: UILabel = {
+        let label = UILabel()
+        label.text = "(0/300)"
+        label.font = UIFont.systemFont(ofSize: 10)
+        return label
+    }()
+    
+    internal lazy var photoCollectionView: UICollectionView = {
         var layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 8
@@ -96,10 +87,11 @@ class CreateBoardViewController: UIViewController {
         super.viewDidLoad()
         initNavigationBar()
         initUI()
+        initObserver()
         hideKeyboard()
     }
     
-    private func initNavigationBar(){
+    internal func initNavigationBar(){
         self.navigationItem.title = "글쓰기"
         self.navigationItem.setRightBarButton(UIBarButtonItem(image: UIImage(systemName: "arrow.up"), style: .done, target: self, action: #selector(uploadBoard)), animated: true)
         self.navigationItem.rightBarButtonItem?.tintColor = .black
@@ -115,8 +107,8 @@ class CreateBoardViewController: UIViewController {
         self.scrollView.addSubview(titleTextView)
         self.scrollView.addSubview(categoryTitleBreakLine)
         self.scrollView.addSubview(contentTextView)
+        self.scrollView.addSubview(contentLimitLabel)
         self.view.addSubview(photoCollectionView)
-        self.view.addSubview(activityIndicator)
         
         topBreakLine.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
@@ -156,6 +148,7 @@ class CreateBoardViewController: UIViewController {
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET+5)
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
         }
+        titleTextView.delegate = self
         
         contentTextView.snp.makeConstraints { make in
             make.top.equalTo(titleTextView.snp.bottom).offset(10)
@@ -163,6 +156,12 @@ class CreateBoardViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-LEADINGTRAIINGOFFSET)
             make.bottom.equalToSuperview()
             make.width.equalTo(scrollView.snp.width).offset(-LEADINGTRAIINGOFFSET * 2)
+        }
+        contentTextView.delegate = self
+        
+        contentLimitLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(contentTextView.snp.bottom).offset(-2)
+            make.right.equalTo(contentTextView.snp.right).offset(-2)
         }
         
         photoCollectionView.register(ShowPhotoPickerCollectionViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "addImage")
@@ -175,35 +174,73 @@ class CreateBoardViewController: UIViewController {
             make.leading.equalToSuperview().offset(LEADINGTRAIINGOFFSET)
             make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
-        activityIndicator.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+    }
+    
+    private func initObserver(){
+        NotificationCenter.default.addObserver(self, selector: #selector(titleTextFieldDidChange), name: UITextField.textDidChangeNotification, object: titleTextView)
+        NotificationCenter.default.addObserver(self, selector: #selector(contentTextViewDidChange), name: UITextView.textDidChangeNotification, object: contentTextView)
+    }
+    
+    @objc func titleTextFieldDidChange(_ notification: Notification){
+        if let textfield = notification.object as? UITextField{
+            if let text = textfield.text{
+                if text.count >= 20{
+                    let index = text.index(text.startIndex, offsetBy: 20)
+                    let newString = text[text.startIndex..<index]
+                    titleTextView.text = String(newString)
+                }
+            }
         }
     }
-
+    
+    @objc func contentTextViewDidChange(_ notification: Notification){
+        if let textView = notification.object as? UITextView{
+            if let text = textView.text{
+                if text.count >= 300{
+                    let index = text.index(text.startIndex, offsetBy: 300)
+                    let newString = text[text.startIndex..<index]
+                    contentTextView.text = String(newString)
+                }
+                contentLimitLabel.text = "(\(contentTextView.text!.count)/300"
+            }
+        }
+    }
+    
     @objc private func uploadBoard(){
         guard let category = categoryLabel.text, category != "카테고리를 선택해 주세요." else{
+            print("카테고리를 선택해 주세요.")
 //            Toast().showToast(view: self.view, message: "카테고리를 선택해 주세요.")
             return
         }
         
         guard let contents = contentTextView.text, contents.count > 1, contents != "내용을 입력해 주세요." else{
 //            Toast().showToast(view: self.view, message: "내용을 최소 두 글자 이상 입력해주세요.")
+            print("내용을 최소 두 글자 이상 입력해주세요.")
             return
         }
         
         guard let title = titleTextView.text, title.count > 1 else{
 //            Toast().showToast(view: self.view, message: "제목을 최소 두 글자 이상 입력해주세요.")
+            print("제목을 최소 두글자 이상 입력해 주세요")
             return
         }
         
         self.navigationItem.rightBarButtonItem?.isEnabled = false
-        self.activityIndicator.startAnimating()
-        FirebaseFirestoreManager.uploadCommunityBoard(model: .init(category: category, title: title, contents: contents, images: selectedImage, date: Date())) {
-            self.delegate?.sendFunction()
-            self.activityIndicator.stopAnimating()
-            self.navigationController?.popViewController(animated: true)
+        showActivityIndicator(alpha: 0.0)
+        if let uid = Auth.auth().currentUser?.uid{
+            FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { [weak self] userModel in
+                guard let self = self else { return }
+                let boardId = UUID().uuidString + String(Date().timeIntervalSince1970)
+                FirebaseStorageManager.shared.uploadBoardImages(images: self.selectedImage, boardId: boardId, uid: uid) { [weak self] contentImageURLs in
+                    guard let self = self else { return }
+                    FirebaseFirestoreManager.shared.uploadBoard(model: BoardModel(boardId: boardId, category: category, title: title, contents: contents, uid: uid, nickName: userModel.nickName, profileImageURL: userModel.profileImageURL, contentImageURLs: contentImageURLs)) { [weak self] in
+                        guard let self = self else { return }
+                        self.hideActivityIndicator(alpha: 0.0)
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+            }
         }
-        
     }
     
     @objc private func showCategoryList(){
@@ -218,28 +255,12 @@ class CreateBoardViewController: UIViewController {
         dismissKeyboard()
         var configuration = PHPickerConfiguration(photoLibrary: .shared())
         configuration.filter = .images
-        configuration.selectionLimit = 5
+        configuration.selectionLimit = 5 - selectedImage.count
         
         let picker = PHPickerViewController(configuration: configuration)
         picker.delegate = self
         
         self.present(picker, animated: true)
-    }
-}
-
-                                              
-extension CreateBoardViewController: UITextViewDelegate{
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty{
-            textView.textColor = .lightGray
-            textView.text = "내용을 입력해 주세요."
-        }
-    }
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == .lightGray{
-            textView.text = ""
-            textView.textColor = .black
-        }
     }
 }
 
@@ -269,32 +290,33 @@ extension CreateBoardViewController: PHPickerViewControllerDelegate{
         dismiss(animated: true)
 
         if !results.isEmpty{
-            selectedImage.removeAll()
+//            selectedImage.removeAll()
             let dispatchGroup = DispatchGroup()
             dispatchGroup.enter()
-            for result in results {
+            for (offset,result) in results.enumerated() {
                 DispatchQueue.main.async {
                     self.navigationItem.rightBarButtonItem?.isEnabled = false
                 }
                 let itemProvider = result.itemProvider
                 if itemProvider.canLoadObject(ofClass: UIImage.self){
                     itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (image, error) in
+                        if error != nil { print("error")
+                            return }
                         if let image = image as? UIImage{
                             self?.selectedImage.append(image)
-                            if self?.selectedImage.count == results.count{
+                            if offset == results.count - 1{
                                 dispatchGroup.leave()
-                                
                             }
                         }
                     }
                 }
             }
+            
             dispatchGroup.notify(queue: .global(), work: DispatchWorkItem{
                 DispatchQueue.main.async {
                     self.photoCollectionView.reloadData()
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                 }
-                
             })
         }
     }
@@ -335,5 +357,44 @@ extension CreateBoardViewController: UICollectionViewDelegate, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 3, bottom: 0, right: 3)
+    }
+}
+extension CreateBoardViewController: UITextFieldDelegate{
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if let char = string.cString(using: String.Encoding.utf8) {
+            let isBackSpace = strcmp(char, "\\b")
+            if isBackSpace == -92 {
+                return true
+            }
+        }
+        if textField == titleTextView {
+            if titleTextView.text!.count > 20{
+                return false
+            }
+        }
+        return true
+    }
+}
+extension CreateBoardViewController: UITextViewDelegate{
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty{
+            textView.textColor = .lightGray
+            textView.text = "내용을 입력해 주세요."
+        }
+    }
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == .lightGray{
+            textView.text = ""
+            textView.textColor = .black
+        }
+    }
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let contentText = textView.text ?? ""
+        guard let stringRange = Range(range, in: contentText) else { return false }
+        let convertText = contentText.replacingCharacters(in: stringRange, with: text)
+        if contentTextView.text!.count > 300{
+            return false
+        }
+        return true
     }
 }

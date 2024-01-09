@@ -61,4 +61,9 @@ class SelectedPhotoCollectionViewCell: UICollectionViewCell {
             self.imageView.layer.cornerRadius = 5
         }
     }
+    
+    func setImageWithURL(url: String){
+        self.imageView.setImageView(url: url)
+        self.imageView.layer.cornerRadius = 5
+    }
 }

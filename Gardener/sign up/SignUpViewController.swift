@@ -27,6 +27,7 @@ class SignUpViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         initUI()
+        initObserver()
         hideKeyboard()
     }
     
@@ -41,6 +42,22 @@ class SignUpViewController: UIViewController {
         signView.nickNameTextField.addTarget(self, action: #selector(minimumNickNameLength(_ :)), for: .editingChanged)
         signView.submitButton.addTarget(self, action: #selector(setProfile(_ :)), for: .touchUpInside)
         signView.profileImage.addTarget(self, action: #selector(touchUpProfileImage(_ :)), for: .touchUpInside)
+    }
+    
+    private func initObserver(){
+        NotificationCenter.default.addObserver(self, selector: #selector(nickNameTextFieldDidChange), name: UITextField.textDidChangeNotification, object: signView.nickNameTextField)
+    }
+    
+    @objc func nickNameTextFieldDidChange(_ notification: Notification){
+        if let textfield = notification.object as? UITextField{
+            if let text = textfield.text{
+                if text.count >= 8{
+                    let index = text.index(text.startIndex, offsetBy: 8)
+                    let newString = text[text.startIndex..<index]
+                    signView.nickNameTextField.text = String(newString)
+                }
+            }
+        }
     }
     
     @objc private func touchUpProfileImage(_ sender: Any){
@@ -62,18 +79,29 @@ class SignUpViewController: UIViewController {
     }
     
     @objc private func setProfile(_ sender: Any){
-        let db = Firestore.firestore()
+        self.showActivityIndicator(alpha: 0.2)
         guard let uploadProfileImage = self.signView.profileImage.imageView?.image else { return }
         print("isExist uploadProfileImage")
         if let user = Auth.auth().currentUser{
-            FirebaseStorageManager.uploadProfileImage(image: uploadProfileImage, pathRoot: user.uid) { url in
+            FirebaseStorageManager.shared.uploadProfileImage(image: uploadProfileImage, pathRoot: user.uid) { [weak self] url in
+                guard let self = self else {return}
                 if let url = url {
-                    print("download url = \(url)")
-                    db.collection("user").document(user.uid).setData(["nickName" : String(describing: self.signView.nickNameTextField.text!),
-                                                                      "profileImage" : url.absoluteString])
-                    let vc = MainTabBarController()
-                    vc.modalPresentationStyle = .fullScreen
-                    self.present(vc, animated: true)
+                    FirebaseFirestoreManager.shared.setUserInfo(uid: user.uid, model: UserModel(nickName: self.signView.nickNameTextField.text!, profileImageURL: url.absoluteString)) { result in
+                        switch result{
+                        case .success(let bool):
+                            self.hideActivityIndicator(alpha: 0.2)
+                            let vc = MainTabBarController()
+                            vc.modalPresentationStyle = .fullScreen
+                            self.present(vc, animated: true)
+                        case .failure(let error):
+                            self.hideActivityIndicator(alpha: 0.2)
+                            print("falied setUserInfo error = \(error.localizedDescription)")
+                        }
+                    }
+//                    print("download url = \(url)")
+//                    db.collection("user").document(user.uid).setData(["nickName" : String(describing: self.signView.nickNameTextField.text!),
+//                                                                      "profileImage" : url.absoluteString])
+                    
                 }
             }
         }

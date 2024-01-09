@@ -16,9 +16,8 @@ class CommunityView: UIView {
         var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         // TODO: 색상 고르기
-        collectionView.backgroundColor = .green
+        collectionView.backgroundColor = .systemGray6
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.decelerationRate = .fast
         return collectionView
     }()
     
@@ -32,7 +31,6 @@ class CommunityView: UIView {
     }
     
     func initUI(){
-        print("init communityView")
         self.backgroundColor = .white
         
         self.addSubview(boardCollectionView)

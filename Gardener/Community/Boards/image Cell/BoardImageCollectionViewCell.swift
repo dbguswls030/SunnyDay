@@ -26,7 +26,7 @@ class BoardImageCollectionViewCell: UICollectionViewCell {
     }
     
     func setImageUrl(url: String){
-        imageView.setImage(url: url)
+        imageView.setImageView(url: url)
     }
     
     func initUI(){

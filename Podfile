@@ -11,6 +11,7 @@ target 'Gardener' do
   pod 'FirebaseAuth'
   pod 'FirebaseStorage'
   pod 'FirebaseFirestore'
+  pod 'FirebaseFirestoreSwift'
   pod 'GoogleSignIn'
   pod 'KakaoSDKCommon'
   pod 'KakaoSDKUser'

@@ -14,13 +14,15 @@ class CreateBoard{
     let contents: String
     let images: [UIImage]
     let date: Date
+    let userInfo: UserModel
     
-    init(category: String, title: String, contents: String, images: [UIImage], date: Date) {
+    init(category: String, title: String, contents: String, images: [UIImage], date: Date, userInfo: UserModel) {
         self.category = category
         self.title = title
         self.contents = contents
         self.images = images
         self.date = date
+        self.userInfo = userInfo
     }
     
 }
