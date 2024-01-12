@@ -36,9 +36,11 @@ class CommentViewModel{
     func numberOfModel() -> Int{
         return comments.count
     }
-    
+    func getCommentModel(index: Int) -> CommentModel{
+        return comments[index]
+    }
     func getDocumentId(index: Int) -> String?{
-        return comments[index].commentId
+        return comments[index].documentId
     }
     
     func getIsHiddenValue(index: Int) -> Bool{

@@ -27,6 +27,13 @@ class UIDeleteButton: UIButton{
         self.index = index
     }
 }
+class UICommentOptionButton: UIButton{
+    var index: Int?
+    
+    func initCommentButton(index: Int){
+        self.index = index
+    }
+}
 class CommentCollectionViewCell: UICollectionViewCell {
     
 //    weak var delegate: ReplyButtonDelegate?
@@ -96,14 +103,11 @@ class CommentCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
-    lazy var deleteButton: UIDeleteButton = {
-        let button = UIDeleteButton()
+    lazy var optionButton: UICommentOptionButton = {
+        let button = UICommentOptionButton()
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         button.tintColor = .lightGray
-        button.alpha = 0.8
-        var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(systemName: "trash", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 10))
-        button.configuration = configuration
-        button.isHidden = true
+        button.transform = .init(rotationAngle: .pi/2)
         return button
     }()
     
@@ -115,8 +119,7 @@ class CommentCollectionViewCell: UICollectionViewCell {
         profileImage.snp.updateConstraints { make in
             make.left.equalToSuperview().offset(10)
         }
-        deleteButton.isHidden = true
-        deleteButton.removeTarget(nil, action: nil, for: .allEvents)
+        optionButton.removeTarget(nil, action: nil, for: .allEvents)
     }
     
     override init(frame: CGRect) {
@@ -135,13 +138,7 @@ class CommentCollectionViewCell: UICollectionViewCell {
         self.addSubview(contentLabel)
         self.addSubview(likeButton)
         self.addSubview(replyButton)
-        self.addSubview(deleteButton)
-        
-        deleteButton.snp.makeConstraints { make in
-            make.right.equalToSuperview()
-            make.top.equalToSuperview()
-            make.width.height.equalTo(45)
-        }
+        self.addSubview(optionButton)
         
         profileImage.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -163,7 +160,6 @@ class CommentCollectionViewCell: UICollectionViewCell {
             make.left.equalTo(profileImage.snp.right).offset(12)
             make.top.equalTo(profileImage.snp.bottom).offset(5)
             make.right.equalToSuperview().offset(-10)
-            
         }
         
         likeButton.snp.makeConstraints { make in
@@ -178,18 +174,16 @@ class CommentCollectionViewCell: UICollectionViewCell {
             make.left.equalTo(likeButton.snp.right).offset(10)
             make.height.equalTo(20)
         }
+        
+        optionButton.snp.makeConstraints { make in
+            make.right.equalToSuperview()
+            make.top.equalToSuperview()
+            make.width.height.equalTo(45)
+        }
     }
     
     func setDefaultProfileImage(){
         self.profileImage.image = UIImage(named: "defaultProfileImage")
-    }
-    
-    func setHiddenDeleteButton(isHidden: Bool){
-        if isHidden == false{
-            deleteButton.isHidden = true
-        }else{
-            deleteButton.isHidden = false
-        }
     }
     
     func setContent(content: String){

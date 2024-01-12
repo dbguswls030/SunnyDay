@@ -7,7 +7,7 @@
 
 import UIKit
 import FirebaseAuth
-class EditContentViewController: CreateBoardViewController {
+class EditBoardViewController: CreateBoardViewController {
     var model: BoardModel?
     
     weak var editDelegate: DelegateEditBoard?

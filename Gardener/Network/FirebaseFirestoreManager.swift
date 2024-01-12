@@ -224,15 +224,29 @@ class FirebaseFirestoreManager{
         docRef.updateData(["isHidden" : true]) { error in
             if let error = error {
                 print("failed deleteComment error = \(error.localizedDescription)")
+                return
             }
             self.db.collection("community").document(boardDocumentId).updateData(["commentCount" : FieldValue.increment(Int64(-1))]) { error in
                 if let error = error{
                     print("failed decrement commentCount \(error.localizedDescription)")
+                    return
                 }
                 completion()
             }
         }
     }
+    
+    func updateComment(boardDocumentId: String, commentDocumentId: String, content: String, completion: @escaping () -> Void){
+        let docRef = self.db.collection("community").document(boardDocumentId).collection("comment").document(commentDocumentId)
+        docRef.updateData(["content" : content]) { error in
+            if let error = error{
+                print("failed update Comment \(error.localizedDescription)")
+                return
+            }
+            completion()
+        }
+    }
+    
     
     func updateCommentThenDeleteComment(documentId: String, parentId: Int, completion: @escaping () -> Void){
         let docRef = self.db.collection("community").document(documentId).collection("comment")

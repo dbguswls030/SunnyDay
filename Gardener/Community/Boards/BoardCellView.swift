@@ -61,7 +61,7 @@ class BoardCellView: UIView {
     }()
     
     lazy var commentCountImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "bubble.right.fill", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 11)))
+        let imageView = UIImageView(image: UIImage(systemName: "bubble.right", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 11)))
         imageView.isHidden = true
         imageView.tintColor = .lightGray
         return imageView
@@ -76,7 +76,7 @@ class BoardCellView: UIView {
     }()
     
     lazy var likeCountImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "heart.fill", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 11)))
+        let imageView = UIImageView(image: UIImage(systemName: "heart", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 11)))
         imageView.isHidden = true
         imageView.tintColor = .lightGray
         return imageView
@@ -135,8 +135,6 @@ class BoardCellView: UIView {
             make.left.equalToSuperview().offset(15)
             make.bottom.equalToSuperview().offset(-20)
         }
-        
-        
         
         likeCountLabel.snp.makeConstraints { make in
             make.right.equalToSuperview().offset(-10)

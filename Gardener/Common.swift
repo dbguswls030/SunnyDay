@@ -36,6 +36,10 @@ protocol DelegateEditBoard: AnyObject{
     func endEditBoard(model: BoardModel)
 }
 
+protocol DelegateEditComment: AnyObject{
+    func endEditComment()
+}
+
 enum BoardCategory: String, CaseIterable{
     case free = "자유"
     case question = "질문/답변"
@@ -56,7 +60,7 @@ class BreakLine: UIView{
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .lightGray
-        self.alpha = 0.2
+        self.alpha = 0.3
     }
     
     required init?(coder: NSCoder) {
