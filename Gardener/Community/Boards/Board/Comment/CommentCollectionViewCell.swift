@@ -34,6 +34,25 @@ class UICommentOptionButton: UIButton{
         self.index = index
     }
 }
+class UICommentLikeButton: UIButton{
+    var index: Int?
+    
+    func initCommentButton(index: Int){
+        self.index = index
+    }
+    func setLikeCount(likeCount: Int){
+        if likeCount > 0{
+            var buttonTitle = AttributedString.init("좋아요 \(likeCount)")
+            buttonTitle.font = .systemFont(ofSize: 11, weight: .regular)
+            self.configuration?.attributedTitle = buttonTitle
+        }else if likeCount == 0{
+            var buttonTitle = AttributedString.init("좋아요")
+            buttonTitle.font = .systemFont(ofSize: 11, weight: .regular)
+            self.configuration?.attributedTitle = buttonTitle
+        }
+    }
+}
+
 class CommentCollectionViewCell: UICollectionViewCell {
     
 //    weak var delegate: ReplyButtonDelegate?
@@ -86,19 +105,21 @@ class CommentCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
-    private lazy var likeButton: UIButton = {
-        let button = UIButton()
+    lazy var likeButton: UICommentLikeButton = {
+        let button = UICommentLikeButton()
+        button.setImage(UIImage(systemName: "heart", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 10)), for: .normal)
+        button.setImage(UIImage(systemName: "heart.fill", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 10)), for: .selected)
         var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(systemName: "heart", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 10))
-        configuration.imagePlacement = .all
         var buttonTitle = AttributedString.init("좋아요")
         buttonTitle.font = .systemFont(ofSize: 11, weight: .regular)
         configuration.attributedTitle = buttonTitle
         configuration.contentInsets = .init(top: 2, leading: 1, bottom: 2, trailing: 1)
         configuration.imagePadding = 5
         configuration.imagePlacement = .leading
+        configuration.background.backgroundColor = .clear
         button.configuration = configuration
         button.setTitleColor(.lightGray, for: .normal)
+        button.setTitleColor(.green, for: .selected)
         button.tintColor = .lightGray
         return button
     }()
@@ -120,6 +141,7 @@ class CommentCollectionViewCell: UICollectionViewCell {
             make.left.equalToSuperview().offset(10)
         }
         optionButton.removeTarget(nil, action: nil, for: .allEvents)
+        likeButton.removeTarget(nil, action: nil, for: .allEvents)
     }
     
     override init(frame: CGRect) {
@@ -206,6 +228,23 @@ class CommentCollectionViewCell: UICollectionViewCell {
     func updateConstraintsWithDept(){
         profileImage.snp.updateConstraints { make in
             make.left.equalToSuperview().offset(10 + 45 + 12)
+        }
+    }
+    
+    func setLikeButton(boardDocumentId: String, commentDocumentId: String, userId: String){
+        FirebaseFirestoreManager.shared.checkLikeComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId, userId: userId) { [weak self] isLike in
+            guard let self = self else { return }
+            if isLike == true{
+                DispatchQueue.main.async {
+                    self.likeButton.isSelected = true
+                    self.likeButton.tintColor = .green
+                }
+            }else{
+                DispatchQueue.main.async {
+                    self.likeButton.isSelected = false
+                    self.likeButton.tintColor = .lightGray
+                }
+            }
         }
     }
 }

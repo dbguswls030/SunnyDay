@@ -47,6 +47,10 @@ class CommentViewModel{
         return comments[index].isHidden
     }
     
+    func getLikeCount(index: Int) -> Int{
+        return comments[index].likeCount
+    }
+    
     func getUid(index: Int) -> String{
         return comments[index].userId
     }

@@ -266,6 +266,32 @@ class BoardViewController: UIViewController {
         }
     }
     
+    @objc private func likeComment(_ sender: UICommentLikeButton){
+        
+        guard let boardDocumentId = model!.documentId else { return }
+        guard let commentDocumentId = commentViewModel.getDocumentId(index: sender.index!) else { return }
+                
+        if let uid = Auth.auth().currentUser?.uid{
+            if sender.isSelected == false{
+                FirebaseFirestoreManager.shared.likeComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId, userId: uid) {
+                    FirebaseFirestoreManager.shared.getComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId) { CommentModel in
+                        sender.setLikeCount(likeCount: CommentModel.likeCount)
+                        sender.tintColor = .green
+                        sender.isSelected.toggle()
+                    }
+                }
+            }else{
+                FirebaseFirestoreManager.shared.unLikeComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId, userId: uid) {
+                    FirebaseFirestoreManager.shared.getComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId) { CommentModel in
+                        sender.setLikeCount(likeCount: CommentModel.likeCount)
+                        sender.tintColor = .lightGray
+                        sender.isSelected.toggle()
+                    }
+                }
+            }
+        }
+    }
+    
     @objc private func touchUpBoardOptionButton(_ sender: UIBarButtonItem){
         guard let model = model else { return }
         let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -421,6 +447,13 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             if commentViewModel.getDept(index: indexPath.item) == 1{
                 cell.updateConstraintsWithDept()
             }
+            
+            cell.likeButton.initCommentButton(index: indexPath.item)
+            cell.likeButton.setLikeCount(likeCount: commentViewModel.getLikeCount(index: indexPath.item))
+            if let boardDocumentId = model?.documentId, let commentDocumentId = commentViewModel.getDocumentId(index: indexPath.item), let uid = Auth.auth().currentUser?.uid{
+                cell.setLikeButton(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId, userId: uid)
+            }
+            cell.likeButton.addTarget(self, action: #selector(likeComment(_:)), for: .touchUpInside)
             
             cell.optionButton.initCommentButton(index: indexPath.item)
             cell.optionButton.addTarget(self, action: #selector(touchUpCommentOptionButton(_:)), for: .touchUpInside)
