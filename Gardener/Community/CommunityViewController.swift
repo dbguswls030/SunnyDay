@@ -44,6 +44,7 @@ class CommunityViewController: UIViewController{
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print("viewWillAppear")
         refreshViewModel()
     }
     
@@ -179,9 +180,8 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDel
             if contentOffsetY > collectionViewContentSizeY - paginationY{
                 let startIndex = viewModel.numberOfBoards()
                 self.viewModel.setPaging(data: true)
-            
                 self.viewModel.setBoardModel { [weak self] in
-                    print("scrollViewDidScroll")
+
                     guard let self = self else {return}
                     let endIndex = self.viewModel.numberOfBoards()
                     let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}

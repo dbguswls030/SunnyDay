@@ -9,7 +9,7 @@ import Foundation
 import FirebaseFirestore
 
 class BoardViewModel{
-    private weak var query: Query? = nil
+    private var query: Query? = nil
     private var boards = [BoardModel]()
     private var paging = true
     private var lastPage = false

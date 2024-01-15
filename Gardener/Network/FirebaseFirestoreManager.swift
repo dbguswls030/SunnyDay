@@ -133,8 +133,9 @@ class FirebaseFirestoreManager{
                     return
                 }
             }
-            listener?.remove()
+            
             completion(models, self.db.collection("community").whereField("isDelete", isEqualTo: false).order(by: "date", descending: true).limit(to: 10).start(afterDocument: lastShapshot))
+            listener?.remove()
         }
     }
     
