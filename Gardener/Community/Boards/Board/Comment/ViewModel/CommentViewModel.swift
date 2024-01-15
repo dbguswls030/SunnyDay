@@ -11,16 +11,41 @@ import FirebaseFirestore
 class CommentViewModel{
     private var query: Query? = nil
     private var comments = [CommentModel]()
-
+    private var paging = true
+    private var lastPage = false
+    
     func setCommentModel(documentId: String, completion: @escaping () -> Void){
         FirebaseFirestoreManager.shared.getComments(query: self.query, documentId: documentId) { [weak self] models, query in
             guard let self = self else{
                 return
             }
+            guard !models.isEmpty else{
+                return
+            }
+            self.setPaging(data: false)
             self.query = query
-            self.comments = models
+            self.comments += models
+            
+            if models.count < 10{
+                self.setLastPage(data: true)
+            }
             completion()
         }
+    }
+    func isValidPaging() -> Bool{
+        return self.paging
+    }
+    
+    func isLastPage() -> Bool{
+        return self.lastPage
+    }
+    
+    func setLastPage(data: Bool){
+        self.lastPage = data
+    }
+    
+    func setPaging(data: Bool){
+        self.paging = data
     }
     
     func removeModel(index: Int){
@@ -28,9 +53,10 @@ class CommentViewModel{
     }
     
     func resetViewModel(){
-        print("resetViewModel")
         query = nil
         comments.removeAll()
+        paging = true
+        lastPage = false
     }
     
     func numberOfModel() -> Int{

@@ -92,7 +92,7 @@ class FirebaseFirestoreManager{
             do{
                 model = try document.data(as: BoardModel.self)
             }catch let error{
-                print("falied convert document to Data")
+                print("falied convert document to Data \(error.localizedDescription)")
                 return
             }
             completion(model)
@@ -213,7 +213,7 @@ class FirebaseFirestoreManager{
             // isHidden이 false 이거나, isHidden이 true이고 isEmptyReply가 false인 것들을 보여준다
             request = self.db.collection("community").document(documentId).collection("comment").whereFilter(Filter.orFilter(
                 [Filter.whereField("isHidden", isEqualTo: false),
-                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20)
+                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 10)
         }
         var listener: ListenerRegistration?
         listener = request.addSnapshotListener { snapshot, error in
@@ -251,7 +251,7 @@ class FirebaseFirestoreManager{
             listener?.remove()
             completion(models, self.db.collection("community").document(documentId).collection("comment").whereFilter(Filter.orFilter(
                 [Filter.whereField("isHidden", isEqualTo: false),
-                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 20).start(afterDocument: lastShapshot))
+                 Filter.andFilter([Filter.whereField("isHidden", isEqualTo: true), Filter.whereField("isEmptyReply", isEqualTo: false)])])).order(by: "parentId", descending: false).order(by: "dept", descending: false).order(by: "date", descending: false).limit(to: 10).start(afterDocument: lastShapshot))
         }
     }
     

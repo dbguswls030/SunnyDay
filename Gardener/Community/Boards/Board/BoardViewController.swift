@@ -23,6 +23,7 @@ class BoardViewController: UIViewController {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
+        scrollView.delegate = self
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.backgroundColor = .systemGray5
@@ -68,16 +69,21 @@ class BoardViewController: UIViewController {
             if self.commentViewModel.numberOfModel() == 0 {
                 return
             }
-            self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
+            FirebaseFirestoreManager.shared.getBoard(documentId: documentId) { model in
+                self.model = model
+                self.commentView.setCommentCount(count: model.commentCount)
+            }
+
             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
             self.commentView.commentCollectionView.reloadData()
             
             DispatchQueue.main.async {
-                let margin = self.commentViewModel.numberOfModel() * 5
+//                let margin = (self.commentViewModel.numberOfModel() - 1) * 8
                 self.commentView.snp.updateConstraints { make in
-                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
+                    make.height.equalTo(35 + self.commentView.getCommentLabelHeight() + Int(self.commentView.commentCollectionView.contentSize.height))
                 }
             }
+            
         }
     }
     
@@ -214,6 +220,7 @@ class BoardViewController: UIViewController {
         boardView.setNickName(nickName: model.nickName)
         boardView.setProfileImage(profileImageURL: model.profileImageURL)
         boardView.setLikeCount(likeCount: model.likeCount)
+        commentView.setCommentCount(count: model.commentCount)
     }
     
     private func initNavigationBar(){
@@ -361,10 +368,13 @@ class BoardViewController: UIViewController {
                     FirebaseFirestoreManager.shared.updateCommentThenDeleteComment(documentId: boardDocumentId, parentId: parentId) {
                         self.reinitCommentViewModel()
                         // 댓글이 있었는데 없어졌을 떄
+                        FirebaseFirestoreManager.shared.getBoard(documentId: boardDocumentId) { model in
+                            self.model = model
+                            self.commentView.setCommentCount(count: model.commentCount)
+                        }
                         if self.commentViewModel.numberOfModel() == 0{
                             self.commentView.commentCollectionView.reloadData()
                             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
-                            self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
                             self.commentView.snp.updateConstraints { make in
                                 make.height.equalTo(200)
                             }
@@ -461,6 +471,10 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 8
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == self.boardView.imageCollectionView{
             return CGSize(width: 150, height: 150)
@@ -480,6 +494,38 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             vc.imageUrls = model?.contentImageURLs
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: true)
+        }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard let boardDocumentId = model!.documentId else { return }
+
+        let contentOffsetY = self.commentView.commentCollectionView.contentOffset.y
+        let scrollViewContentSizeY = self.commentView.commentCollectionView.contentSize.height
+        let paginationY = self.commentView.commentCollectionView.frame.height
+        
+        if !commentViewModel.isValidPaging() && !commentViewModel.isLastPage(){
+            if contentOffsetY > scrollViewContentSizeY - paginationY{
+                let startIndex = commentViewModel.numberOfModel()
+                self.commentViewModel.setPaging(data: true)
+                self.commentViewModel.setCommentModel(documentId: boardDocumentId) {
+                    [weak self] in
+                    guard let self = self else {return}
+                    let endIndex = self.commentViewModel.numberOfModel()
+                    let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
+                    self.commentView.commentCollectionView.performBatchUpdates {
+                        self.commentView.commentCollectionView.insertItems(at: indexPath)
+                    } completion: { finish in
+                        if finish{
+                            DispatchQueue.main.async {
+                                self.commentView.snp.updateConstraints { make in
+                                    make.height.equalTo(35 + self.commentView.getCommentLabelHeight() + Int(self.commentView.commentCollectionView.contentSize.height))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
