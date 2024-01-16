@@ -17,17 +17,12 @@ class BoardCollectionViewCell: UICollectionViewCell {
     }()
     
     override func prepareForReuse() {
-//        super.prepareForReuse()
+        super.prepareForReuse()
         model = nil
         boardCellView.prepareReuseInitUI()
         boardCellView.imageCollectionView.gestureRecognizers = nil
-//        for indexPath in boardCellView.imageCollectionView.indexPathsForVisibleItems {
-//            if let cell = boardCellView.imageCollectionView.cellForItem(at: indexPath) as? BoardImageCollectionViewCell {
-//                cell.imageView.image = nil
-//            }
-//        }
-//        boardCellView.imageCollectionView.reloadData()
     }
+    
     func initUI(){
         self.addSubview(boardCellView)
         boardCellView.snp.makeConstraints { make in
@@ -41,7 +36,10 @@ class BoardCollectionViewCell: UICollectionViewCell {
         setContents(contents: model.contents)
         setDate(date: model.date)
         setImageUrl(urls: model.contentImageURLs)
+        setCommentCount(commentCount: model.commentCount)
+        setLikeCount(likeCount: model.likeCount)
     }
+    
     private func setCategroy(categroy: String){
         boardCellView.categroy.text = categroy
     }
@@ -58,7 +56,21 @@ class BoardCollectionViewCell: UICollectionViewCell {
         // TODO: 날짜 케이스, 분, 시간, 일
         boardCellView.date.text = date.convertDateToTime()
     }
- 
+    private func setCommentCount(commentCount: Int){
+        if commentCount > 0{
+            boardCellView.commentCountImageView.isHidden = false
+            boardCellView.commentCountLabel.isHidden = false
+            boardCellView.commentCountLabel.text = "\(commentCount)"
+        }
+    }
+    private func setLikeCount(likeCount: Int){
+        if likeCount > 0{
+            boardCellView.likeCountImageView.isHidden = false
+            boardCellView.likeCountLabel.isHidden = false
+            boardCellView.likeCountLabel.text = "\(likeCount)"
+        }
+    }
+    
     private func setImageUrl(urls: [String]){
         guard !urls.isEmpty else {
             return

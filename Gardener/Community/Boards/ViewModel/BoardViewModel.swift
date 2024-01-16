@@ -9,12 +9,12 @@ import Foundation
 import FirebaseFirestore
 
 class BoardViewModel{
-    private weak var query: Query? = nil
+    private var query: Query? = nil
     private var boards = [BoardModel]()
     private var paging = true
     private var lastPage = false
     
-    func setBoards(completion: @escaping () -> Void){
+    func setBoardModel(completion: @escaping () -> Void){
         FirebaseFirestoreManager.shared.getBoards(query: self.query) { [weak self] models, query in
             guard let self = self else{
                 return

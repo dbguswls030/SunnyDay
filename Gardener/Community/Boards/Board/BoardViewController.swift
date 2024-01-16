@@ -23,6 +23,7 @@ class BoardViewController: UIViewController {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
+        scrollView.delegate = self
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.backgroundColor = .systemGray5
@@ -59,25 +60,30 @@ class BoardViewController: UIViewController {
     }
     
     private func initCommentViewModel(){
-        guard let model = model else {
+        guard let model = model, let documentId = model.documentId  else {
             print("model is empty")
             return
         }
-        self.commentViewModel.setComments(boardId: model.boardId) { [weak self] in
+        self.commentViewModel.setCommentModel(documentId: documentId) { [weak self] in
             guard let self = self else { return }
             if self.commentViewModel.numberOfModel() == 0 {
                 return
             }
-            self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
+            FirebaseFirestoreManager.shared.getBoard(documentId: documentId) { model in
+                self.model = model
+                self.commentView.setCommentCount(count: model.commentCount)
+            }
+
             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
             self.commentView.commentCollectionView.reloadData()
             
             DispatchQueue.main.async {
-                let margin = self.commentViewModel.numberOfModel() * 5
+//                let margin = (self.commentViewModel.numberOfModel() - 1) * 8
                 self.commentView.snp.updateConstraints { make in
-                    make.height.equalTo(55 + Int(self.commentView.commentCollectionView.contentSize.height) + margin)
+                    make.height.equalTo(35 + self.commentView.getCommentLabelHeight() + Int(self.commentView.commentCollectionView.contentSize.height))
                 }
             }
+            
         }
     }
     
@@ -160,7 +166,7 @@ class BoardViewController: UIViewController {
         self.replyFlag = false
     }
     
-    private func reinitViewModel(){
+    private func reinitCommentViewModel(){
         self.commentViewModel.resetViewModel()
         initCommentViewModel()
     }
@@ -181,9 +187,9 @@ class BoardViewController: UIViewController {
         if let uid = Auth.auth().currentUser?.uid{
             FirebaseFirestoreManager.shared.getUserInfo(uid: uid) { [weak self] userModel in
                 guard let self = self else { return }
-                FirebaseFirestoreManager.shared.uploadComment(boardId: model.boardId, commentModel: CommentModel(parentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
+                FirebaseFirestoreManager.shared.uploadComment(documentId: model.documentId!, commentModel: CommentModel(parentId: parentId, content: comment, dept: dept, userId: uid, profileImageURL: userModel.profileImageURL, nickName: userModel.nickName)) { [weak self] in
                     guard let self = self else { return }
-                    self.reinitViewModel()
+                    self.reinitCommentViewModel()
                     self.commentWriteView.resetTextView()
                     if self.replyFlag == true{
                         self.deinitReplyNoticeView()
@@ -193,8 +199,7 @@ class BoardViewController: UIViewController {
             }
         }
     }
-    
-    
+        
     func setBoardModel(model: BoardModel){
         self.model = model
         initImageCollectionView()
@@ -215,6 +220,7 @@ class BoardViewController: UIViewController {
         boardView.setNickName(nickName: model.nickName)
         boardView.setProfileImage(profileImageURL: model.profileImageURL)
         boardView.setLikeCount(likeCount: model.likeCount)
+        commentView.setCommentCount(count: model.commentCount)
     }
     
     private func initNavigationBar(){
@@ -225,12 +231,21 @@ class BoardViewController: UIViewController {
         self.navigationItem.backBarButtonItem = backButton
         guard let model = model else { return }
         if model.uid == Auth.auth().currentUser?.uid{
-            let optionButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(touchUpOptionButton))
+            
+//            let button = UIButton(type: .custom)
+//            button.addTarget(self, action: #selector(touchUpOptionButton), for: .touchUpInside)
+//            button.setImage(UIImage(systemName: "ellipsis", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 55)), for: .normal)
+//            button.tintColor = .black
+//            button.imageView?.contentMode = .scaleAspectFit
+//            button.imageView?.transform = .init(rotationAngle: .pi/2)
+            
+            let optionButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis"), style: .plain, target: self, action: #selector(touchUpBoardOptionButton))
             optionButton.tintColor = .black
+//            let optionBButton = UIBarButtonItem(customView: button)
             self.navigationItem.rightBarButtonItem = optionButton
         }
     }
-    
+
     private func addLikeBoardButtonTarget(){
         boardView.likeButton.addTarget(self, action: #selector(likeBoard), for: .touchUpInside)
     }
@@ -239,7 +254,7 @@ class BoardViewController: UIViewController {
         guard let documentId = model!.documentId else{ return }
         if let uid = Auth.auth().currentUser?.uid{
             if boardView.likeButton.isSelected == false{
-                FirebaseFirestoreManager.shared.likeBoard(boardId: documentId, userId: uid) { [weak self] in
+                FirebaseFirestoreManager.shared.likeBoard(documentId: documentId, userId: uid) { [weak self] in
                     FirebaseFirestoreManager.shared.getBoard(documentId: documentId) { [weak self] model in
                         self?.model = model
                         self?.boardView.setLikeCount(likeCount: model.likeCount)
@@ -247,7 +262,7 @@ class BoardViewController: UIViewController {
                     }
                 }
             }else{
-                FirebaseFirestoreManager.shared.unLikeBoard(boardId: documentId, userId: uid) { [weak self] in
+                FirebaseFirestoreManager.shared.unLikeBoard(documentId: documentId, userId: uid) { [weak self] in
                     FirebaseFirestoreManager.shared.getBoard(documentId: documentId) { [weak self] model in
                         self?.model = model
                         self?.boardView.setLikeCount(likeCount: model.likeCount)
@@ -258,13 +273,39 @@ class BoardViewController: UIViewController {
         }
     }
     
-    @objc private func touchUpOptionButton(_ sender: UIBarButtonItem){
+    @objc private func likeComment(_ sender: UICommentLikeButton){
+        
+        guard let boardDocumentId = model!.documentId else { return }
+        guard let commentDocumentId = commentViewModel.getDocumentId(index: sender.index!) else { return }
+                
+        if let uid = Auth.auth().currentUser?.uid{
+            if sender.isSelected == false{
+                FirebaseFirestoreManager.shared.likeComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId, userId: uid) {
+                    FirebaseFirestoreManager.shared.getComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId) { CommentModel in
+                        sender.setLikeCount(likeCount: CommentModel.likeCount)
+                        sender.tintColor = .green
+                        sender.isSelected.toggle()
+                    }
+                }
+            }else{
+                FirebaseFirestoreManager.shared.unLikeComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId, userId: uid) {
+                    FirebaseFirestoreManager.shared.getComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId) { CommentModel in
+                        sender.setLikeCount(likeCount: CommentModel.likeCount)
+                        sender.tintColor = .lightGray
+                        sender.isSelected.toggle()
+                    }
+                }
+            }
+        }
+    }
+    
+    @objc private func touchUpBoardOptionButton(_ sender: UIBarButtonItem){
         guard let model = model else { return }
         let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let editBoard = UIAlertAction(title: "글 수정하기", style: .default) { [weak self] _ in
             guard let self = self else { return }
-            let vc = EditContentViewController()
+            let vc = EditBoardViewController()
             vc.model = model
             vc.editDelegate = self
             vc.setData()
@@ -275,9 +316,10 @@ class BoardViewController: UIViewController {
         let deleteBoard = UIAlertAction(title: "삭제하기", style: .destructive) { [weak self] _ in
             guard let self = self else { return }
             guard let documentId = self.model?.documentId else { return }
-            showActivityIndicator(alpha: 0.0)
+            
             showPopUp(title: "정말 게시글을 삭제하시겠습니까?", confirmButtonTitle: "삭제") { [weak self] in
                 guard let self = self else { return }
+                self.showActivityIndicator(alpha: 0.0)
                 FirebaseFirestoreManager.shared.deleteBoard(documentId: documentId) { [weak self] in
                     guard let self = self else { return }
                     self.hideActivityIndicator(alpha: 0.0)
@@ -299,30 +341,44 @@ class BoardViewController: UIViewController {
         self.present(actionSheetController, animated: true)
     }
     
-    @objc private func deleteComment(_ sender: UIDeleteButton){
-        guard let index = sender.index else { return }
-        guard let model = model else {return}
-        let boardId = model.boardId
-        showActivityIndicator(alpha: 0.0)
-        let parentId = commentViewModel.getParentId(index: index)
-        showPopUp(confirmButtonTitle: "삭제") { [weak self] in
-            guard let self = self else{
-                return
-            }
-            if let documentId = self.commentViewModel.getDocumentId(index: index){
-                FirebaseFirestoreManager.shared.deleteComment(boardId: boardId, documentId: documentId) {
-                    FirebaseFirestoreManager.shared.updateCommentThenDeleteComment(boardId: boardId, parentId: parentId) {
-                        self.reinitViewModel()
+    @objc private func touchUpCommentOptionButton(_ sender: UICommentOptionButton){
+        let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let editBoard = UIAlertAction(title: "댓글 수정하기", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            let vc = EditCommentViewController()
+            vc.boardDocumentId = model?.documentId!
+            vc.model = commentViewModel.getCommentModel(index: sender.index!)
+            vc.delegate = self
+            vc.setData()
+            vc.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+        
+        let deleteBoard = UIAlertAction(title: "삭제하기", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            guard let boardDocumentId = self.model?.documentId else { return }
+            guard let commentDocumentId = commentViewModel.getDocumentId(index: sender.index!) else {return}
+            let parentId = commentViewModel.getParentId(index: sender.index!)
+            showPopUp(title: "정말 댓글을 삭제하시겠습니까?", confirmButtonTitle: "삭제") { [weak self] in
+                guard let self = self else{
+                    return
+                }
+                FirebaseFirestoreManager.shared.deleteComment(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId) {
+                    FirebaseFirestoreManager.shared.updateCommentThenDeleteComment(documentId: boardDocumentId, parentId: parentId) {
+                        self.reinitCommentViewModel()
                         // 댓글이 있었는데 없어졌을 떄
+                        FirebaseFirestoreManager.shared.getBoard(documentId: boardDocumentId) { model in
+                            self.model = model
+                            self.commentView.setCommentCount(count: model.commentCount)
+                        }
                         if self.commentViewModel.numberOfModel() == 0{
                             self.commentView.commentCollectionView.reloadData()
                             self.commentView.setLabel(count: self.commentViewModel.numberOfModel())
-                            self.commentView.setCommentCount(count: self.commentViewModel.numberOfModel())
                             self.commentView.snp.updateConstraints { make in
                                 make.height.equalTo(200)
                             }
                         }
-                        self.hideActivityIndicator(alpha: 0.0)
                         DispatchQueue.main.async {
                             self.dismiss(animated: false)
                         }
@@ -330,6 +386,14 @@ class BoardViewController: UIViewController {
                 }
             }
         }
+        
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        if commentViewModel.getUid(index: sender.index!) == Auth.auth().currentUser?.uid{
+            actionSheetController.addAction(editBoard)
+            actionSheetController.addAction(deleteBoard)
+        }
+        actionSheetController.addAction(cancel)
+        self.present(actionSheetController, animated: true)
     }
 }
 
@@ -390,17 +454,25 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
                 cell.replyButton.addTarget(self, action: #selector(touchUpReplyButton), for: .touchUpInside)
             }
             
-            if let uid = Auth.auth().currentUser?.uid{
-                cell.setHiddenDeleteButton(isHidden: uid == commentViewModel.getUid(index: indexPath.item))
-                cell.deleteButton.initDeleteButton(index: indexPath.item)
-                cell.deleteButton.addTarget(self, action: #selector(deleteComment), for: .touchUpInside)
-            }
-            
             if commentViewModel.getDept(index: indexPath.item) == 1{
                 cell.updateConstraintsWithDept()
             }
+            
+            cell.likeButton.initCommentButton(index: indexPath.item)
+            cell.likeButton.setLikeCount(likeCount: commentViewModel.getLikeCount(index: indexPath.item))
+            if let boardDocumentId = model?.documentId, let commentDocumentId = commentViewModel.getDocumentId(index: indexPath.item), let uid = Auth.auth().currentUser?.uid{
+                cell.setLikeButton(boardDocumentId: boardDocumentId, commentDocumentId: commentDocumentId, userId: uid)
+            }
+            cell.likeButton.addTarget(self, action: #selector(likeComment(_:)), for: .touchUpInside)
+            
+            cell.optionButton.initCommentButton(index: indexPath.item)
+            cell.optionButton.addTarget(self, action: #selector(touchUpCommentOptionButton(_:)), for: .touchUpInside)
             return cell
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 8
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -422,6 +494,38 @@ extension BoardViewController: UICollectionViewDelegate, UICollectionViewDataSou
             vc.imageUrls = model?.contentImageURLs
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: true)
+        }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard let boardDocumentId = model!.documentId else { return }
+
+        let contentOffsetY = self.commentView.commentCollectionView.contentOffset.y
+        let scrollViewContentSizeY = self.commentView.commentCollectionView.contentSize.height
+        let paginationY = self.commentView.commentCollectionView.frame.height
+        
+        if !commentViewModel.isValidPaging() && !commentViewModel.isLastPage(){
+            if contentOffsetY > scrollViewContentSizeY - paginationY{
+                let startIndex = commentViewModel.numberOfModel()
+                self.commentViewModel.setPaging(data: true)
+                self.commentViewModel.setCommentModel(documentId: boardDocumentId) {
+                    [weak self] in
+                    guard let self = self else {return}
+                    let endIndex = self.commentViewModel.numberOfModel()
+                    let indexPath = (startIndex..<endIndex).map{ IndexPath(item: $0, section: 0)}
+                    self.commentView.commentCollectionView.performBatchUpdates {
+                        self.commentView.commentCollectionView.insertItems(at: indexPath)
+                    } completion: { finish in
+                        if finish{
+                            DispatchQueue.main.async {
+                                self.commentView.snp.updateConstraints { make in
+                                    make.height.equalTo(35 + self.commentView.getCommentLabelHeight() + Int(self.commentView.commentCollectionView.contentSize.height))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -504,6 +608,11 @@ extension BoardViewController: DelegateEditBoard{
         DispatchQueue.main.async {
             self.boardView.imageCollectionView.reloadData()
         }
-        
+    }
+}
+
+extension BoardViewController: DelegateEditComment{
+    func endEditComment() {
+        self.reinitCommentViewModel()
     }
 }

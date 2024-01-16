@@ -59,7 +59,37 @@ class BoardCellView: UIView {
         label.sizeToFit()
         return label
     }()
-
+    
+    lazy var commentCountImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(systemName: "bubble.right", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 11)))
+        imageView.isHidden = true
+        imageView.tintColor = .lightGray
+        return imageView
+    }()
+    
+    lazy var commentCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 11)
+        label.textColor = .lightGray
+        label.isHidden = true
+        return label
+    }()
+    
+    lazy var likeCountImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(systemName: "heart", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 11)))
+        imageView.isHidden = true
+        imageView.tintColor = .lightGray
+        return imageView
+    }()
+    
+    lazy var likeCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 11)
+        label.textColor = .lightGray
+        label.isHidden = true
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         initUI()
@@ -75,6 +105,10 @@ class BoardCellView: UIView {
         self.addSubview(title)
         self.addSubview(contents)
         self.addSubview(date)
+        self.addSubview(commentCountImageView)
+        self.addSubview(commentCountLabel)
+        self.addSubview(likeCountImageView)
+        self.addSubview(likeCountLabel)
         
         categroy.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(15)
@@ -99,8 +133,28 @@ class BoardCellView: UIView {
         date.snp.makeConstraints { make in
             make.top.equalTo(contents.snp.bottom).offset(15)
             make.left.equalToSuperview().offset(15)
-            make.right.equalToSuperview().offset(-15)
             make.bottom.equalToSuperview().offset(-20)
+        }
+        
+        likeCountLabel.snp.makeConstraints { make in
+            make.right.equalToSuperview().offset(-10)
+            make.centerY.equalTo(date.snp.centerY)
+            
+        }
+        
+        likeCountImageView.snp.makeConstraints { make in
+            make.right.equalTo(likeCountLabel.snp.left).offset(-3)
+            make.centerY.equalTo(date.snp.centerY)
+        }
+        
+        commentCountLabel.snp.makeConstraints { make in
+            make.right.equalTo(likeCountImageView.snp.left).offset(-8)
+            make.centerY.equalTo(likeCountLabel.snp.centerY)
+        }
+        
+        commentCountImageView.snp.makeConstraints { make in
+            make.right.equalTo(commentCountLabel.snp.left).offset(-3)
+            make.centerY.equalTo(date.snp.centerY)
         }
     }
 
@@ -116,7 +170,6 @@ class BoardCellView: UIView {
         date.snp.remakeConstraints { make in
             make.top.equalTo(imageCollectionView.snp.bottom).offset(15)
             make.left.equalToSuperview().offset(15)
-            make.right.equalToSuperview().offset(-15)
             make.bottom.equalToSuperview().offset(-20)
         }
     }
@@ -126,8 +179,11 @@ class BoardCellView: UIView {
         date.snp.remakeConstraints { make in
             make.top.equalTo(contents.snp.bottom).offset(15)
             make.left.equalToSuperview().offset(15)
-            make.right.equalToSuperview().offset(-15)
             make.bottom.equalToSuperview().offset(-20)
         }
+        likeCountLabel.text = ""
+        likeCountImageView.isHidden = true
+        commentCountLabel.text = ""
+        commentCountImageView.isHidden = true
     }
 }

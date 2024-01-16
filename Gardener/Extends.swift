@@ -52,4 +52,22 @@ extension UIImage{
             }
         }
     }
+    
+    func rotate(by: CGFloat) -> UIImage{
+        let rotatedView = UIView(frame: .init(x: 0, y: 0, width: size.width, height: size.height))
+        let affineTransform = CGAffineTransform(rotationAngle: by * CGFloat.pi / 180)
+        rotatedView.transform = affineTransform
+        
+        let rotatedSize = rotatedView.frame.size
+        UIGraphicsBeginImageContext(rotatedSize)
+        let bitmap = UIGraphicsGetCurrentContext()!
+        bitmap.translateBy(x: rotatedSize.width / 2, y: rotatedSize.height / 2)
+        bitmap.rotate(by: by * CGFloat.pi / 180)
+        bitmap.scaleBy(x: 1.0, y: -1.0)
+        bitmap.draw(cgImage!, in: .init(x: -size.width / 2, y: -size.height / 2, width: size.width, height: size.height))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return newImage
+    }
 }

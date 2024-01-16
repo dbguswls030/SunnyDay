@@ -88,5 +88,9 @@ class CommentView: UIView{
     func setCommentCount(count: Int){
         self.commentCountLabel.text = "\(count)"
     }
+    
+    func getCommentLabelHeight() -> Int{
+        return Int(ceil(self.commentLabel.frame.size.height))
+    }
 }
 

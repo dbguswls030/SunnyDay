@@ -87,7 +87,6 @@ class BoardView: UIView {
         button.layer.cornerRadius = 20
         button.layer.borderWidth = 1.5
         button.layer.borderColor = UIColor.systemGray5.cgColor
-//        button.addTarget(self, action: #selector(toggleLikeButton), for: .touchUpInside)
         return button
     }()
     
