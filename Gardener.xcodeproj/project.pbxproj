@@ -59,6 +59,7 @@
 		9FE3FE132B63B7AB00DA26CF /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE3FE122B63B7AB00DA26CF /* ChatTableViewCell.swift */; };
 		9FE3FE162B63BB5B00DA26CF /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE3FE152B63BB5B00DA26CF /* ChatViewModel.swift */; };
 		9FE3FE192B63BB7500DA26CF /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE3FE182B63BB7500DA26CF /* ChatModel.swift */; };
+		9FE3FE1C2B63D8ED00DA26CF /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE3FE1B2B63D8ED00DA26CF /* ChatViewController.swift */; };
 		9FEAE4542B2012EF005DC66E /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEAE4532B2012EF005DC66E /* UserModel.swift */; };
 		C92EDC768C5B4FE847B40B44 /* Pods_GardenerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CCD6EC441EDEEB71EC22DC0 /* Pods_GardenerTests.framework */; };
 		F0F87CBC36ED7911F509BA86 /* Pods_Gardener.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF8AE5FE8727CEABFF322993 /* Pods_Gardener.framework */; };
@@ -143,6 +144,7 @@
 		9FE3FE122B63B7AB00DA26CF /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
 		9FE3FE152B63BB5B00DA26CF /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		9FE3FE182B63BB7500DA26CF /* ChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModel.swift; sourceTree = "<group>"; };
+		9FE3FE1B2B63D8ED00DA26CF /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		9FEAE4532B2012EF005DC66E /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		AF8AE5FE8727CEABFF322993 /* Pods_Gardener.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gardener.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C8DBF515AC998ACE4F21D9 /* Pods-Gardener-GardenerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gardener-GardenerUITests.release.xcconfig"; path = "Target Support Files/Pods-Gardener-GardenerUITests/Pods-Gardener-GardenerUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 				9F13E0D229D2D95D00651EA0 /* ChatListViewController.swift */,
 				9FE3FE102B63AFEF00DA26CF /* ChatListView.swift */,
 				9FE3FE122B63B7AB00DA26CF /* ChatTableViewCell.swift */,
+				9FE3FE1A2B63D8C900DA26CF /* Chat Room */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -487,6 +490,14 @@
 				9FE3FE182B63BB7500DA26CF /* ChatModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		9FE3FE1A2B63D8C900DA26CF /* Chat Room */ = {
+			isa = PBXGroup;
+			children = (
+				9FE3FE1B2B63D8ED00DA26CF /* ChatViewController.swift */,
+			);
+			path = "Chat Room";
 			sourceTree = "<group>";
 		};
 		9FEAE4512B2012CE005DC66E /* User */ = {
@@ -784,6 +795,7 @@
 				9FB9E3752B2739B900D5B490 /* ReplyNoticeView.swift in Sources */,
 				9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */,
 				9F13E0D329D2D95D00651EA0 /* ChatListViewController.swift in Sources */,
+				9FE3FE1C2B63D8ED00DA26CF /* ChatViewController.swift in Sources */,
 				9FDFBF5D2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift in Sources */,
 				9FDFBF482ABB14AB00F5E9B3 /* CreateBoard.swift in Sources */,
 				9FCBD8872AFA612600FBBE27 /* BoardViewController.swift in Sources */,

@@ -50,5 +50,13 @@ class ChatListViewController: UIViewController {
                 cell.setChatTitle(chatTitle: item.title)
             }
             .disposed(by: disposeBag)
+        chatListView.chatTableView.rx.modelSelected(ChatModel.self)
+            .subscribe(onNext: { chatModel in
+                let vc = ChatViewController()
+                vc.setChatTitle(chatTitle: chatModel.title)
+//                vc.navigationItem.backBarButtonItem = .init(title: "", style: .plain, target: self, action: nil)
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }
