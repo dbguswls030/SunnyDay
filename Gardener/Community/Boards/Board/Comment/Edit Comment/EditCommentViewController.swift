@@ -38,7 +38,7 @@ class EditCommentViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     private func initUI(){
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .systemBackground
         self.view.addSubview(topBreakLine)
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(contentTextView)

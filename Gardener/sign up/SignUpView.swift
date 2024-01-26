@@ -88,7 +88,7 @@ class SignUpView: UIView {
     }
     
     private func initUI(){
-        backgroundColor = .white
+        backgroundColor = .systemBackground
         
         self.addSubview(profileTitle)
         self.addSubview(profileTitleBottomLine)

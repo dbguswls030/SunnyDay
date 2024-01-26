@@ -98,7 +98,7 @@ class CreateBoardViewController: UIViewController {
     }
     
     private func initUI(){
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .systemBackground
         
         self.view.addSubview(topBreakLine)
         self.view.addSubview(scrollView)

@@ -46,7 +46,7 @@ class CommentWriteView: UIView, UITextViewDelegate{
     }
     
     private func initUI(){
-        self.backgroundColor = .white
+        self.backgroundColor = .systemBackground
         
         self.addSubview(topBreakLine)
         self.addSubview(commentTextView)

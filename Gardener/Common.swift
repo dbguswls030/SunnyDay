@@ -110,7 +110,7 @@ class PopUpViewController: UIViewController{
     
     private lazy var contentView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.layer.cornerRadius = 15
         view.sizeToFit()
         return view

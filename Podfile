@@ -16,6 +16,8 @@ target 'Gardener' do
   pod 'KakaoSDKCommon'
   pod 'KakaoSDKUser'
   pod 'KakaoSDKAuth'
+  pod 'ReactorKit'
+  pod 'RxCocoa'
   target 'GardenerTests' do
     inherit! :search_paths
     # Pods for testing

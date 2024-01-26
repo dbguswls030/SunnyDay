@@ -12,7 +12,7 @@
 		9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0414852A6557BF00DD6F2C /* SignUpViewController.swift */; };
 		9F0414882A6557DB00DD6F2C /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0414872A6557DB00DD6F2C /* SignUpView.swift */; };
 		9F13E0D129D2D95000651EA0 /* MyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D029D2D95000651EA0 /* MyViewController.swift */; };
-		9F13E0D329D2D95D00651EA0 /* ShopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D229D2D95D00651EA0 /* ShopViewController.swift */; };
+		9F13E0D329D2D95D00651EA0 /* ChatListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D229D2D95D00651EA0 /* ChatListViewController.swift */; };
 		9F13E0D529D2D96400651EA0 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D429D2D96400651EA0 /* HomeViewController.swift */; };
 		9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D629D2D97200651EA0 /* CommunityViewController.swift */; };
 		9F13E0D929D2D97C00651EA0 /* GardenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D829D2D97C00651EA0 /* GardenViewController.swift */; };
@@ -55,6 +55,10 @@
 		9FDD56962AA09F1200C35268 /* BoardCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDD56952AA09F1200C35268 /* BoardCellView.swift */; };
 		9FDFBF482ABB14AB00F5E9B3 /* CreateBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDFBF472ABB14AB00F5E9B3 /* CreateBoard.swift */; };
 		9FDFBF5D2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDFBF5C2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift */; };
+		9FE3FE112B63AFEF00DA26CF /* ChatListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE3FE102B63AFEF00DA26CF /* ChatListView.swift */; };
+		9FE3FE132B63B7AB00DA26CF /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE3FE122B63B7AB00DA26CF /* ChatTableViewCell.swift */; };
+		9FE3FE162B63BB5B00DA26CF /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE3FE152B63BB5B00DA26CF /* ChatViewModel.swift */; };
+		9FE3FE192B63BB7500DA26CF /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE3FE182B63BB7500DA26CF /* ChatModel.swift */; };
 		9FEAE4542B2012EF005DC66E /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEAE4532B2012EF005DC66E /* UserModel.swift */; };
 		C92EDC768C5B4FE847B40B44 /* Pods_GardenerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CCD6EC441EDEEB71EC22DC0 /* Pods_GardenerTests.framework */; };
 		F0F87CBC36ED7911F509BA86 /* Pods_Gardener.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF8AE5FE8727CEABFF322993 /* Pods_Gardener.framework */; };
@@ -88,7 +92,7 @@
 		9F0414852A6557BF00DD6F2C /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		9F0414872A6557DB00DD6F2C /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		9F13E0D029D2D95000651EA0 /* MyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyViewController.swift; sourceTree = "<group>"; };
-		9F13E0D229D2D95D00651EA0 /* ShopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewController.swift; sourceTree = "<group>"; };
+		9F13E0D229D2D95D00651EA0 /* ChatListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListViewController.swift; sourceTree = "<group>"; };
 		9F13E0D429D2D96400651EA0 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		9F13E0D629D2D97200651EA0 /* CommunityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewController.swift; sourceTree = "<group>"; };
 		9F13E0D829D2D97C00651EA0 /* GardenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenViewController.swift; sourceTree = "<group>"; };
@@ -135,6 +139,10 @@
 		9FDD56952AA09F1200C35268 /* BoardCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardCellView.swift; sourceTree = "<group>"; };
 		9FDFBF472ABB14AB00F5E9B3 /* CreateBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateBoard.swift; sourceTree = "<group>"; };
 		9FDFBF5C2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardImageCollectionViewCell.swift; sourceTree = "<group>"; };
+		9FE3FE102B63AFEF00DA26CF /* ChatListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListView.swift; sourceTree = "<group>"; };
+		9FE3FE122B63B7AB00DA26CF /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
+		9FE3FE152B63BB5B00DA26CF /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		9FE3FE182B63BB7500DA26CF /* ChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModel.swift; sourceTree = "<group>"; };
 		9FEAE4532B2012EF005DC66E /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		AF8AE5FE8727CEABFF322993 /* Pods_Gardener.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gardener.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C8DBF515AC998ACE4F21D9 /* Pods-Gardener-GardenerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gardener-GardenerUITests.release.xcconfig"; path = "Target Support Files/Pods-Gardener-GardenerUITests/Pods-Gardener-GardenerUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -241,12 +249,16 @@
 			path = Community;
 			sourceTree = "<group>";
 		};
-		9F13E0CF29D2D8E000651EA0 /* Shop */ = {
+		9F13E0CF29D2D8E000651EA0 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				9F13E0D229D2D95D00651EA0 /* ShopViewController.swift */,
+				9FE3FE172B63BB6200DA26CF /* Model */,
+				9FE3FE142B63BB4900DA26CF /* View Model */,
+				9F13E0D229D2D95D00651EA0 /* ChatListViewController.swift */,
+				9FE3FE102B63AFEF00DA26CF /* ChatListView.swift */,
+				9FE3FE122B63B7AB00DA26CF /* ChatTableViewCell.swift */,
 			);
-			path = Shop;
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		9F5AD0B32AB1B592002105DE /* Boards */ = {
@@ -347,7 +359,7 @@
 				9F13E0CD29D2D8DC00651EA0 /* Garden */,
 				9F13E0CE29D2D8DE00651EA0 /* Community */,
 				9F13E0CB29D2D8D500651EA0 /* Home */,
-				9F13E0CF29D2D8E000651EA0 /* Shop */,
+				9F13E0CF29D2D8E000651EA0 /* Chat */,
 				9F13E0CC29D2D8DA00651EA0 /* My */,
 				9FB122932A8E697300C346E7 /* Popup */,
 				9F95B9D82A2DC8B100A5E247 /* Common.swift */,
@@ -459,6 +471,22 @@
 				9FDFBF5C2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift */,
 			);
 			path = "image Cell";
+			sourceTree = "<group>";
+		};
+		9FE3FE142B63BB4900DA26CF /* View Model */ = {
+			isa = PBXGroup;
+			children = (
+				9FE3FE152B63BB5B00DA26CF /* ChatViewModel.swift */,
+			);
+			path = "View Model";
+			sourceTree = "<group>";
+		};
+		9FE3FE172B63BB6200DA26CF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				9FE3FE182B63BB7500DA26CF /* ChatModel.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		9FEAE4512B2012CE005DC66E /* User */ = {
@@ -750,11 +778,12 @@
 				9F9E11BF29C4C3B70090B2E6 /* AppDelegate.swift in Sources */,
 				9FEAE4542B2012EF005DC66E /* UserModel.swift in Sources */,
 				9FA37F212B1503700065BE3D /* CommentView.swift in Sources */,
+				9FE3FE112B63AFEF00DA26CF /* ChatListView.swift in Sources */,
 				9FB9E3782B2EF5D400D5B490 /* CommentModel.swift in Sources */,
 				9F8F6A662B5130C3004ACF69 /* EditCommentViewController.swift in Sources */,
 				9FB9E3752B2739B900D5B490 /* ReplyNoticeView.swift in Sources */,
 				9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */,
-				9F13E0D329D2D95D00651EA0 /* ShopViewController.swift in Sources */,
+				9F13E0D329D2D95D00651EA0 /* ChatListViewController.swift in Sources */,
 				9FDFBF5D2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift in Sources */,
 				9FDFBF482ABB14AB00F5E9B3 /* CreateBoard.swift in Sources */,
 				9FCBD8872AFA612600FBBE27 /* BoardViewController.swift in Sources */,
@@ -774,6 +803,7 @@
 				9F13E0D529D2D96400651EA0 /* HomeViewController.swift in Sources */,
 				9FA37F232B1710670065BE3D /* CommentWriteView.swift in Sources */,
 				9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */,
+				9FE3FE192B63BB7500DA26CF /* ChatModel.swift in Sources */,
 				9FDD56922AA080B500C35268 /* CommunityView.swift in Sources */,
 				9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */,
 				9FB1229B2A8E780800C346E7 /* Toast.swift in Sources */,
@@ -781,6 +811,8 @@
 				9F0414882A6557DB00DD6F2C /* SignUpView.swift in Sources */,
 				9F0139EF2B1A7A2E00678519 /* CommentViewModel.swift in Sources */,
 				9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */,
+				9FE3FE162B63BB5B00DA26CF /* ChatViewModel.swift in Sources */,
+				9FE3FE132B63B7AB00DA26CF /* ChatTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

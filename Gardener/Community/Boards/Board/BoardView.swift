@@ -114,7 +114,7 @@ class BoardView: UIView {
     }
     
     private func initUI(){
-        self.backgroundColor = .white
+        self.backgroundColor = .systemBackground
         self.addSubview(navigationBottomBreakLine)
         self.addSubview(boardTitleLabel)
         self.addSubview(profileImage)

@@ -100,7 +100,7 @@ class BoardCellView: UIView {
     }
     
     private func initUI(){
-        self.backgroundColor = .white
+        self.backgroundColor = .systemBackground
         self.addSubview(categroy)
         self.addSubview(title)
         self.addSubview(contents)

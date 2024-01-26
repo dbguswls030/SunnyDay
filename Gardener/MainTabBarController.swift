@@ -20,10 +20,10 @@ class MainTabBarController: UITabBarController {
         let gardenViewController = UINavigationController(rootViewController: GardenViewController())
         let communityViewController = UINavigationController(rootViewController: CommunityViewController())
         let homeViewController = UINavigationController(rootViewController: HomeViewController())
-        let shopViewController = UINavigationController(rootViewController: ShopViewController())
+        let chatListViewController = UINavigationController(rootViewController: ChatListViewController())
         let myViewController = UINavigationController(rootViewController: MyViewController())
         
-        viewControllers = [gardenViewController,communityViewController,homeViewController,shopViewController,myViewController]
+        viewControllers = [gardenViewController,communityViewController,homeViewController,chatListViewController,myViewController]
     }
     
     func loginThenShowUserInfo(){
@@ -53,7 +53,7 @@ class MainTabBarController: UITabBarController {
         if #available(iOS 15.0, *){
             let appearance = UITabBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = .white
+            appearance.backgroundColor = .systemBackground
             tabBar.standardAppearance = appearance
             tabBar.scrollEdgeAppearance = appearance
         }
@@ -75,7 +75,7 @@ class MainTabBarController: UITabBarController {
             items[0].image = UIImage(systemName: "camera.macro.circle", withConfiguration: imageConfiguartion)
             items[0].title = "가드닝"
             
-            items[1].selectedImage = UIImage(systemName: "bubble.left.and.bubble.right.fill", withConfiguration: imageConfiguartion)
+            items[1].selectedImage = UIImage(systemName: "newspaper.fill", withConfiguration: imageConfiguartion)
             items[1].image = UIImage(systemName: "bubble.left.and.bubble.right", withConfiguration: imageConfiguartion)
             items[1].title = "게시판"
             
@@ -83,9 +83,9 @@ class MainTabBarController: UITabBarController {
             items[2].image = UIImage(systemName: "house", withConfiguration: imageConfiguartion)
             items[2].title = "홈"
             
-            items[3].selectedImage = UIImage(systemName: "bag.fill", withConfiguration: imageConfiguartion)
+            items[3].selectedImage = UIImage(systemName: "bubble.left.and.bubble.right.fill", withConfiguration: imageConfiguartion)
             items[3].image = UIImage(systemName: "bag", withConfiguration: imageConfiguartion)
-            items[3].title = "쇼핑"
+            items[3].title = "채팅"
             
             items[4].selectedImage = UIImage(systemName: "person.circle.fill", withConfiguration: imageConfiguartion)
             items[4].image = UIImage(systemName: "person.circle", withConfiguration: imageConfiguartion)

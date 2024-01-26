@@ -63,7 +63,7 @@ class CommunityViewController: UIViewController{
     
     private func initUI(){
         self.view.addSubview(communityView)
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .systemBackground
         communityView.snp.makeConstraints { make in
 //            make.top.equalToSuperview()
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)

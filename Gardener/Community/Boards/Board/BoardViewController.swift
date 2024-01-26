@@ -97,7 +97,7 @@ class BoardViewController: UIViewController {
     }
     
     private func initUI(){
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .systemBackground
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(boardView)
         self.scrollView.addSubview(commentView)

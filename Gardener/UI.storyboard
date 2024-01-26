@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -20,7 +20,7 @@
                         <viewLayoutGuide key="safeArea" id="tkY-U7-zMw"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="게시판" image="bubble.left.and.bubble.right.fill" catalog="system" id="qxL-LB-79P"/>
+                    <tabBarItem key="tabBarItem" title="게시판" image="newspaper.fill" catalog="system" id="qxL-LB-79P"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fEO-WS-J9F" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -42,7 +42,7 @@
             </objects>
             <point key="canvasLocation" x="-3996" y="389"/>
         </scene>
-        <!--쇼핑-->
+        <!--채팅-->
         <scene sceneID="mMq-Pp-WPS">
             <objects>
                 <viewController id="Mw4-7J-RNL" sceneMemberID="viewController">
@@ -52,7 +52,7 @@
                         <viewLayoutGuide key="safeArea" id="hvz-In-4EV"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="쇼핑" image="bag.fill" catalog="system" id="3z4-7g-fcg"/>
+                    <tabBarItem key="tabBarItem" title="채팅" image="bubble.left.and.bubble.right.fill" catalog="system" id="3z4-7g-fcg"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MEf-oW-SHc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -148,6 +148,7 @@
         <image name="bubble.left.and.bubble.right" catalog="system" width="128" height="96"/>
         <image name="bubble.left.and.bubble.right.fill" catalog="system" width="128" height="102"/>
         <image name="house.fill" catalog="system" width="128" height="104"/>
+        <image name="newspaper.fill" catalog="system" width="128" height="112"/>
         <image name="person.circle.fill" catalog="system" width="128" height="123"/>
         <image name="sun.haze" catalog="system" width="128" height="118"/>
         <image name="sun.haze.fill" catalog="system" width="128" height="118"/>
