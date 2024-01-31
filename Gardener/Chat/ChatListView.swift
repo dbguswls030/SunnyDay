@@ -12,6 +12,7 @@ class ChatListView: UIView {
     
     lazy var chatTableView: UITableView = {
         var tableView = UITableView()
+        tableView.separatorStyle = .none
         return tableView
     }()
     

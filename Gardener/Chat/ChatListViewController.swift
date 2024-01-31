@@ -25,9 +25,13 @@ class ChatListViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .systemBackground
         initUI()
-        initNavigationBar()
         setChatTableView()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        initNavigationBar()
+    }
+    
     
     private func initUI(){
         self.view.addSubview(chatListView)
@@ -39,24 +43,35 @@ class ChatListViewController: UIViewController {
     }
     
     private func initNavigationBar(){
-        self.title = "채팅 목록"
+        self.title = "채팅"
     }
     
     private func setChatTableView(){
         chatListView.chatTableView.register(ChatTableViewCell.self, forCellReuseIdentifier: "chatCell")
         chatListView.chatTableView.rowHeight = 100
+        
         chatViewModel.getChatList()
             .bind(to: chatListView.chatTableView.rx.items(cellIdentifier: "chatCell", cellType: ChatTableViewCell.self)) { index, item, cell in
                 cell.setChatTitle(chatTitle: item.title)
             }
             .disposed(by: disposeBag)
+        
+        
         chatListView.chatTableView.rx.modelSelected(ChatModel.self)
             .subscribe(onNext: { chatModel in
                 let vc = ChatViewController()
                 vc.setChatTitle(chatTitle: chatModel.title)
-//                vc.navigationItem.backBarButtonItem = .init(title: "", style: .plain, target: self, action: nil)
+                vc.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
+        
+        chatListView.chatTableView.rx.itemSelected
+            .bind(onNext: { indexPath in
+                self.chatListView.chatTableView.deselectRow(at: indexPath, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
+    
+    
 }

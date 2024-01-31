@@ -14,7 +14,7 @@ class MainTabBarController: UITabBarController {
         // Do any additional setup after loading the view.
         connectNavigationControllerToTabBarController()
         setUI()
-        loginThenShowUserInfo()
+//        loginThenShowUserInfo()
     }
     func connectNavigationControllerToTabBarController(){
         let gardenViewController = UINavigationController(rootViewController: GardenViewController())
@@ -76,7 +76,7 @@ class MainTabBarController: UITabBarController {
             items[0].title = "가드닝"
             
             items[1].selectedImage = UIImage(systemName: "newspaper.fill", withConfiguration: imageConfiguartion)
-            items[1].image = UIImage(systemName: "bubble.left.and.bubble.right", withConfiguration: imageConfiguartion)
+            items[1].image = UIImage(systemName: "newspaper", withConfiguration: imageConfiguartion)
             items[1].title = "게시판"
             
             items[2].selectedImage = UIImage(systemName: "house.fill", withConfiguration: imageConfiguartion)
@@ -84,7 +84,7 @@ class MainTabBarController: UITabBarController {
             items[2].title = "홈"
             
             items[3].selectedImage = UIImage(systemName: "bubble.left.and.bubble.right.fill", withConfiguration: imageConfiguartion)
-            items[3].image = UIImage(systemName: "bag", withConfiguration: imageConfiguartion)
+            items[3].image = UIImage(systemName: "bubble.left.and.bubble.right", withConfiguration: imageConfiguartion)
             items[3].title = "채팅"
             
             items[4].selectedImage = UIImage(systemName: "person.circle.fill", withConfiguration: imageConfiguartion)
