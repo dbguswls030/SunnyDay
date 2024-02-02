@@ -15,7 +15,7 @@ class ChatListViewController: UIViewController {
 
     var disposeBag = DisposeBag()
     
-    var chatViewModel = ChatViewModel()
+    var chatViewModel = ChatListViewModel()
     
     private lazy var chatListView: ChatListView = {
         return ChatListView()
@@ -50,14 +50,14 @@ class ChatListViewController: UIViewController {
         chatListView.chatTableView.register(ChatTableViewCell.self, forCellReuseIdentifier: "chatCell")
         chatListView.chatTableView.rowHeight = 100
         
-        chatViewModel.getChatList()
+        chatViewModel.getChatRoomList()
             .bind(to: chatListView.chatTableView.rx.items(cellIdentifier: "chatCell", cellType: ChatTableViewCell.self)) { index, item, cell in
                 cell.setChatTitle(chatTitle: item.title)
             }
             .disposed(by: disposeBag)
         
         
-        chatListView.chatTableView.rx.modelSelected(ChatModel.self)
+        chatListView.chatTableView.rx.modelSelected(ChatRoomModel.self)
             .subscribe(onNext: { chatModel in
                 let vc = ChatViewController()
                 vc.setChatTitle(chatTitle: chatModel.title)

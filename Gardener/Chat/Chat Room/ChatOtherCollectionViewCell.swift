@@ -9,6 +9,9 @@ import UIKit
 import SnapKit
 
 class ChatOtherCollectionViewCell: UICollectionViewCell {
+    
+    static let identifier = "OtherChatCell"
+    
     private lazy var profileImageView: UIImageView = {
         var imageView = UIImageView()
         return imageView
@@ -66,7 +69,7 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         contentTextView.snp.makeConstraints { make in
             make.top.equalTo(nickNameLabel.snp.bottom).offset(5)
             make.left.equalTo(profileImageView.snp.right).offset(5)
-            make.right.lessThanOrEqualToSuperview().offset(40)
+            make.right.lessThanOrEqualToSuperview().offset(-80)
         }
         
         timeLabel.snp.makeConstraints { make in
@@ -75,7 +78,11 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    
+    func setData(model: ChatModel){
+        self.timeLabel.text = model.date.convertDateToTime()
+        self.contentTextView.text = model.message
+        self.nickNameLabel.text = model.nickName
+    }
     
     
     

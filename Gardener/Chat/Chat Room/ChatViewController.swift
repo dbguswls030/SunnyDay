@@ -13,7 +13,7 @@ import RxCocoa
 class ChatViewController: UIViewController {
     
     // TODO: 임시 ViewModel 만들어서 테스트해보기
-    
+    var chatViewModel = ChatViewModel()
     
     var disposeBag = DisposeBag()
     
@@ -21,12 +21,46 @@ class ChatViewController: UIViewController {
         return InputBarView()
     }()
     
+    private lazy var chatCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.showsVerticalScrollIndicator = false
+        return collectionView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboard()
         initUI()
         setSendButton()
-        setInputTextView()
+        setInputBarView()
+        initCollectionView()
+        
+    }
+    
+    private func initCollectionView(){
+        chatCollectionView.delegate = self
+        chatCollectionView.register(ChatMyCollectionViewCell.self, forCellWithReuseIdentifier: ChatMyCollectionViewCell.identifier)
+        chatCollectionView.register(ChatOtherCollectionViewCell.self, forCellWithReuseIdentifier: ChatOtherCollectionViewCell.identifier)
+        
+        chatViewModel.chatList
+            .bind(to: chatCollectionView.rx.items) { collectionView, index, model in
+                if model.uid == "My"{
+                    let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatMyCollectionViewCell
+                
+                    cell.setData(model: model)
+                    
+                    return cell
+                }else{
+                    let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatOtherCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatOtherCollectionViewCell
+                    
+                    cell.setData(model: model)
+                    
+                    return cell
+                }
+            }
+            .disposed(by: disposeBag)
     }
     
     private func initUI(){
@@ -34,7 +68,15 @@ class ChatViewController: UIViewController {
         self.navigationController?.navigationBar.tintColor = .black
         self.navigationController?.navigationBar.topItem?.title = ""
         
+        self.view.addSubview(chatCollectionView)
         self.view.addSubview(inputBarView)
+
+        
+        chatCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(inputBarView.snp.top)
+        }
         
         inputBarView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
@@ -63,7 +105,7 @@ class ChatViewController: UIViewController {
         // TODO: 버튼 클릭 시
     }
     
-    private func setInputTextView(){
+    private func setInputBarView(){
         // 텍스트 입력 시 동적 높이 조절
         inputBarView.inputTextView.rx.text
             .orEmpty
@@ -71,7 +113,7 @@ class ChatViewController: UIViewController {
             .bind{ text in
                 let size = CGSize(width: self.inputBarView.inputTextView.frame.width, height: .infinity)
                 let estimatedSize = self.inputBarView.inputTextView.sizeThatFits(size)
-
+                
                 self.inputBarView.inputTextView.constraints.forEach { constraint in
                     if estimatedSize.height >= 120{
                         self.inputBarView.inputTextView.isScrollEnabled = true
@@ -84,5 +126,30 @@ class ChatViewController: UIViewController {
                     }
                 }
             }.disposed(by: disposeBag)
+        
+        // 버튼을 누르면
+        // textView에 있는 내용과 여러 정보들을 포함해서
+        // chatList subject에 next로 전달하는거
+        
+        inputBarView.sendButton.rx
+            .tap
+            .map{
+                let message = self.inputBarView.inputTextView.text ?? ""
+                self.inputBarView.inputTextView.text = ""
+                return ChatModel(profileImageURL: "", nickName: "나", message: message, date: Date(), uid: "My")
+            }
+            .scan([]) { chatModels, newChatModel in
+                return chatModels + [newChatModel]
+            }
+            .startWith([])
+            .bind(to: self.chatViewModel.chatList)
+            .disposed(by: disposeBag)
+    }
+}
+
+
+extension ChatViewController: UICollectionViewDelegateFlowLayout{
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.bounds.size.width, height: 100)
     }
 }

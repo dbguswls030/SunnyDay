@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct ChatModel{
+struct ChatRoomModel{
     var title: String
 }

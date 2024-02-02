@@ -8,6 +8,9 @@
 import UIKit
 import SnapKit
 class ChatMyCollectionViewCell: UICollectionViewCell {
+    
+    static let identifier = "MyChatCell"
+    
     private lazy var contentTextView: UITextView = {
         var textView = UITextView()
         textView.isScrollEnabled = false
@@ -43,7 +46,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         contentTextView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.right.equalToSuperview().offset(-5)
-            make.left.lessThanOrEqualToSuperview().offset(40)
+            make.left.greaterThanOrEqualToSuperview().offset(80)
         }
         
         timeLabel.snp.makeConstraints { make in
@@ -51,4 +54,11 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
             make.right.equalTo(contentTextView.snp.left).offset(-3)
         }
     }
+    
+    
+    func setData(model: ChatModel){
+        self.timeLabel.text = model.date.convertDateToTime()
+        self.contentTextView.text = model.message
+    }
+    
 }
