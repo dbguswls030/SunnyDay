@@ -16,11 +16,15 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         textView.isScrollEnabled = false
         textView.isEditable = false
         textView.backgroundColor = .green
+        textView.layer.masksToBounds = true
+        textView.font = UIFont.systemFont(ofSize: 14)
         return textView
     }()
     
     private lazy var timeLabel: UILabel = {
         var label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 10, weight: .light)
+        label.textColor = .systemGray
         return label
     }()
     
@@ -45,7 +49,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         
         contentTextView.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.right.equalToSuperview().offset(-5)
+            make.right.equalToSuperview().offset(-8)
             make.left.greaterThanOrEqualToSuperview().offset(80)
         }
         
@@ -61,4 +65,8 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         self.contentTextView.text = model.message
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentTextView.layer.cornerRadius = min(contentTextView.bounds.height, contentTextView.bounds.width) * 0.1
+    }
 }

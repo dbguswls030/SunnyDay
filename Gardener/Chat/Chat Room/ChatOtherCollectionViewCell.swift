@@ -27,11 +27,15 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         textView.isScrollEnabled = false
         textView.isEditable = false
         textView.backgroundColor = .blue
+        textView.layer.masksToBounds = true
+        textView.font = UIFont.systemFont(ofSize: 14)
         return textView
     }()
     
     private lazy var timeLabel: UILabel = {
         var label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 10, weight: .light)
+        label.textColor = .systemGray
         return label
     }()
     
@@ -57,7 +61,7 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         
         profileImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.left.equalToSuperview().offset(5)
+            make.left.equalToSuperview().offset(8)
             make.width.height.equalTo(45)
         }
         
@@ -84,6 +88,9 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         self.nickNameLabel.text = model.nickName
     }
     
-    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentTextView.layer.cornerRadius = min(contentTextView.bounds.height, contentTextView.bounds.width) * 0.1
+    }
     
 }

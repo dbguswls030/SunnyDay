@@ -17,7 +17,8 @@ class InputBarView: UIView {
     lazy var inputTextView: UITextView = {
         var textView = UITextView()
         textView.backgroundColor = .systemGray6
-        textView.contentInset = .init(top: 0, left: 8, bottom: 0, right: 8)
+        textView.contentInset = .init(top: 0, left: 4, bottom: 0, right: 4)
+        textView.textContainerInset = .init(top: 8, left: 4, bottom: 8, right: 4)
         textView.alignTextVerticallyInContainer()
         textView.isScrollEnabled = false
         textView.font = UIFont.systemFont(ofSize: 15)
