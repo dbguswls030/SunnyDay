@@ -16,7 +16,6 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         textView.isScrollEnabled = false
         textView.isEditable = false
         textView.backgroundColor = .green
-        textView.layer.masksToBounds = true
         textView.font = UIFont.systemFont(ofSize: 14)
         return textView
     }()
@@ -38,7 +37,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
     }
     
     override func prepareForReuse() {
-        
+        contentTextView.text = ""
     }
     
     private func initUI(){
@@ -50,7 +49,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         contentTextView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.right.equalToSuperview().offset(-8)
-            make.left.greaterThanOrEqualToSuperview().offset(80)
+            make.width.lessThanOrEqualToSuperview().offset(-110).priority(.high)
         }
         
         timeLabel.snp.makeConstraints { make in
@@ -64,9 +63,14 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         self.timeLabel.text = model.date.convertDateToTime()
         self.contentTextView.text = model.message
     }
+
     
     override func layoutSubviews() {
         super.layoutSubviews()
         contentTextView.layer.cornerRadius = min(contentTextView.bounds.height, contentTextView.bounds.width) * 0.1
+    }
+    
+    func getTextViewHeight() -> CGFloat{
+        return contentTextView.intrinsicContentSize.height
     }
 }

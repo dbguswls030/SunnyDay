@@ -93,4 +93,5 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         contentTextView.layer.cornerRadius = min(contentTextView.bounds.height, contentTextView.bounds.width) * 0.1
     }
     
+    
 }

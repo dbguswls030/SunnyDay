@@ -145,11 +145,31 @@ class ChatViewController: UIViewController {
             .bind(to: self.chatViewModel.chatList)
             .disposed(by: disposeBag)
     }
+    
+    private func configureCell(collectionView: UICollectionView, index: Int, model: ChatModel) -> UICollectionViewCell{
+        if model.uid == "My"{
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as? ChatMyCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            cell.setData(model: model)
+            return cell
+        }else{
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatOtherCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as? ChatOtherCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            cell.setData(model: model)
+            return cell
+        }
+    }
 }
 
 
 extension ChatViewController: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.size.width, height: 100)
+        guard let cell = self.configureCell(collectionView: collectionView, index: indexPath.item, model: chatViewModel.getChatModel(at: indexPath.item)!) as? ChatMyCollectionViewCell else{
+            return CGSize(width: collectionView.bounds.size.width, height: 100)
+        }
+        return CGSize(width: collectionView.bounds.size.width, height: cell.getTextViewHeight())
+//        return CGSize(width: collectionView.bounds.size.width, height: 100)
     }
 }
