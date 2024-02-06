@@ -232,4 +232,13 @@ extension Date{
             return "\(intervalTime/60/24/365)년 전"
         }
     }
+    
+    func convertDateToCurrentTime() -> String{
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "a h:mm"
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
+    
+        return dateFormatter.string(from: self)
+    }
 }

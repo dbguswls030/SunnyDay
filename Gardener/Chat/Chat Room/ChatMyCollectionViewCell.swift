@@ -60,7 +60,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
     
     
     func setData(model: ChatModel){
-        self.timeLabel.text = model.date.convertDateToTime()
+        self.timeLabel.text = model.date.convertDateToCurrentTime()
         self.contentTextView.text = model.message
     }
 
