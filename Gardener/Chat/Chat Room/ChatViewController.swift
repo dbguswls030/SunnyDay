@@ -95,7 +95,7 @@ class ChatViewController: UIViewController {
             .orEmpty
             .distinctUntilChanged()
             .bind{ text in
-                if text.count == 0 {
+                if text.trimmingCharacters(in: .whitespaces).isEmpty {
                     self.inputBarView.sendButton.isEnabled = false
                 }else{
                     self.inputBarView.sendButton.isEnabled = true
