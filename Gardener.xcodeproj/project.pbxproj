@@ -18,6 +18,7 @@
 		9F13E0D929D2D97C00651EA0 /* GardenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D829D2D97C00651EA0 /* GardenViewController.swift */; };
 		9F13E0DF29D2E6AF00651EA0 /* UI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F13E0DE29D2E6AF00651EA0 /* UI.storyboard */; };
 		9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */; };
+		9F3DEC922B72094A00D14D6B /* CreateChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3DEC912B72094A00D14D6B /* CreateChatViewController.swift */; };
 		9F50D6802B69E77E002E387A /* InputBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D67F2B69E77E002E387A /* InputBarView.swift */; };
 		9F50D6822B6A15BA002E387A /* ChatMyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D6812B6A15BA002E387A /* ChatMyCollectionViewCell.swift */; };
 		9F50D6842B6A8737002E387A /* ChatOtherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D6832B6A8737002E387A /* ChatOtherCollectionViewCell.swift */; };
@@ -104,6 +105,7 @@
 		9F13E0D829D2D97C00651EA0 /* GardenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenViewController.swift; sourceTree = "<group>"; };
 		9F13E0DE29D2E6AF00651EA0 /* UI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = UI.storyboard; sourceTree = "<group>"; };
 		9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateBoardViewController.swift; sourceTree = "<group>"; wrapsLines = 0; };
+		9F3DEC912B72094A00D14D6B /* CreateChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateChatViewController.swift; sourceTree = "<group>"; };
 		9F50D67F2B69E77E002E387A /* InputBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputBarView.swift; sourceTree = "<group>"; };
 		9F50D6812B6A15BA002E387A /* ChatMyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMyCollectionViewCell.swift; sourceTree = "<group>"; };
 		9F50D6832B6A8737002E387A /* ChatOtherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatOtherCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -269,9 +271,18 @@
 				9F13E0D229D2D95D00651EA0 /* ChatListViewController.swift */,
 				9FE3FE102B63AFEF00DA26CF /* ChatListView.swift */,
 				9FE3FE122B63B7AB00DA26CF /* ChatTableViewCell.swift */,
+				9F3DEC902B72092100D14D6B /* Create Chat Room */,
 				9FE3FE1A2B63D8C900DA26CF /* Chat Room */,
 			);
 			path = Chat;
+			sourceTree = "<group>";
+		};
+		9F3DEC902B72092100D14D6B /* Create Chat Room */ = {
+			isa = PBXGroup;
+			children = (
+				9F3DEC912B72094A00D14D6B /* CreateChatViewController.swift */,
+			);
+			path = "Create Chat Room";
 			sourceTree = "<group>";
 		};
 		9F50D6872B6BA29A002E387A /* Model */ = {
@@ -850,6 +861,7 @@
 				9FA37F232B1710670065BE3D /* CommentWriteView.swift in Sources */,
 				9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */,
 				9FE3FE192B63BB7500DA26CF /* ChatRoomModel.swift in Sources */,
+				9F3DEC922B72094A00D14D6B /* CreateChatViewController.swift in Sources */,
 				9F50D68E2B6BA535002E387A /* ChatViewModel.swift in Sources */,
 				9FDD56922AA080B500C35268 /* CommunityView.swift in Sources */,
 				9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */,

@@ -51,7 +51,7 @@ class BoardViewController: UIViewController {
         initUI()
         initCommentCollectionView()
         initNavigationBar()
-        hideKeyboard()
+        hideKeyboardWhenTouchUpBackground()
         setLikeButtonState()
     }
     override func viewWillAppear(_ animated: Bool) {

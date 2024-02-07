@@ -31,7 +31,7 @@ class ChatViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        hideKeyboard()
+        hideKeyboardWhenTouchUpBackground()
         initUI()
         setSendButton()
         setInputBarView()

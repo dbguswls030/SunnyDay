@@ -44,7 +44,17 @@ class ChatListViewController: UIViewController {
     
     private func initNavigationBar(){
         self.title = "채팅"
+        
+        self.navigationItem.rightBarButtonItem = .init(title: nil, image: UIImage(systemName: "plus.bubble"), target: self, action: #selector(createChatRoom))
+        self.navigationItem.rightBarButtonItem?.tintColor = .lightGray
     }
+    
+    @objc private func createChatRoom(){
+        let vc = CreateChatViewController()
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true)
+    }
+    
     
     private func setChatTableView(){
         chatListView.chatTableView.register(ChatTableViewCell.self, forCellReuseIdentifier: "chatCell")

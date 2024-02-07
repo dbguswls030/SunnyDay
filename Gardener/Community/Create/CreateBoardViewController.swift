@@ -88,7 +88,7 @@ class CreateBoardViewController: UIViewController {
         initNavigationBar()
         initUI()
         initObserver()
-        hideKeyboard()
+        hideKeyboardWhenTouchUpBackground()
     }
     
     internal func initNavigationBar(){

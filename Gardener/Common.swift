@@ -46,7 +46,7 @@ enum BoardCategory: String, CaseIterable{
 }
 
 extension UIViewController {
-    func hideKeyboard() {
+    func hideKeyboardWhenTouchUpBackground() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self,
             action: #selector(UIViewController.dismissKeyboard))
         view.addGestureRecognizer(tap)
@@ -133,7 +133,6 @@ class PopUpViewController: UIViewController{
             button.snp.makeConstraints { make in
                 make.height.equalTo(button.snp.width).multipliedBy(0.3)
             }
-            
         }
         
         titleLabel.snp.makeConstraints { make in
@@ -215,11 +214,8 @@ extension Date{
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         dateFormatter.locale = Locale(identifier: "ko_KR")
         dateFormatter.timeZone = TimeZone(abbreviation: "KST")
-        guard let convertDate = dateFormatter.date(from: dateFormatter.string(from: self)) else {
-            return "알 수 없음"
-        }
         
-        let intervalTime = Int(floor(Date().timeIntervalSince(convertDate) / 60))
+        let intervalTime = Int(floor(Date().timeIntervalSince(self) / 60))
         if intervalTime < 1 {
             return "방금 전"
         }else if intervalTime < 60 {
