@@ -55,6 +55,7 @@
 		9FCBD8382AE872A500FBBE27 /* Extends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCBD8372AE872A500FBBE27 /* Extends.swift */; };
 		9FCBD8872AFA612600FBBE27 /* BoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCBD8862AFA612600FBBE27 /* BoardViewController.swift */; };
 		9FCBD8892AFA641500FBBE27 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCBD8882AFA641500FBBE27 /* BoardView.swift */; };
+		9FCF40E32B7484C700CE0459 /* CreateChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FCF40E22B7484C700CE0459 /* CreateChatView.swift */; };
 		9FD29C472B4A6E57007252CC /* LikeBoardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD29C462B4A6E56007252CC /* LikeBoardModel.swift */; };
 		9FDD56922AA080B500C35268 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDD56912AA080B500C35268 /* CommunityView.swift */; };
 		9FDD56942AA0986800C35268 /* BoardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FDD56932AA0986800C35268 /* BoardCollectionViewCell.swift */; };
@@ -146,6 +147,7 @@
 		9FCBD8372AE872A500FBBE27 /* Extends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extends.swift; sourceTree = "<group>"; };
 		9FCBD8862AFA612600FBBE27 /* BoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewController.swift; sourceTree = "<group>"; };
 		9FCBD8882AFA641500FBBE27 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		9FCF40E22B7484C700CE0459 /* CreateChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateChatView.swift; sourceTree = "<group>"; };
 		9FD29C462B4A6E56007252CC /* LikeBoardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeBoardModel.swift; sourceTree = "<group>"; };
 		9FDD56912AA080B500C35268 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
 		9FDD56932AA0986800C35268 /* BoardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -281,6 +283,7 @@
 			isa = PBXGroup;
 			children = (
 				9F3DEC912B72094A00D14D6B /* CreateChatViewController.swift */,
+				9FCF40E22B7484C700CE0459 /* CreateChatView.swift */,
 			);
 			path = "Create Chat Room";
 			sourceTree = "<group>";
@@ -857,6 +860,7 @@
 				9F95BA052A31DC5100A5E247 /* SelectedPhotoCollectionViewCell.swift in Sources */,
 				9FCBD8382AE872A500FBBE27 /* Extends.swift in Sources */,
 				9F13E0D929D2D97C00651EA0 /* GardenViewController.swift in Sources */,
+				9FCF40E32B7484C700CE0459 /* CreateChatView.swift in Sources */,
 				9F13E0D529D2D96400651EA0 /* HomeViewController.swift in Sources */,
 				9FA37F232B1710670065BE3D /* CommentWriteView.swift in Sources */,
 				9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */,

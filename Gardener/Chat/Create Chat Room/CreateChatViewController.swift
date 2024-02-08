@@ -14,6 +14,12 @@ class CreateChatViewController: UIViewController {
 
     var disposeBag = DisposeBag()
     
+    private lazy var topView: UIView = {
+        var view = UIView()
+        view.backgroundColor = .systemBackground
+        return view
+    }()
+    
     private lazy var titleLabel: UILabel = {
         var label = UILabel()
         label.text = "채팅방 만들기"
@@ -29,43 +35,14 @@ class CreateChatViewController: UIViewController {
         return button
     }()
     
-    private lazy var thumnailImage: UIButton = {
-        var button = UIButton()
-        button.setImage(UIImage(named: "ralo"), for: .normal)
-        button.clipsToBounds = true
-        return button
+    private lazy var scrollView: UIScrollView = {
+        var scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        return scrollView
     }()
     
-    private lazy var titleTextField: UITextField = {
-        var textField = UITextField()
-        textField.placeholder = "채팅방 이름을 입력해 주세요."
-        textField.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
-        return textField
-    }()
-    
-    private lazy var titleTextLimitLabel: UILabel = {
-        var label = UILabel()
-        label.textColor = .lightGray
-        label.text = "0/15"
-        label.font = UIFont.systemFont(ofSize: 11, weight: .light)
-        return label
-    }()
-    
-    private lazy var subTitleTextView: UITextView = {
-        var textView = UITextView()
-        textView.isScrollEnabled = false
-        textView.textColor = .lightGray
-        textView.text = "#해시태그로 채팅방을 소개해 주세요."
-        textView.font = UIFont.systemFont(ofSize: 15, weight: .medium)
-        return textView
-    }()
-    
-    private lazy var subTitleLimitLabel: UILabel = {
-        var label = UILabel()
-        label.textColor = .lightGray
-        label.text = "0/60"
-        label.font = UIFont.systemFont(ofSize: 11, weight: .light)
-        return label
+    private lazy var createChatView: CreateChatView = {
+        return CreateChatView()
     }()
     
     override func viewDidLoad() {
@@ -75,134 +52,48 @@ class CreateChatViewController: UIViewController {
         hideKeyboardWhenTouchUpBackground()
         initUI()
         backButtonAction()
-        changedTitleTextField()
-        changedSubTitleTextField()
     }
     
 
     private func initUI(){
         self.view.backgroundColor = .systemBackground
+        self.view.addSubview(topView)
+        self.view.addSubview(scrollView)
+        self.topView.addSubview(titleLabel)
+        self.topView.addSubview(backButton)
+        self.scrollView.addSubview(createChatView)
         
-        self.view.addSubview(titleLabel)
-        self.view.addSubview(backButton)
-        self.view.addSubview(thumnailImage)
-        self.view.addSubview(titleTextField)
-        self.view.addSubview(titleTextLimitLabel)
-        self.view.addSubview(subTitleTextView)
-        self.view.addSubview(subTitleLimitLabel)
+        topView.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.height.equalTo(45)
+        }
+        
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(topView.snp.bottom)
+            make.left.right.equalToSuperview()
+            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
+        }
         
         titleLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(15)
+            make.top.bottom.equalToSuperview()
         }
         
         backButton.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.top.equalToSuperview()
             make.left.equalToSuperview()
             make.width.height.equalTo(45)
-
         }
         
-        thumnailImage.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(30)
-            make.centerX.equalToSuperview()
-            make.width.height.equalTo(100)
-        }
-        
-        titleTextField.snp.makeConstraints { make in
-            make.top.equalTo(thumnailImage.snp.bottom).offset(35)
-            make.left.equalToSuperview().offset(25)
-            make.right.equalTo(titleTextLimitLabel.snp.left).offset(-15)
-        }
-        
-        titleTextLimitLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(titleTextField.snp.bottom)
-            make.right.equalToSuperview().offset(-5)
-            make.width.equalTo(40)
-        }
-        
-        subTitleTextView.snp.makeConstraints { make in
-            make.top.equalTo(titleTextField.snp.bottom).offset(30)
-            make.left.equalToSuperview().offset(25)
-            make.right.equalTo(subTitleLimitLabel.snp.left).offset(-15)
-        }
-        
-        subTitleLimitLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(subTitleTextView.snp.bottom)
-            make.right.equalToSuperview().offset(-5)
-            make.width.equalTo(40)
+        createChatView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalToSuperview()
+            make.height.equalToSuperview().offset(1)
         }
     }
 
     @objc private func backButtonAction(){
         self.dismiss(animated: true)
-    }
-    
-    private func changedTitleTextField(){
-        titleTextField.rx
-            .text
-            .orEmpty
-            .bind{ text in
-                if text.count > 15{
-                    let index = text.index(text.startIndex, offsetBy: 15)
-                    self.titleTextField.text = String(text[..<index])
-                }
-            }.disposed(by: disposeBag)
-        
-        titleTextField.rx
-            .text
-            .orEmpty
-            .bind{ text in
-                let count = min(text.count, 15)
-                self.titleTextLimitLabel.text = "\(count)/15"
-            }.disposed(by: disposeBag)
-    }
-    
-    private func changedSubTitleTextField(){
-        subTitleTextView.rx
-            .didBeginEditing
-            .bind{ _ in
-                if self.subTitleTextView.text == "#해시태그로 채팅방을 소개해 주세요."{
-                    self.subTitleTextView.text = ""
-                }
-                self.subTitleTextView.textColor = .black
-            }.disposed(by: disposeBag)
-        
-        subTitleTextView.rx
-            .didEndEditing
-            .bind{ _ in
-                if self.subTitleTextView.text.count == 0{
-                    self.subTitleTextView.text = "#해시태그로 채팅방을 소개해 주세요."
-                    self.subTitleTextView.textColor = .lightGray
-                    self.subTitleTextView.font = UIFont.systemFont(ofSize: 15, weight: .medium)
-                }
-            }.disposed(by: disposeBag)
-        
-        subTitleTextView.rx
-            .text
-            .orEmpty
-            .bind{ text in
-                if text.count > 60{
-                    let index = text.index(text.startIndex, offsetBy: 60)
-                    self.titleTextField.text = String(text[..<index])
-                }
-                if self.subTitleTextView.textColor != .lightGray{
-                    self.subTitleTextView.resolveHashTags()
-                }
-            }.disposed(by: disposeBag)
-        
-        subTitleTextView.rx
-            .text
-            .orEmpty
-            .bind{ text in
-                if self.subTitleTextView.textColor != .lightGray{
-                    let count = min(text.count, 60)
-                    self.subTitleLimitLabel.text = "\(count)/60"
-                }
-            }.disposed(by: disposeBag)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        thumnailImage.layer.cornerRadius = thumnailImage.bounds.width / 2
     }
 }
