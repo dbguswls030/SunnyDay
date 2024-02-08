@@ -9,6 +9,7 @@ import UIKit
 import RxSwift
 import SnapKit
 import RxCocoa
+import PhotosUI
 
 class CreateChatViewController: UIViewController {
 
@@ -35,6 +36,16 @@ class CreateChatViewController: UIViewController {
         return button
     }()
     
+    private lazy var createButton: UIButton = {
+        var button = UIButton()
+        button.setTitle("완료", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        button.setTitleColor(.black, for: .normal)
+        button.setTitleColor(.lightGray, for: .disabled)
+        button.isEnabled = false
+        return button
+    }()
+    
     private lazy var scrollView: UIScrollView = {
         var scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -52,6 +63,8 @@ class CreateChatViewController: UIViewController {
         hideKeyboardWhenTouchUpBackground()
         initUI()
         backButtonAction()
+        thumnailButtonAddTarget()
+        toggleCreatButton()
     }
     
 
@@ -61,6 +74,7 @@ class CreateChatViewController: UIViewController {
         self.view.addSubview(scrollView)
         self.topView.addSubview(titleLabel)
         self.topView.addSubview(backButton)
+        self.topView.addSubview(createButton)
         self.scrollView.addSubview(createChatView)
         
         topView.snp.makeConstraints { make in
@@ -86,6 +100,12 @@ class CreateChatViewController: UIViewController {
             make.width.height.equalTo(45)
         }
         
+        createButton.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.right.equalToSuperview().offset(-5)
+            make.width.height.equalTo(45)
+        }
+        
         createChatView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalToSuperview()
@@ -95,5 +115,73 @@ class CreateChatViewController: UIViewController {
 
     @objc private func backButtonAction(){
         self.dismiss(animated: true)
+    }
+    
+    private func thumnailButtonAddTarget(){
+        self.createChatView.thumnailImage.rx
+            .tap
+            .bind{
+                self.touchUpThumnailButton()
+            }.disposed(by: disposeBag)
+        
+    }
+    private func toggleCreatButton(){
+        self.createChatView.titleTextField.rx
+            .text
+            .orEmpty
+            .bind{ text in
+                if text.trimmingCharacters(in: .whitespaces).count == 0 {
+                    self.createButton.isEnabled = false
+                }else{
+                    self.createButton.isEnabled = true
+                }
+            }.disposed(by: disposeBag)
+    }
+    
+    private func touchUpThumnailButton(){
+        let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+    
+        let showAlbum = UIAlertAction(title: "앨범에서 선택", style: .default) { action in
+            self.showMyAlbum()
+        }
+        let removeProfile = UIAlertAction(title: "기본 이미지로 변경", style: .destructive) { action in
+            self.createChatView.thumnailImage.setImage(UIImage(named: "ralo"), for: .normal)
+        }
+        let actionCancel = UIAlertAction(title: "취소", style: .cancel)
+        
+        actionSheetController.addAction(showAlbum)
+        actionSheetController.addAction(removeProfile)
+        actionSheetController.addAction(actionCancel)
+        
+        self.present(actionSheetController, animated: true)
+    }
+    
+    
+}
+extension CreateChatViewController: PHPickerViewControllerDelegate{
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        dismiss(animated: true)
+        
+        if let itemProvider = results.first?.itemProvider, itemProvider.canLoadObject(ofClass: UIImage.self){
+            let previousImage = self.createChatView.thumnailImage.imageView?.image
+            itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+                DispatchQueue.main.async {
+                    guard let self = self, let image = image as? UIImage, self.createChatView.thumnailImage != previousImage else { return }
+                    self.createChatView.thumnailImage.setImage(image, for: .normal)
+                }
+            }
+        }
+    }
+    
+    private func showMyAlbum(){
+        dismissKeyboard()
+        var configuration = PHPickerConfiguration(photoLibrary: .shared())
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+        
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
+        
+        self.present(picker, animated: true)
     }
 }

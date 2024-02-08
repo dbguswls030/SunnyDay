@@ -14,14 +14,27 @@ class CreateChatView: UIView {
     
     var disposeBag = DisposeBag()
     
-    private lazy var thumnailImage: UIButton = {
+    lazy var thumnailImage: UIButton = {
         var button = UIButton()
         button.setImage(UIImage(named: "ralo"), for: .normal)
         button.clipsToBounds = true
         return button
     }()
     
-    private lazy var titleTextField: UITextField = {
+    private lazy var addImageParentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray6
+        return view
+    }()
+    
+    private lazy var addImageView: UIImageView = {
+        var imageView = UIImageView(image: UIImage(systemName: "camera.fill"))
+        imageView.contentMode = .scaleAspectFill
+        imageView.tintColor = .gray
+        return imageView
+    }()
+    
+    lazy var titleTextField: UITextField = {
         var textField = UITextField()
         textField.placeholder = "채팅방 이름을 입력해 주세요."
         textField.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
@@ -71,6 +84,8 @@ class CreateChatView: UIView {
         self.backgroundColor = .systemBackground
         
         self.addSubview(thumnailImage)
+        self.addSubview(addImageParentView)
+        self.addImageParentView.addSubview(addImageView)
         self.addSubview(titleTextField)
         self.addSubview(titleTextLimitLabel)
         self.addSubview(subTitleTextView)
@@ -80,6 +95,17 @@ class CreateChatView: UIView {
             make.top.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.width.height.equalTo(100)
+        }
+        
+        addImageParentView.snp.makeConstraints { make in
+            make.right.equalTo(thumnailImage.snp.right)
+            make.bottom.equalTo(thumnailImage.snp.bottom)
+            make.width.height.equalTo(30)
+        }
+        
+        addImageView.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+            make.width.height.equalTo(20)
         }
         
         titleTextField.snp.makeConstraints { make in
@@ -107,6 +133,8 @@ class CreateChatView: UIView {
             make.width.equalTo(40)
         }
     }
+    
+    
     
     private func changedTitleTextField(){
         titleTextField.rx
@@ -182,8 +210,10 @@ class CreateChatView: UIView {
                 }
             }.disposed(by: disposeBag)
     }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         thumnailImage.layer.cornerRadius = thumnailImage.bounds.width / 2
+        addImageParentView.layer.cornerRadius = addImageParentView.bounds.width / 2
     }
 }

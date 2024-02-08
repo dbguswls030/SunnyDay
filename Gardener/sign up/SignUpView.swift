@@ -39,7 +39,7 @@ class SignUpView: UIView {
         return view
     }()
     
-    private lazy var addImageButton: UIImageView = {
+    private lazy var addImageView: UIImageView = {
         var imageView = UIImageView(image: UIImage(systemName: "camera.fill"))
         imageView.contentMode = .scaleAspectFill
         imageView.tintColor = .gray
@@ -94,7 +94,7 @@ class SignUpView: UIView {
         self.addSubview(profileTitleBottomLine)
         self.addSubview(profileImage)
         self.addSubview(addImageButtonView)
-        self.addImageButtonView.addSubview(addImageButton)
+        self.addImageButtonView.addSubview(addImageView)
         self.addSubview(noticeLabel)
         self.addSubview(nickNameTextField)
         self.addSubview(submitButton)
@@ -124,7 +124,7 @@ class SignUpView: UIView {
             make.height.width.equalTo(30)
         }
         
-        addImageButton.snp.makeConstraints { make in
+        addImageView.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
             make.width.height.equalTo(20)
         }
