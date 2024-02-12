@@ -10,7 +10,7 @@ import RxSwift
 import SnapKit
 import RxCocoa
 import PhotosUI
-
+import FirebaseAuth
 class CreateChatViewController: UIViewController {
 
     var disposeBag = DisposeBag()
@@ -64,7 +64,8 @@ class CreateChatViewController: UIViewController {
         initUI()
         backButtonAction()
         thumnailButtonAddTarget()
-        toggleCreatButton()
+        toggleCreateButton()
+        touchUpCreateButton()
     }
     
 
@@ -125,7 +126,8 @@ class CreateChatViewController: UIViewController {
             }.disposed(by: disposeBag)
         
     }
-    private func toggleCreatButton(){
+    
+    private func toggleCreateButton(){
         self.createChatView.titleTextField.rx
             .text
             .orEmpty
@@ -136,6 +138,35 @@ class CreateChatViewController: UIViewController {
                     self.createButton.isEnabled = true
                 }
             }.disposed(by: disposeBag)
+    }
+    
+    private func touchUpCreateButton(){
+        self.createButton.rx
+            .tap
+            .bind{
+                self.showActivityIndicator(alpha: 0.2)
+                self.dismissKeyboard()
+                self.createChatRoomAPI()
+            }.disposed(by: disposeBag)
+    }
+    
+    func createChatRoomAPI(){
+        // TODO: 섬네일 저장
+        let getUser = FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: Auth.auth().currentUser!.uid)
+        getUser.flatMap { userModel in
+            let title = self.createChatView.titleTextField.text!
+            let subTitle = self.createChatView.subTitleTextView.text!
+            let model = ChatRoomModel(title: title, subTitle: subTitle, members: [ChatMemberModel(user: userModel, level: 0)])
+            return FirebaseFirestoreManager.shared.createChatRoomWithRx(model: model)
+        }.bind{ _ in
+            self.hideActivityIndicator(alpha: 0.2)
+            UIView.animate(withDuration: 0.2) {
+                self.view.alpha = 0
+            }completion: { _ in
+                self.dismiss(animated: false)
+            }
+        }.disposed(by: disposeBag)
+            
     }
     
     private func touchUpThumnailButton(){
@@ -164,10 +195,12 @@ extension CreateChatViewController: PHPickerViewControllerDelegate{
         
         if let itemProvider = results.first?.itemProvider, itemProvider.canLoadObject(ofClass: UIImage.self){
             let previousImage = self.createChatView.thumnailImage.imageView?.image
+            self.showActivityIndicator(alpha: 0)
             itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
                 DispatchQueue.main.async {
                     guard let self = self, let image = image as? UIImage, self.createChatView.thumnailImage != previousImage else { return }
                     self.createChatView.thumnailImage.setImage(image, for: .normal)
+                    self.hideActivityIndicator(alpha: 0)
                 }
             }
         }

@@ -51,7 +51,7 @@ class ChatListViewController: UIViewController {
     
     @objc private func createChatRoom(){
         let vc = CreateChatViewController()
-        vc.modalPresentationStyle = .fullScreen
+        vc.modalPresentationStyle = .overFullScreen
         self.present(vc, animated: true)
     }
     

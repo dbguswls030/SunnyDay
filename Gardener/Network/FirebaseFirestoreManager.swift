@@ -9,6 +9,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseAuth
 import FirebaseFirestoreSwift
+import RxSwift
 
 class FirebaseFirestoreManager{
     
@@ -49,6 +50,27 @@ class FirebaseFirestoreManager{
         }
     }
     
+    func getUserInfoWithRx(uid: String) -> Observable<UserModel>{
+        return Observable.create(){ emitter in
+            self.db.collection("user").document(uid).getDocument { document, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                
+                guard let document = document, document.exists else { return }
+                
+                do {
+                    let model = try document.data(as: UserModel.self)
+                    emitter.onNext(model)
+                    emitter.onCompleted()
+                }catch let error{
+                    print("falied getUserInfo \(error.localizedDescription)")
+                    emitter.onError(error)
+                }
+            }
+            return Disposables.create()
+        }
+    }
     
     // MARK: 게시글
     func uploadBoard(model: BoardModel, completion: @escaping () -> Void){
@@ -404,4 +426,20 @@ class FirebaseFirestoreManager{
         }
     }
     
+    
+    // MARK: 채팅
+    
+    // MARK: 채팅방 만들기
+    func createChatRoomWithRx(model: ChatRoomModel) -> Observable<ChatRoomModel>{
+        return Observable.create { emitter in
+            do{
+                try self.db.collection("chat").document().setData(from: model)
+                emitter.onNext(model)
+                emitter.onCompleted()
+            }catch let error{
+                emitter.onError(error)
+            }
+            return Disposables.create()
+        }
+    }
 }

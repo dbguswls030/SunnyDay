@@ -13,7 +13,7 @@ class ChatListViewModel{
     var chatRoomList: [ChatRoomModel]
     
     init(){
-        chatRoomList = [ChatRoomModel(title: "1"), ChatRoomModel(title: "2")]
+        chatRoomList = [ChatRoomModel(title: "1", subTitle: "주식", members: []), ChatRoomModel(title: "2", subTitle: "머", members: [])]
     }
     
     func getChatRoomList() -> Observable<[ChatRoomModel]>{

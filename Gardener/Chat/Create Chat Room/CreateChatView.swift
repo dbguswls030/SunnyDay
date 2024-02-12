@@ -49,7 +49,7 @@ class CreateChatView: UIView {
         return label
     }()
     
-    private lazy var subTitleTextView: UITextView = {
+    lazy var subTitleTextView: UITextView = {
         var textView = UITextView()
         textView.isScrollEnabled = false
         textView.textColor = .lightGray
