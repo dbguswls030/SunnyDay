@@ -10,10 +10,11 @@ import FirebaseFirestoreSwift
 import FirebaseFirestore
 
 struct ChatRoomModel: Codable{
-    @DocumentID var roomId: String?
+    var roomId: String // DocumentId
     var title: String
     var subTitle: String
     var members: [ChatMemberModel]
+    var thumbnailURL: String
     var date: Date
     
     init(title: String, subTitle: String, members: [ChatMemberModel]) {
@@ -21,6 +22,8 @@ struct ChatRoomModel: Codable{
         self.subTitle = subTitle
         self.members = members
         self.date = Date()
+        self.thumbnailURL = ""
+        self.roomId = UUID().uuidString + String(Date().timeIntervalSince1970)
     }
     
     init(from decoder: Decoder) throws {
@@ -29,7 +32,8 @@ struct ChatRoomModel: Codable{
         self.subTitle = try container.decode(String.self, forKey: .subTitle)
         self.members = try container.decode([ChatMemberModel].self, forKey: .members)
         self.date = try container.decode(Date.self, forKey: .date)
-        self._roomId = try container.decode(DocumentID<String>.self, forKey: .roomId)
+        self.thumbnailURL = try container.decode(String.self, forKey: .thumbnailURL)
+        self.roomId = try container.decode(String.self, forKey: .roomId)
     }
     
     
@@ -39,5 +43,6 @@ struct ChatRoomModel: Codable{
         case members
         case roomId
         case date
+        case thumbnailURL
     }
 }

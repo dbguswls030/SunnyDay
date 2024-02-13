@@ -151,14 +151,20 @@ class CreateChatViewController: UIViewController {
     }
     
     func createChatRoomAPI(){
-        // TODO: 섬네일 저장
+        guard let thumnailImage = self.createChatView.thumnailImage.imageView!.image else {
+            return
+        }
         let getUser = FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: Auth.auth().currentUser!.uid)
-        getUser.flatMap { userModel in
+        getUser.flatMap { userModel -> Observable<ChatRoomModel> in
             let title = self.createChatView.titleTextField.text!
             let subTitle = self.createChatView.subTitleTextView.text!
             let model = ChatRoomModel(title: title, subTitle: subTitle, members: [ChatMemberModel(user: userModel, level: 0)])
             return FirebaseFirestoreManager.shared.createChatRoomWithRx(model: model)
-        }.bind{ _ in
+        }.flatMap{ chatRoomModel -> Observable<(String, ChatRoomModel)> in
+            return FirebaseStorageManager.shared.uploadChatThumbnailImage(path: chatRoomModel.roomId, image: thumnailImage).map{ url in (url, chatRoomModel)}
+        }.flatMap{ url, chatRoomModel in
+            return FirebaseFirestoreManager.shared.updateChatRoomThumbnail(chatRoomModel: chatRoomModel, thumbailURL: url)
+        }.bind{_ in
             self.hideActivityIndicator(alpha: 0.2)
             UIView.animate(withDuration: 0.2) {
                 self.view.alpha = 0
@@ -166,7 +172,6 @@ class CreateChatViewController: UIViewController {
                 self.dismiss(animated: false)
             }
         }.disposed(by: disposeBag)
-            
     }
     
     private func touchUpThumnailButton(){

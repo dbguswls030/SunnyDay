@@ -433,7 +433,7 @@ class FirebaseFirestoreManager{
     func createChatRoomWithRx(model: ChatRoomModel) -> Observable<ChatRoomModel>{
         return Observable.create { emitter in
             do{
-                try self.db.collection("chat").document().setData(from: model)
+                try self.db.collection("chat").document(model.roomId).setData(from: model)
                 emitter.onNext(model)
                 emitter.onCompleted()
             }catch let error{
@@ -442,4 +442,21 @@ class FirebaseFirestoreManager{
             return Disposables.create()
         }
     }
+    
+    // MARK: 채팅방 섬네일 수정
+    func updateChatRoomThumbnail(chatRoomModel: ChatRoomModel, thumbailURL: String) -> Observable<Void>{
+        return Observable.create { emitter in
+            self.db.collection("chat").document(chatRoomModel.roomId).updateData(["thumbnailURL" : thumbailURL]) { error in
+                if let error = error {
+                    emitter.onError(error)
+                }
+                emitter.onNext(())
+                emitter.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: 채팅방 찾기
+    
 }
