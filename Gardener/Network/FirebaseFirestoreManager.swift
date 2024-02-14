@@ -72,6 +72,23 @@ class FirebaseFirestoreManager{
         }
     }
     
+    
+    // MARK: 유저가 참여한 채팅방 추가
+    func userEnteredChatRoom(uid: String, chatRoomId: String) -> Observable<Void>{
+        return Observable.create(){ emitter in
+            self.db.collection("user").document(uid).updateData(["participatedChat" : FieldValue.arrayUnion([chatRoomId])]) { error in
+                if let error = error{
+                    print("failed userEnteredChatRoom \(error.localizedDescription)")
+                    emitter.onError(error)
+                }
+                emitter.onNext(())
+                emitter.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+    
+    
     // MARK: 게시글
     func uploadBoard(model: BoardModel, completion: @escaping () -> Void){
         let docRef = self.db.collection("community").document()
@@ -459,4 +476,37 @@ class FirebaseFirestoreManager{
     
     // MARK: 채팅방 찾기
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // MARK: FireStore 수정
+    
+    // User에 필드 추가
+    func insertCreatedChatRoomInChatRoom() -> Observable<Void>{
+        return Observable.create(){ emitter in
+            self.db.collection("user").getDocuments { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let snapshot = snapshot else{
+                    print("insertCreatedChatRoomInChatRoom not exist snapshot")
+                    return
+                }
+                
+                for document in snapshot.documents{
+                    document.reference.updateData(["participatedChat" : [] ])
+                }
+                
+                emitter.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
 }

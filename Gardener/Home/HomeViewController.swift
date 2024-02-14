@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import RxSwift
 class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
