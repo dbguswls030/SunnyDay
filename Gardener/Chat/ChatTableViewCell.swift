@@ -9,11 +9,39 @@ import UIKit
 import SnapKit
 
 class ChatTableViewCell: UITableViewCell {
-
+    
+    private lazy var chatThumbnailImageView: UIImageView = {
+        var imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
     private lazy var chatTitleLabel: UILabel = {
         var label = UILabel()
-        label.text = "123"
         label.textColor = .black
+        label.font = .systemFont(ofSize: 18, weight: .semibold)
+        return label
+    }()
+    
+    private lazy var chatSubTitleLabel: UILabel = {
+        var label = UILabel()
+        label.textColor = .lightGray
+        label.font = .systemFont(ofSize: 13, weight: .medium)
+        return label
+    }()
+    
+    private lazy var memberCountLabel: UILabel = {
+        var label = UILabel()
+        label.textColor = .lightGray
+        label.font = .systemFont(ofSize: 15, weight: .semibold)
+        return label
+    }()
+    
+    private lazy var updateDateLabel: UILabel = {
+        var label = UILabel()
+        label.textColor = .lightGray
+        label.font = .systemFont(ofSize: 11, weight: .light)
         return label
     }()
     
@@ -33,24 +61,69 @@ class ChatTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         chatTitleLabel.text = ""
+        chatSubTitleLabel.text = ""
+        chatThumbnailImageView.image = nil
+        updateDateLabel.text = ""
+        memberCountLabel.text = ""
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
     private func initUI(){
         backgroundColor = .systemBackground
+        self.addSubview(chatThumbnailImageView)
         self.addSubview(chatTitleLabel)
+        self.addSubview(chatSubTitleLabel)
+        self.addSubview(memberCountLabel)
+        self.addSubview(updateDateLabel)
+        
+        chatThumbnailImageView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.bottom.equalToSuperview().offset(-12)
+            make.left.equalToSuperview().offset(15)
+            make.width.equalTo(chatThumbnailImageView.snp.height)
+        }
         
         chatTitleLabel.snp.makeConstraints { make in
-            make.centerY.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(13)
+            make.left.equalTo(chatThumbnailImageView.snp.right).offset(10)
+            make.right.greaterThanOrEqualTo(updateDateLabel.snp.left).offset(-15)
+        }
+        
+        chatSubTitleLabel.snp.makeConstraints { make in
+            make.left.equalTo(chatTitleLabel.snp.left)
+            make.top.equalTo(chatTitleLabel.snp.bottom).offset(3)
+            make.bottom.greaterThanOrEqualToSuperview().offset(-15)
+            make.right.greaterThanOrEqualTo(updateDateLabel.snp.left).offset(-15)
+        }
+        
+        updateDateLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(chatTitleLabel.snp.centerY)
+            make.right.equalToSuperview().offset(-10)
+            make.width.equalTo(50)
+        }
+        
+        memberCountLabel.snp.makeConstraints { make in
+            make.top.equalTo(chatSubTitleLabel.snp.top)
+            make.right.equalToSuperview().offset(-15)
         }
     }
-    
-    func setChatTitle(chatTitle: String){
-        self.chatTitleLabel.text = chatTitle
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        chatThumbnailImageView.layer.cornerRadius = chatThumbnailImageView.frame.size.height * 0.25
     }
+    
+    func setData(model: ChatRoomModel){
+        self.chatTitleLabel.text = model.title
+        self.chatSubTitleLabel.text = model.subTitle
+        self.chatThumbnailImageView.setImageView(url: model.thumbnailURL)
+        self.updateDateLabel.text = model.date.convertDateToCurrentTime()
+        self.memberCountLabel.text = "\(model.members.count)"
+    }
+    
 }

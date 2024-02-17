@@ -21,6 +21,7 @@ class MainTabBarController: UITabBarController {
         let communityViewController = UINavigationController(rootViewController: CommunityViewController())
         let homeViewController = UINavigationController(rootViewController: HomeViewController())
         let chatListViewController = UINavigationController(rootViewController: ChatListViewController())
+        chatListViewController.isNavigationBarHidden = true
         let myViewController = UINavigationController(rootViewController: MyViewController())
         
         viewControllers = [gardenViewController,communityViewController,homeViewController,chatListViewController,myViewController]

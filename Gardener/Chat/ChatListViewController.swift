@@ -17,16 +17,12 @@ class ChatListViewController: UIViewController {
     
     var chatViewModel = ChatListViewModel()
     
+    private lazy var toolView: ChatListTopView = {
+        return ChatListTopView()
+    }()
+    
     private lazy var chatListView: ChatListView = {
         return ChatListView()
-    }()
-    
-    private lazy var creatChatRoomItem: UIBarButtonItem = {
-        return UIBarButtonItem(title: nil, image: UIImage(systemName: "plus.bubble"), target: self, action: #selector(createChatRoom))
-    }()
-    
-    private lazy var searchChatRoomItem: UIBarButtonItem = {
-        return UIBarButtonItem(title: nil, image: UIImage(systemName: "magnifyingglass"), target: self, action: nil)
     }()
     
     override func viewDidLoad() {
@@ -34,54 +30,56 @@ class ChatListViewController: UIViewController {
         self.view.backgroundColor = .systemBackground
         initUI()
         setChatTableView()
+        initToolButtonItems()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        initNavigationBar()
-    }
-    
     
     private func initUI(){
+        self.view.addSubview(toolView)
         self.view.addSubview(chatListView)
-        chatListView.snp.makeConstraints { make in
+        
+        toolView.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.left.right.equalToSuperview()
+            make.height.equalTo(50)
+        }
+        chatListView.snp.makeConstraints { make in
+            make.top.equalTo(toolView.snp.bottom)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
             make.left.right.equalToSuperview()
         }
     }
     
-    private func initNavigationBar(){
-        self.title = "채팅"
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 28, weight: .bold)]
-        
-        self.navigationItem.rightBarButtonItems = [creatChatRoomItem, searchChatRoomItem]
-        self.navigationItem.rightBarButtonItems?.forEach({ buttonItem in
-            buttonItem.tintColor = .black
-        })
-        
-    }
-    private func c(){
-        self.navigationItem.rightBarButtonItems![1].rx
+    private func searchChatRoomButtonAction(){
+        self.toolView.searchChatRoomButton.rx
             .tap
             .bind{
                 
             }.disposed(by: disposeBag)
     }
-    @objc private func createChatRoom(){
-        let vc = CreateChatViewController()
-        vc.modalPresentationStyle = .overFullScreen
-        self.present(vc, animated: true)
+    
+    private func createChatRoomButtonAction(){
+        self.toolView.createChatRoomButton.rx
+            .tap
+            .bind{
+                let vc = CreateChatViewController()
+                vc.modalPresentationStyle = .overFullScreen
+                self.present(vc, animated: true)
+            }.disposed(by: disposeBag)
     }
     
+    private func initToolButtonItems(){
+        searchChatRoomButtonAction()
+        createChatRoomButtonAction()
+        
+    }
     
     private func setChatTableView(){
         chatListView.participatedChatTableView.register(ChatTableViewCell.self, forCellReuseIdentifier: "chatCell")
-        chatListView.participatedChatTableView.rowHeight = 90
+        chatListView.participatedChatTableView.rowHeight = 80
         
         chatViewModel.chatRooms
             .bind(to: chatListView.participatedChatTableView.rx.items(cellIdentifier: "chatCell", cellType: ChatTableViewCell.self)) { index, item, cell in
-                cell.setChatTitle(chatTitle: item.title)
+                cell.setData(model: item)
             }
             .disposed(by: disposeBag)
         
