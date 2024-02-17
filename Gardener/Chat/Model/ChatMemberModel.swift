@@ -14,6 +14,6 @@ enum ChatClass{
 }
 
 struct ChatMemberModel: Codable{
-    var user: UserModel
+    var uid: String
     var level: Int
 }

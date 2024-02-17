@@ -14,14 +14,12 @@ class UserModel: Codable{
     let profileImageURL: String
     let likeBoards: [String]
     let likeComments: [String]
-    let participatedChat: [String]
     
     init(nickName: String, profileImageURL: String) {
         self.nickName = nickName
         self.profileImageURL = profileImageURL
         self.likeBoards = []
         self.likeComments = []
-        self.participatedChat = []
     }
     
     enum CodingKeys: String, CodingKey{
@@ -29,7 +27,6 @@ class UserModel: Codable{
         case profileImageURL
         case likeBoards
         case likeComments
-        case participatedChat
     }
     
     required init(from decoder: Decoder) throws {
@@ -38,7 +35,5 @@ class UserModel: Codable{
         profileImageURL = try container.decode(String.self, forKey: .profileImageURL)
         likeBoards = try container.decode([String].self, forKey: .likeBoards)
         likeComments = try container.decode([String].self, forKey: .likeComments)
-        participatedChat = try container.decode([String].self, forKey: .participatedChat)
     }
-
 }

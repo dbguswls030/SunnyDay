@@ -39,7 +39,7 @@ class CreateChatViewController: UIViewController {
     private lazy var createButton: UIButton = {
         var button = UIButton()
         button.setTitle("완료", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         button.setTitleColor(.black, for: .normal)
         button.setTitleColor(.lightGray, for: .disabled)
         button.isEnabled = false
@@ -161,7 +161,7 @@ class CreateChatViewController: UIViewController {
         getUser.flatMap { userModel -> Observable<ChatRoomModel> in
             let title = self.createChatView.titleTextField.text!
             let subTitle = self.createChatView.subTitleTextView.text!
-            let model = ChatRoomModel(title: title, subTitle: subTitle, members: [ChatMemberModel(user: userModel, level: 0)])
+            let model = ChatRoomModel(title: title, subTitle: subTitle, members: [ChatMemberModel(uid: uid, level: 0)])
             return FirebaseFirestoreManager.shared.createChatRoomWithRx(model: model)
         }.flatMap{ chatRoomModel -> Observable<(String, ChatRoomModel)> in
             return FirebaseStorageManager.shared.uploadChatThumbnailImage(path: chatRoomModel.roomId, image: thumnailImage).map{ url in (url, chatRoomModel)}
@@ -196,8 +196,6 @@ class CreateChatViewController: UIViewController {
         
         self.present(actionSheetController, animated: true)
     }
-    
-    
 }
 extension CreateChatViewController: PHPickerViewControllerDelegate{
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {

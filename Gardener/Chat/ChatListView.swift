@@ -10,7 +10,7 @@ import SnapKit
 
 class ChatListView: UIView {
     
-    lazy var chatTableView: UITableView = {
+    lazy var participatedChatTableView: UITableView = {
         var tableView = UITableView()
         tableView.separatorStyle = .none
         return tableView
@@ -27,8 +27,8 @@ class ChatListView: UIView {
     }
     
     private func initUI(){
-        addSubview(chatTableView)
-        chatTableView.snp.makeConstraints { make in
+        addSubview(participatedChatTableView)
+        participatedChatTableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }

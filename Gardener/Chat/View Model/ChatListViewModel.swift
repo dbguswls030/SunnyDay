@@ -7,16 +7,19 @@
 
 import Foundation
 import RxSwift
+import FirebaseFirestore
+import FirebaseAuth
+import RxCocoa
 
 class ChatListViewModel{
-    
-    var chatRoomList: [ChatRoomModel]
+    var disposeBag = DisposeBag()
+    let chatRooms = BehaviorRelay<[ChatRoomModel]>(value: [])
     
     init(){
-        chatRoomList = [ChatRoomModel(title: "1", subTitle: "주식", members: []), ChatRoomModel(title: "2", subTitle: "머", members: [])]
-    }
-    
-    func getChatRoomList() -> Observable<[ChatRoomModel]>{
-        return Observable.just(chatRoomList)
+        FirebaseFirestoreManager.shared.getParticipatedChatRoomId(uid: Auth.auth().currentUser!.uid)
+            .flatMap { participatedChatRoomIdList in
+                return FirebaseFirestoreManager.shared.getChatRoomWithChatRoomId(chatRoomIdList: participatedChatRoomIdList)
+            }.bind(to: chatRooms)
+            .disposed(by: disposeBag)
     }
 }

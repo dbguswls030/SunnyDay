@@ -76,7 +76,8 @@ class FirebaseFirestoreManager{
     // MARK: 유저가 참여한 채팅방 추가
     func userEnteredChatRoom(uid: String, chatRoomId: String) -> Observable<Void>{
         return Observable.create(){ emitter in
-            self.db.collection("user").document(uid).updateData(["participatedChat" : FieldValue.arrayUnion([chatRoomId])]) { error in
+            self.db.collection("user").document(uid)
+                .collection("chat").document(chatRoomId).setData([:]) { error in
                 if let error = error{
                     print("failed userEnteredChatRoom \(error.localizedDescription)")
                     emitter.onError(error)
@@ -88,6 +89,26 @@ class FirebaseFirestoreManager{
         }
     }
     
+    // MARK: 유저가 참여한 채팅방 Id 가져오기
+    func getParticipatedChatRoomId(uid: String) -> Observable<[String]>{
+        return Observable.create { emitter in
+            self.db.collection("user").document(uid).collection("chat").addSnapshotListener { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let documents = snapshot?.documents else {
+                    print("getParticipatedChatRoom no exist documents")
+                    return
+                }
+                var chatRoomIdList = [String]()
+                documents.forEach { document in
+                    chatRoomIdList.append(document.documentID)
+                }
+                emitter.onNext(chatRoomIdList)
+            }
+            return Disposables.create()
+        }
+    }
     
     // MARK: 게시글
     func uploadBoard(model: BoardModel, completion: @escaping () -> Void){
@@ -474,39 +495,33 @@ class FirebaseFirestoreManager{
         }
     }
     
-    // MARK: 채팅방 찾기
     
-    
-    
-    
-    
-    
-    
-    
+    // MARK: 채팅방Id로 채팅방 가져오기
+    func getChatRoomWithChatRoomId(chatRoomIdList: [String]) -> Observable<[ChatRoomModel]>{
+        let observables = chatRoomIdList.map{ chatRoomId in
+            return Observable<ChatRoomModel>.create { emitter in
+                let docRef = self.db.collection("chat").document(chatRoomId)
+                docRef.getDocument { snapshot, error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
+                    guard let snapshot = snapshot else { return }
+                    
+                    do{
+                        let chatRoomModel = try snapshot.data(as: ChatRoomModel.self)
+                        emitter.onNext(chatRoomModel)
+                        emitter.onCompleted()
+                    }catch let error{
+                        emitter.onError(error)
+                    }
+                }
+                return Disposables.create()
+            }
+        }
+        return Observable.zip(observables)
+    }
     
     
     
     // MARK: FireStore 수정
-    
-    // User에 필드 추가
-    func insertCreatedChatRoomInChatRoom() -> Observable<Void>{
-        return Observable.create(){ emitter in
-            self.db.collection("user").getDocuments { snapshot, error in
-                if let error = error{
-                    emitter.onError(error)
-                }
-                guard let snapshot = snapshot else{
-                    print("insertCreatedChatRoomInChatRoom not exist snapshot")
-                    return
-                }
-                
-                for document in snapshot.documents{
-                    document.reference.updateData(["participatedChat" : [] ])
-                }
-                
-                emitter.onCompleted()
-            }
-            return Disposables.create()
-        }
-    }
 }

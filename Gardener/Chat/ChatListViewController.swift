@@ -21,6 +21,14 @@ class ChatListViewController: UIViewController {
         return ChatListView()
     }()
     
+    private lazy var creatChatRoomItem: UIBarButtonItem = {
+        return UIBarButtonItem(title: nil, image: UIImage(systemName: "plus.bubble"), target: self, action: #selector(createChatRoom))
+    }()
+    
+    private lazy var searchChatRoomItem: UIBarButtonItem = {
+        return UIBarButtonItem(title: nil, image: UIImage(systemName: "magnifyingglass"), target: self, action: nil)
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .systemBackground
@@ -44,10 +52,22 @@ class ChatListViewController: UIViewController {
     
     private func initNavigationBar(){
         self.title = "채팅"
-        self.navigationItem.rightBarButtonItem = .init(title: nil, image: UIImage(systemName: "plus.bubble"), target: self, action: #selector(createChatRoom))
-        self.navigationItem.rightBarButtonItem?.tintColor = .lightGray
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 28, weight: .bold)]
+        
+        self.navigationItem.rightBarButtonItems = [creatChatRoomItem, searchChatRoomItem]
+        self.navigationItem.rightBarButtonItems?.forEach({ buttonItem in
+            buttonItem.tintColor = .black
+        })
+        
     }
-    
+    private func c(){
+        self.navigationItem.rightBarButtonItems![1].rx
+            .tap
+            .bind{
+                
+            }.disposed(by: disposeBag)
+    }
     @objc private func createChatRoom(){
         let vc = CreateChatViewController()
         vc.modalPresentationStyle = .overFullScreen
@@ -56,31 +76,31 @@ class ChatListViewController: UIViewController {
     
     
     private func setChatTableView(){
-        chatListView.chatTableView.register(ChatTableViewCell.self, forCellReuseIdentifier: "chatCell")
-        chatListView.chatTableView.rowHeight = 100
+        chatListView.participatedChatTableView.register(ChatTableViewCell.self, forCellReuseIdentifier: "chatCell")
+        chatListView.participatedChatTableView.rowHeight = 90
         
-        chatViewModel.getChatRoomList()
-            .bind(to: chatListView.chatTableView.rx.items(cellIdentifier: "chatCell", cellType: ChatTableViewCell.self)) { index, item, cell in
+        chatViewModel.chatRooms
+            .bind(to: chatListView.participatedChatTableView.rx.items(cellIdentifier: "chatCell", cellType: ChatTableViewCell.self)) { index, item, cell in
                 cell.setChatTitle(chatTitle: item.title)
             }
             .disposed(by: disposeBag)
         
         
-        chatListView.chatTableView.rx.modelSelected(ChatRoomModel.self)
+        chatListView.participatedChatTableView.rx.modelSelected(ChatRoomModel.self)
             .subscribe(onNext: { chatModel in
                 let vc = ChatViewController()
                 vc.setChatTitle(chatTitle: chatModel.title)
                 vc.hidesBottomBarWhenPushed = true
+                self.navigationController?.navigationBar.prefersLargeTitles = false
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
         
-        chatListView.chatTableView.rx.itemSelected
+        chatListView.participatedChatTableView.rx.itemSelected
             .bind(onNext: { indexPath in
-                self.chatListView.chatTableView.deselectRow(at: indexPath, animated: true)
+                self.chatListView.participatedChatTableView.deselectRow(at: indexPath, animated: true)
             })
             .disposed(by: disposeBag)
     }
-    
-    
+
 }
