@@ -20,28 +20,28 @@ class ChatTableViewCell: UITableViewCell {
     private lazy var chatTitleLabel: UILabel = {
         var label = UILabel()
         label.textColor = .black
-        label.font = .systemFont(ofSize: 18, weight: .semibold)
+        label.font = .systemFont(ofSize: 17, weight: .medium)
         return label
     }()
     
     private lazy var chatSubTitleLabel: UILabel = {
         var label = UILabel()
         label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 13, weight: .medium)
+        label.font = .systemFont(ofSize: 12, weight: .regular)
         return label
     }()
     
     private lazy var memberCountLabel: UILabel = {
         var label = UILabel()
         label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 15, weight: .semibold)
+        label.font = .systemFont(ofSize: 13, weight: .semibold)
         return label
     }()
     
     private lazy var updateDateLabel: UILabel = {
         var label = UILabel()
         label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 11, weight: .light)
+        label.font = .systemFont(ofSize: 10, weight: .light)
         return label
     }()
     
@@ -82,22 +82,21 @@ class ChatTableViewCell: UITableViewCell {
         self.addSubview(updateDateLabel)
         
         chatThumbnailImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(12)
-            make.bottom.equalToSuperview().offset(-12)
+            make.top.equalToSuperview().offset(14)
+            make.bottom.equalToSuperview().offset(-14)
             make.left.equalToSuperview().offset(15)
             make.width.equalTo(chatThumbnailImageView.snp.height)
         }
         
         chatTitleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(13)
-            make.left.equalTo(chatThumbnailImageView.snp.right).offset(10)
+            make.top.equalTo(chatThumbnailImageView.snp.top).offset(4)
+            make.left.equalTo(chatThumbnailImageView.snp.right).offset(12)
             make.right.greaterThanOrEqualTo(updateDateLabel.snp.left).offset(-15)
         }
         
         chatSubTitleLabel.snp.makeConstraints { make in
             make.left.equalTo(chatTitleLabel.snp.left)
-            make.top.equalTo(chatTitleLabel.snp.bottom).offset(3)
-            make.bottom.greaterThanOrEqualToSuperview().offset(-15)
+            make.top.equalTo(chatTitleLabel.snp.bottom).offset(6)
             make.right.greaterThanOrEqualTo(updateDateLabel.snp.left).offset(-15)
         }
         
@@ -125,5 +124,4 @@ class ChatTableViewCell: UITableViewCell {
         self.updateDateLabel.text = model.date.convertDateToCurrentTime()
         self.memberCountLabel.text = "\(model.members.count)"
     }
-    
 }
