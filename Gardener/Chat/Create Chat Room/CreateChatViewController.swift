@@ -159,8 +159,8 @@ class CreateChatViewController: UIViewController {
         }
         let getUser = FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: uid)
         getUser.flatMap { userModel -> Observable<ChatRoomModel> in
-            let title = self.createChatView.titleTextField.text!
-            let subTitle = self.createChatView.subTitleTextView.text!
+            let title = self.createChatView.titleTextField.text!.trimmingCharacters(in: .whitespaces)
+            let subTitle = self.createChatView.subTitleTextView.text!.trimmingCharacters(in: .whitespaces)
             let model = ChatRoomModel(title: title, subTitle: subTitle, members: [ChatMemberModel(uid: uid, level: 0)])
             return FirebaseFirestoreManager.shared.createChatRoomWithRx(model: model)
         }.flatMap{ chatRoomModel -> Observable<(String, ChatRoomModel)> in

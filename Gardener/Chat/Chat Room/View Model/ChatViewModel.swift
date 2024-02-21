@@ -9,20 +9,33 @@ import Foundation
 import RxSwift
 
 class ChatViewModel{
-    var chatList = BehaviorSubject<[ChatModel]>(value: [])
     
+    var chatRoomModel: ChatRoomModel
+    var messages = BehaviorSubject<[ChatMessageModel]>(value: [])
+    var disposeBag = DisposeBag()
+
     
-    init(){
-        
+    init(chatRoomModel: ChatRoomModel){
+        self.chatRoomModel = chatRoomModel
+        FirebaseFirestoreManager.shared.addListenerChatMessage(chatRoom: chatRoomModel)
+            .bind(to: messages)
+            .disposed(by: disposeBag)
     }
     
-    func getChatModel(at index: Int) -> ChatModel? {
-        guard let chatListValue = try? chatList.value() else {
+    
+    
+    func getChatModel(at index: Int) -> ChatMessageModel? {
+        guard let chatListValue = try? messages.value() else {
             return nil
         }
         guard index >= 0, index < chatListValue.count else {
             return nil
         }
         return chatListValue[index]
+    }
+    
+    
+    func getChatRoomTitle() -> String{
+        return chatRoomModel.title
     }
 }

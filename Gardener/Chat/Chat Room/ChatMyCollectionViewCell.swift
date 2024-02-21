@@ -17,6 +17,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         textView.isEditable = false
         textView.backgroundColor = .green
         textView.font = UIFont.systemFont(ofSize: 14)
+        textView.textContainerInset = UIEdgeInsets(top: 7, left: 8, bottom: 7, right: 8)
         return textView
     }()
     
@@ -59,7 +60,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
     }
     
     
-    func setData(model: ChatModel){
+    func setData(model: ChatMessageModel){
         self.timeLabel.text = model.date.convertDateToCurrentTime()
         self.contentTextView.text = model.message
     }
@@ -67,7 +68,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        contentTextView.layer.cornerRadius = min(contentTextView.bounds.height, contentTextView.bounds.width) * 0.1
+        contentTextView.layer.cornerRadius = min(contentTextView.bounds.height, contentTextView.bounds.width) * 0.4
     }
     
     func getTextViewHeight() -> CGFloat{

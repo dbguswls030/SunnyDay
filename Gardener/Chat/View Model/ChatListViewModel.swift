@@ -16,7 +16,7 @@ class ChatListViewModel{
     let chatRooms = BehaviorRelay<[ChatRoomModel]>(value: [])
     
     init(){
-        FirebaseFirestoreManager.shared.getParticipatedChatRoomId(uid: Auth.auth().currentUser!.uid)
+        FirebaseFirestoreManager.shared.addListenerParticipatedChatRoomId(uid: Auth.auth().currentUser!.uid)
             .flatMap { participatedChatRoomIdList in
                 return FirebaseFirestoreManager.shared.getChatRoomWithChatRoomId(chatRoomIdList: participatedChatRoomIdList)
             }.bind(to: chatRooms)

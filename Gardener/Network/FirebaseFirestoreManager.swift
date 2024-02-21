@@ -90,7 +90,7 @@ class FirebaseFirestoreManager{
     }
     
     // MARK: 유저가 참여한 채팅방 Id 가져오기
-    func getParticipatedChatRoomId(uid: String) -> Observable<[String]>{
+    func addListenerParticipatedChatRoomId(uid: String) -> Observable<[String]>{
         return Observable.create { emitter in
             self.db.collection("user").document(uid).collection("chat").addSnapshotListener { snapshot, error in
                 if let error = error{
@@ -520,6 +520,61 @@ class FirebaseFirestoreManager{
         }
         return Observable.zip(observables)
     }
+    
+    
+    // MARK: 메시지 전송
+    func sendChatMessage(chatRoom: ChatRoomModel, message: ChatMessageModel) -> Observable<Void>{
+        return Observable.create{ emitter in
+            do{
+                try self.db.collection("chat").document(chatRoom.roomId).collection("messages").document()
+                    .setData(from: message)
+                emitter.onNext(())
+                emitter.onCompleted()
+            }catch let error{
+                emitter.onError(error)
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: 메시지 리스너
+    
+    func addListenerChatMessage(chatRoom: ChatRoomModel) -> Observable<[ChatMessageModel]>{
+        return Observable.create{ emitter in
+            let docRef = self.db.collection("chat").document(chatRoom.roomId).collection("messages").order(by: "date", descending: false)
+            docRef.addSnapshotListener { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let documents = snapshot?.documents else { return }
+                
+                let message = documents.compactMap { document in
+                    return try! document.data(as: ChatMessageModel.self)
+                }
+                emitter.onNext(message)
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: 채팅방 검색
+    func searchChatRoomList(keyword: String) -> Observable<[ChatRoomModel]>{
+        return Observable.create{ emitter in
+            self.db.collection("chat")
+            return Disposables.create()
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     

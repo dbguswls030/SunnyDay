@@ -27,13 +27,15 @@ class ChatListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .systemBackground
+        
         initUI()
         setChatTableView()
         initToolButtonItems()
     }
-    
+
     private func initUI(){
+        self.view.backgroundColor = .systemBackground
+        
         self.view.addSubview(toolView)
         self.view.addSubview(chatListView)
         
@@ -53,7 +55,9 @@ class ChatListViewController: UIViewController {
         self.toolView.searchChatRoomButton.rx
             .tap
             .bind{
-                
+                let vc = SearchChatRoomViewController()
+                vc.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(vc, animated: true)
             }.disposed(by: disposeBag)
     }
     
@@ -85,11 +89,9 @@ class ChatListViewController: UIViewController {
         
         
         chatListView.participatedChatTableView.rx.modelSelected(ChatRoomModel.self)
-            .subscribe(onNext: { chatModel in
-                let vc = ChatViewController()
-                vc.setChatTitle(chatTitle: chatModel.title)
+            .subscribe(onNext: { chatRoomModel in
+                let vc = ChatViewController(chatRoomModel: chatRoomModel)
                 vc.hidesBottomBarWhenPushed = true
-                self.navigationController?.navigationBar.prefersLargeTitles = false
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
@@ -100,5 +102,4 @@ class ChatListViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
-
 }
