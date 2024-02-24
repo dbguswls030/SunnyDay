@@ -69,7 +69,9 @@ class ChatViewController: UIViewController {
         chatCollectionView.register(ChatMyCollectionViewCell.self, forCellWithReuseIdentifier: ChatMyCollectionViewCell.identifier)
         chatCollectionView.register(ChatOtherCollectionViewCell.self, forCellWithReuseIdentifier: ChatOtherCollectionViewCell.identifier)
         
-        chatViewModel.messages
+        
+        
+        chatViewModel.getChatMessageListener()
             .bind(to: chatCollectionView.rx.items) { collectionView, index, model in
                 if model.uid == Auth.auth().currentUser!.uid{
                     let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatMyCollectionViewCell
@@ -86,6 +88,7 @@ class ChatViewController: UIViewController {
                 }
             }
             .disposed(by: disposeBag)
+        
     }
     
     private func initUI(){

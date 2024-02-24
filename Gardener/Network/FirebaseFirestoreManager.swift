@@ -546,10 +546,11 @@ class FirebaseFirestoreManager{
                 if let error = error{
                     emitter.onError(error)
                 }
-                guard let documents = snapshot?.documents else { return }
+                guard let documents = snapshot?.documentChanges else { return }
                 
-                let message = documents.compactMap { document in
-                    return try! document.data(as: ChatMessageModel.self)
+                let message = documents.compactMap { change -> ChatMessageModel? in
+                    guard change.type == .added else { return nil }
+                    return try? change.document.data(as: ChatMessageModel.self)
                 }
                 emitter.onNext(message)
             }
@@ -564,18 +565,6 @@ class FirebaseFirestoreManager{
             return Disposables.create()
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     // MARK: FireStore 수정

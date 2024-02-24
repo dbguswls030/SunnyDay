@@ -85,7 +85,7 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         contentTextView.snp.makeConstraints { make in
             make.top.equalTo(nickNameLabel.snp.bottom).offset(5)
             make.left.equalTo(profileImageView.snp.right).offset(7)
-            make.right.lessThanOrEqualToSuperview().offset(-80)
+            make.right.lessThanOrEqualToSuperview().offset(-80).priority(.high)
         }
         
         timeLabel.snp.makeConstraints { make in
