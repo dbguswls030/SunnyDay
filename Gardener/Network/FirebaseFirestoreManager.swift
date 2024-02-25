@@ -537,8 +537,28 @@ class FirebaseFirestoreManager{
         }
     }
     
-    // MARK: 메시지 리스너
+    func testGetFirstChatMessages(chatRoom: ChatRoomModel) -> Observable<[ChatMessageModel]>{
+        return Observable.create { emitter in
+            let docRef = self.db.collection("chat").document(chatRoom.roomId).collection("messages").order(by: "date", descending: false).limit(to: 20)
+            
+            docRef.getDocuments { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let documents = snapshot?.documents else { return }
+                let messages = documents.compactMap { document in
+                    return try? document.data(as: ChatMessageModel.self)
+                }
+                
+                emitter.onNext(messages)
+                emitter.onCompleted()
+            }
+            
+            return Disposables.create()
+        }
+    }
     
+    // MARK: 메시지 리스너
     func addListenerChatMessage(chatRoom: ChatRoomModel) -> Observable<[ChatMessageModel]>{
         return Observable.create{ emitter in
             let docRef = self.db.collection("chat").document(chatRoom.roomId).collection("messages").order(by: "date", descending: false)

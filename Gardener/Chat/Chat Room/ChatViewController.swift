@@ -71,7 +71,7 @@ class ChatViewController: UIViewController {
         
         
         
-        chatViewModel.getChatMessageListener()
+        chatViewModel.testGetFirstChatMessages()
             .bind(to: chatCollectionView.rx.items) { collectionView, index, model in
                 if model.uid == Auth.auth().currentUser!.uid{
                     let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatMyCollectionViewCell
@@ -89,6 +89,20 @@ class ChatViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
+        chatViewModel.getChatMessageListener()
+            .skip(1)
+            .observe(on: MainScheduler.instance)
+            .bind{ messages, newMessagesCount in
+                print(messages.count, newMessagesCount)
+                let currentItemCount = self.chatCollectionView.numberOfItems(inSection: 0)
+                print(currentItemCount)
+                let startIndex = messages.count - newMessagesCount
+                
+                self.chatCollectionView.performBatchUpdates {
+                    let indexPath = (currentItemCount..<currentItemCount+newMessagesCount).map{ IndexPath(item: $0, section: 0) }
+                    self.chatCollectionView.insertItems(at: indexPath)
+                }
+            }.disposed(by: self.disposeBag)
     }
     
     private func initUI(){
