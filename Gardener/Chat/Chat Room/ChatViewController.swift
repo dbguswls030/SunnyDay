@@ -62,6 +62,7 @@ class ChatViewController: UIViewController {
     
     private func initCollectionView(){
         chatCollectionView.delegate = self
+        chatCollectionView.dataSource = self
         
         let topInset = navigationController?.navigationBar.isTranslucent == true ? 0 : navigationController?.navigationBar.frame.height ?? 0
         chatCollectionView.contentInset = UIEdgeInsets(top: topInset + 10, left: 0, bottom: 5, right: 0)
@@ -69,40 +70,43 @@ class ChatViewController: UIViewController {
         chatCollectionView.register(ChatMyCollectionViewCell.self, forCellWithReuseIdentifier: ChatMyCollectionViewCell.identifier)
         chatCollectionView.register(ChatOtherCollectionViewCell.self, forCellWithReuseIdentifier: ChatOtherCollectionViewCell.identifier)
         
-        
-        
-        chatViewModel.testGetFirstChatMessages()
-            .bind(to: chatCollectionView.rx.items) { collectionView, index, model in
-                if model.uid == Auth.auth().currentUser!.uid{
-                    let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatMyCollectionViewCell
-                
-                    cell.setData(model: model)
-                    
-                    return cell
-                }else{
-                    let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatOtherCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatOtherCollectionViewCell
-                    
-                    cell.setData(model: model)
-                    
-                    return cell
-                }
+        chatViewModel.getFirstChatMessages()
+            .bind {
+                self.chatCollectionView.reloadData()
             }
             .disposed(by: disposeBag)
         
-        chatViewModel.getChatMessageListener()
+        chatViewModel.addListenerChatMessages()
             .skip(1)
-            .observe(on: MainScheduler.instance)
-            .bind{ messages, newMessagesCount in
-                print(messages.count, newMessagesCount)
-                let currentItemCount = self.chatCollectionView.numberOfItems(inSection: 0)
-                print(currentItemCount)
-                let startIndex = messages.count - newMessagesCount
-                
+            .bind{ messages ,addCount in
+                self.chatViewModel.messages.accept(messages)
+                let startIndex = self.chatCollectionView.numberOfItems(inSection: 0)
+                let endIndex = startIndex + addCount
+                let indexPaths = (startIndex..<endIndex).map { IndexPath(item: $0, section: 0) }
                 self.chatCollectionView.performBatchUpdates {
-                    let indexPath = (currentItemCount..<currentItemCount+newMessagesCount).map{ IndexPath(item: $0, section: 0) }
-                    self.chatCollectionView.insertItems(at: indexPath)
+                    self.chatCollectionView.insertItems(at: indexPaths)
+                } completion: { complete in
+                    if complete{
+                        DispatchQueue.main.async {
+                            let indexPath =  IndexPath(item: self.chatCollectionView.numberOfItems(inSection: 0) - 1, section: 0)
+                            self.chatCollectionView.scrollToItem(at: indexPath, at: .bottom, animated: false)
+                        }
+                    }
                 }
-            }.disposed(by: self.disposeBag)
+            }.disposed(by: disposeBag)
+//        chatViewModel.messages
+//            .bind(to: chatCollectionView.rx.items) { collectionView, index, model in
+//                if model.uid == Auth.auth().currentUser!.uid{
+//                    let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatMyCollectionViewCell
+//                    cell.setData(model: model)
+//                    return cell
+//                }else{
+//                    let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatOtherCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatOtherCollectionViewCell
+//                    cell.setData(model: model)
+//                    return cell
+//                }
+//            }
+//            .disposed(by: disposeBag)
     }
     
     private func initUI(){
@@ -177,11 +181,6 @@ class ChatViewController: UIViewController {
             }.flatMap{ messageModel in
                 FirebaseFirestoreManager.shared.sendChatMessage(chatRoom: self.chatViewModel.chatRoomModel, message: messageModel)
             }
-            .observe(on: MainScheduler.instance)
-            .map{
-                let indexPath = IndexPath(item: self.chatCollectionView.numberOfItems(inSection: 0) - 1, section: 0)
-                self.chatCollectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
-            }
             .bind{}
             .disposed(by: disposeBag)
     }
@@ -203,6 +202,28 @@ class ChatViewController: UIViewController {
     }
 }
 
+extension ChatViewController: UICollectionViewDataSource{
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        chatViewModel.messages.value.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let model = chatViewModel.getChatModel(at: indexPath.item) else {
+            print("no exist model")
+            return UICollectionViewCell()
+        }
+        
+        if model.uid == Auth.auth().currentUser!.uid{
+            let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: indexPath.item, section: 0)) as! ChatMyCollectionViewCell
+            cell.setData(model: model)
+            return cell
+        }else{
+            let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatOtherCollectionViewCell.identifier, for: IndexPath(item: indexPath.item, section: 0)) as! ChatOtherCollectionViewCell
+            cell.setData(model: model)
+            return cell
+        }
+    }
+}
 
 extension ChatViewController: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

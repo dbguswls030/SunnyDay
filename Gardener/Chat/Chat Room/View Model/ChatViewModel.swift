@@ -18,46 +18,45 @@ class ChatViewModel{
     
     init(chatRoomModel: ChatRoomModel){
         self.chatRoomModel = chatRoomModel
+//        FirebaseFirestoreManager.shared.testGetFirstChatMessages(chatRoom: self.chatRoomModel)
+//            .bind(to: messages)
+//            .disposed(by: disposeBag)
+//        
+//        FirebaseFirestoreManager.shared.addListenerChatMessage(chatRoom: self.chatRoomModel)
+//            .scan(self.messages.value, accumulator: { messages, newMessages in
+//                return messages + newMessages
+//            })
+//            .bind(to: messages)
+//            .disposed(by: self.disposeBag)
     }
     
-    func testGetFirstChatMessages() -> Observable<[ChatMessageModel]>{
-        return Observable.create{ emitter in
+    func getFirstChatMessages() -> Observable<Void>{
+        return Observable.create { emitter in
             FirebaseFirestoreManager.shared.testGetFirstChatMessages(chatRoom: self.chatRoomModel)
                 .bind{ messages in
                     self.messages.accept(messages)
-                    emitter.onNext(messages)
-                }.disposed(by: self.disposeBag)
-            return Disposables.create()
-        }
-    }
-    
-    func testGetChatMessagesListener() -> Observable<[ChatMessageModel]>{
-        return Observable.create{ emitter in
-            FirebaseFirestoreManager.shared.addListenerChatMessage(chatRoom: self.chatRoomModel)
-                .scan(self.messages.value, accumulator: { messages, newMessages in
-                    return messages + newMessages
-                })
-                .bind{ messages in
-                    emitter.onNext(messages)
-                }.disposed(by: self.disposeBag)
-            return Disposables.create()
-        }
-    }
-    
-    func getChatMessageListener() -> Observable<([ChatMessageModel], Int)>{
-        return Observable.create{ emitter in
-            FirebaseFirestoreManager.shared.addListenerChatMessage(chatRoom: self.chatRoomModel)
-                .scan(self.messages.value, accumulator: { messages, newMessages in
-                    return messages + newMessages
-                })
-                .flatMap{ updateMessages -> Observable<([ChatMessageModel], Int)> in
-                    let previousMessageCount = self.messages.value.count
-                    self.messages.accept(updateMessages)
-                    return .just((updateMessages, updateMessages.count - previousMessageCount))
+                    emitter.onNext(())
+                    emitter.onCompleted()
                 }
-                .bind{ messages, newMessageCount in
-                    emitter.onNext((messages, newMessageCount))
-                }.disposed(by: self.disposeBag)
+                .disposed(by: self.disposeBag)
+            return Disposables.create()
+        }
+    }
+    
+    func addListenerChatMessages() -> Observable<([ChatMessageModel], Int)>{
+        return Observable.create{ emitter in
+            FirebaseFirestoreManager.shared.addListenerChatMessage(chatRoom: self.chatRoomModel)
+                .scan(self.messages.value, accumulator: { messages, newMessages in
+                    return messages + newMessages
+                })
+                .map{ updateMessages in
+                    return (updateMessages, updateMessages.count - self.messages.value.count)
+                }
+                .bind{ messages, addCount in
+                    emitter.onNext((messages, addCount))
+//                    emitter.onCompleted()
+                }
+                .disposed(by: self.disposeBag)
             return Disposables.create()
         }
     }
