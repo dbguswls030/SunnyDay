@@ -73,27 +73,39 @@ class ChatViewController: UIViewController {
         chatViewModel.getFirstChatMessages()
             .bind {
                 self.chatCollectionView.reloadData()
+                DispatchQueue.main.async {
+                    if self.chatCollectionView.contentSize.height > self.chatCollectionView.bounds.height{
+                        let contentHeight = self.chatCollectionView.contentSize.height
+                        let offsetY = max(0, contentHeight - self.chatCollectionView.bounds.size.height)
+                        self.chatCollectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                    }
+                    
+                }
             }
             .disposed(by: disposeBag)
         
         chatViewModel.addListenerChatMessages()
             .skip(1)
-            .bind{ messages ,addCount in
-                self.chatViewModel.messages.accept(messages)
+            .bind{ messages ,newMessages in
+                self.chatViewModel.messages.accept(messages+newMessages)
                 let startIndex = self.chatCollectionView.numberOfItems(inSection: 0)
-                let endIndex = startIndex + addCount
+                let endIndex = startIndex + newMessages.count
                 let indexPaths = (startIndex..<endIndex).map { IndexPath(item: $0, section: 0) }
                 self.chatCollectionView.performBatchUpdates {
                     self.chatCollectionView.insertItems(at: indexPaths)
                 } completion: { complete in
                     if complete{
                         DispatchQueue.main.async {
-                            let indexPath =  IndexPath(item: self.chatCollectionView.numberOfItems(inSection: 0) - 1, section: 0)
-                            self.chatCollectionView.scrollToItem(at: indexPath, at: .bottom, animated: false)
+//                            let indexPath =  IndexPath(item: self.chatCollectionView.numberOfItems(inSection: 0) - 1, section: 0)
+//                            self.chatCollectionView.scrollToItem(at: indexPath, at: .bottom, animated: false)
+                            let contentHeight = self.chatCollectionView.contentSize.height
+                            let offsetY = max(0, contentHeight - self.chatCollectionView.bounds.size.height)
+                            self.chatCollectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
                         }
                     }
                 }
             }.disposed(by: disposeBag)
+        
 //        chatViewModel.messages
 //            .bind(to: chatCollectionView.rx.items) { collectionView, index, model in
 //                if model.uid == Auth.auth().currentUser!.uid{
@@ -118,7 +130,6 @@ class ChatViewController: UIViewController {
         self.view.addSubview(inputBarView)
 
         chatCollectionView.snp.makeConstraints { make in
-//            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
             make.top.equalToSuperview()
             make.left.right.equalToSuperview()
             make.bottom.equalTo(inputBarView.snp.top)
@@ -200,6 +211,10 @@ class ChatViewController: UIViewController {
             return cell
         }
     }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }
 
 extension ChatViewController: UICollectionViewDataSource{
@@ -236,3 +251,5 @@ extension ChatViewController: UICollectionViewDelegateFlowLayout{
         }
     }
 }
+
+

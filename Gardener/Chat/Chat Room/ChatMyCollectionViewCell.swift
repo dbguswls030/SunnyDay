@@ -38,7 +38,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
     }
     
     override func prepareForReuse() {
-        contentTextView.text = ""
+        contentTextView.text = " "
     }
     
     private func initUI(){
