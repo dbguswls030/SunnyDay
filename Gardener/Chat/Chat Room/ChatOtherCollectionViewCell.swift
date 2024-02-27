@@ -34,6 +34,8 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         var textView = UITextView()
         textView.isScrollEnabled = false
         textView.isEditable = false
+        textView.showsVerticalScrollIndicator = false
+        textView.showsHorizontalScrollIndicator = false
         textView.backgroundColor = .lightGray
         textView.layer.masksToBounds = true
         textView.font = UIFont.systemFont(ofSize: 14)

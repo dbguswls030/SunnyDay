@@ -537,7 +537,7 @@ class FirebaseFirestoreManager{
         }
     }
     
-    func testGetFirstChatMessages(chatRoom: ChatRoomModel) -> Observable<[ChatMessageModel]>{
+    func getFirstChatMessages(chatRoom: ChatRoomModel) -> Observable<[ChatMessageModel]>{
         return Observable.create { emitter in
             let docRef = self.db.collection("chat").document(chatRoom.roomId).collection("messages").order(by: "date", descending: false).limit(toLast: 30)
             

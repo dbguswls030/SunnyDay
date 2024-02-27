@@ -15,6 +15,8 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         var textView = UITextView()
         textView.isScrollEnabled = false
         textView.isEditable = false
+        textView.showsVerticalScrollIndicator = false
+        textView.showsHorizontalScrollIndicator = false
         textView.backgroundColor = .green
         textView.font = UIFont.systemFont(ofSize: 14)
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 8, bottom: 7, right: 8)

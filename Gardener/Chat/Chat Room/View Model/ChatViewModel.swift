@@ -18,21 +18,11 @@ class ChatViewModel{
     
     init(chatRoomModel: ChatRoomModel){
         self.chatRoomModel = chatRoomModel
-//        FirebaseFirestoreManager.shared.testGetFirstChatMessages(chatRoom: self.chatRoomModel)
-//            .bind(to: messages)
-//            .disposed(by: disposeBag)
-//        
-//        FirebaseFirestoreManager.shared.addListenerChatMessage(chatRoom: self.chatRoomModel)
-//            .scan(self.messages.value, accumulator: { messages, newMessages in
-//                return messages + newMessages
-//            })
-//            .bind(to: messages)
-//            .disposed(by: self.disposeBag)
     }
     
     func getFirstChatMessages() -> Observable<Void>{
         return Observable.create { emitter in
-            FirebaseFirestoreManager.shared.testGetFirstChatMessages(chatRoom: self.chatRoomModel)
+            FirebaseFirestoreManager.shared.getFirstChatMessages(chatRoom: self.chatRoomModel)
                 .bind{ messages in
                     self.messages.accept(messages)
                     emitter.onNext(())

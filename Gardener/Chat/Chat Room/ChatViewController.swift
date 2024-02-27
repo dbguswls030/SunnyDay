@@ -50,6 +50,7 @@ class ChatViewController: UIViewController {
         setSendButton()
         setInputBarView()
         initCollectionView()
+//        removeAnimation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,7 +77,7 @@ class ChatViewController: UIViewController {
                 DispatchQueue.main.async {
                     if self.chatCollectionView.contentSize.height > self.chatCollectionView.bounds.height{
                         let contentHeight = self.chatCollectionView.contentSize.height
-                        let offsetY = max(0, contentHeight - self.chatCollectionView.bounds.size.height)
+                        let offsetY = max(0, contentHeight - self.chatCollectionView.bounds.size.height + 10)
                         self.chatCollectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
                     }
                     
@@ -96,31 +97,17 @@ class ChatViewController: UIViewController {
                 } completion: { complete in
                     if complete{
                         DispatchQueue.main.async {
-//                            let indexPath =  IndexPath(item: self.chatCollectionView.numberOfItems(inSection: 0) - 1, section: 0)
-//                            self.chatCollectionView.scrollToItem(at: indexPath, at: .bottom, animated: false)
-                            let contentHeight = self.chatCollectionView.contentSize.height
-                            let offsetY = max(0, contentHeight - self.chatCollectionView.bounds.size.height)
-                            self.chatCollectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                            if self.chatCollectionView.contentSize.height > self.chatCollectionView.bounds.height{
+                                let contentHeight = self.chatCollectionView.contentSize.height
+                                let offsetY = max(0, contentHeight - self.chatCollectionView.bounds.size.height + 10)
+                                self.chatCollectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                            }
                         }
                     }
                 }
             }.disposed(by: disposeBag)
-        
-//        chatViewModel.messages
-//            .bind(to: chatCollectionView.rx.items) { collectionView, index, model in
-//                if model.uid == Auth.auth().currentUser!.uid{
-//                    let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatMyCollectionViewCell
-//                    cell.setData(model: model)
-//                    return cell
-//                }else{
-//                    let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatOtherCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as! ChatOtherCollectionViewCell
-//                    cell.setData(model: model)
-//                    return cell
-//                }
-//            }
-//            .disposed(by: disposeBag)
     }
-    
+
     private func initUI(){
         self.view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.tintColor = .black
@@ -224,7 +211,6 @@ extension ChatViewController: UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let model = chatViewModel.getChatModel(at: indexPath.item) else {
-            print("no exist model")
             return UICollectionViewCell()
         }
         
