@@ -21,6 +21,8 @@
 		9F3201792B84C5D2002C816A /* SearchChatRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3201782B84C5D2002C816A /* SearchChatRoomViewModel.swift */; };
 		9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */; };
 		9F35C0E12B838A9C00A7AE2D /* SearchChatRoomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F35C0E02B838A9C00A7AE2D /* SearchChatRoomTableViewCell.swift */; };
+		9F3D79A42B8E9AA20078023D /* ChatMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3D79A32B8E9AA20078023D /* ChatMenuViewController.swift */; };
+		9F3D79A62B8EA4DB0078023D /* ChatMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3D79A52B8EA4DB0078023D /* ChatMenuView.swift */; };
 		9F3DEC922B72094A00D14D6B /* CreateChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3DEC912B72094A00D14D6B /* CreateChatViewController.swift */; };
 		9F50D6802B69E77E002E387A /* InputBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D67F2B69E77E002E387A /* InputBarView.swift */; };
 		9F50D6822B6A15BA002E387A /* ChatMyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D6812B6A15BA002E387A /* ChatMyCollectionViewCell.swift */; };
@@ -116,6 +118,8 @@
 		9F3201782B84C5D2002C816A /* SearchChatRoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchChatRoomViewModel.swift; sourceTree = "<group>"; };
 		9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateBoardViewController.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		9F35C0E02B838A9C00A7AE2D /* SearchChatRoomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchChatRoomTableViewCell.swift; sourceTree = "<group>"; };
+		9F3D79A32B8E9AA20078023D /* ChatMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMenuViewController.swift; sourceTree = "<group>"; };
+		9F3D79A52B8EA4DB0078023D /* ChatMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMenuView.swift; sourceTree = "<group>"; };
 		9F3DEC912B72094A00D14D6B /* CreateChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateChatViewController.swift; sourceTree = "<group>"; };
 		9F50D67F2B69E77E002E387A /* InputBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputBarView.swift; sourceTree = "<group>"; };
 		9F50D6812B6A15BA002E387A /* ChatMyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMyCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -301,6 +305,15 @@
 				9F3201782B84C5D2002C816A /* SearchChatRoomViewModel.swift */,
 			);
 			path = "View Model";
+			sourceTree = "<group>";
+		};
+		9F3D79A02B8E9A630078023D /* Menu Tab */ = {
+			isa = PBXGroup;
+			children = (
+				9F3D79A32B8E9AA20078023D /* ChatMenuViewController.swift */,
+				9F3D79A52B8EA4DB0078023D /* ChatMenuView.swift */,
+			);
+			path = "Menu Tab";
 			sourceTree = "<group>";
 		};
 		9F3DEC902B72092100D14D6B /* Create Chat Room */ = {
@@ -570,6 +583,7 @@
 			children = (
 				9F50D6872B6BA29A002E387A /* Model */,
 				9F50D6882B6BA2A3002E387A /* View Model */,
+				9F3D79A02B8E9A630078023D /* Menu Tab */,
 				9FE3FE1B2B63D8ED00DA26CF /* ChatViewController.swift */,
 				9F50D6812B6A15BA002E387A /* ChatMyCollectionViewCell.swift */,
 				9F50D6832B6A8737002E387A /* ChatOtherCollectionViewCell.swift */,
@@ -882,6 +896,7 @@
 				9FA37F212B1503700065BE3D /* CommentView.swift in Sources */,
 				9FE3FE112B63AFEF00DA26CF /* ChatListView.swift in Sources */,
 				9FB9E3782B2EF5D400D5B490 /* CommentModel.swift in Sources */,
+				9F3D79A62B8EA4DB0078023D /* ChatMenuView.swift in Sources */,
 				9F50D6842B6A8737002E387A /* ChatOtherCollectionViewCell.swift in Sources */,
 				9F50D6802B69E77E002E387A /* InputBarView.swift in Sources */,
 				9FF51F742B80ED1F00D9CAA8 /* ChatListTopView.swift in Sources */,
@@ -921,6 +936,7 @@
 				9FB31D7329DD96AD00F02DE0 /* LoginView.swift in Sources */,
 				9F35C0E12B838A9C00A7AE2D /* SearchChatRoomTableViewCell.swift in Sources */,
 				9FB1229B2A8E780800C346E7 /* Toast.swift in Sources */,
+				9F3D79A42B8E9AA20078023D /* ChatMenuViewController.swift in Sources */,
 				9FEB1D972B83586300D31F42 /* SearchChatView.swift in Sources */,
 				9FCBD8892AFA641500FBBE27 /* BoardView.swift in Sources */,
 				9F0414882A6557DB00DD6F2C /* SignUpView.swift in Sources */,

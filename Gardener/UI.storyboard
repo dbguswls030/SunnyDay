@@ -52,7 +52,7 @@
                         <viewLayoutGuide key="safeArea" id="hvz-In-4EV"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="채팅" image="bubble.left.and.bubble.right.fill" catalog="system" id="3z4-7g-fcg"/>
+                    <tabBarItem key="tabBarItem" title="채팅" image="li" id="3z4-7g-fcg"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MEf-oW-SHc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -146,12 +146,12 @@
     <resources>
         <image name="bag.fill" catalog="system" width="128" height="128"/>
         <image name="bubble.left.and.bubble.right" catalog="system" width="128" height="96"/>
-        <image name="bubble.left.and.bubble.right.fill" catalog="system" width="128" height="102"/>
         <image name="house.fill" catalog="system" width="128" height="104"/>
-        <image name="newspaper.fill" catalog="system" width="128" height="112"/>
-        <image name="person.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="li" width="128" height="128"/>
+        <image name="newspaper.fill" catalog="system" width="32" height="32"/>
+        <image name="person.circle.fill" catalog="system" width="32" height="32"/>
         <image name="sun.haze" catalog="system" width="128" height="118"/>
-        <image name="sun.haze.fill" catalog="system" width="128" height="118"/>
+        <image name="sun.haze.fill" catalog="system" width="32" height="32"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

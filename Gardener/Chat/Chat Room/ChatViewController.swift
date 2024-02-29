@@ -31,7 +31,13 @@ class ChatViewController: UIViewController {
         return collectionView
     }()
     
-
+    private lazy var menuButton: UIButton = {
+        let button = UIButton()
+        button.tintColor = .black
+        button.setImage(UIImage(systemName: "line.horizontal.3",withConfiguration: UIImage.SymbolConfiguration(pointSize: 22)), for: .normal)
+        return button
+    }()
+    
     init(chatRoomModel: ChatRoomModel) {
         self.chatViewModel = ChatViewModel(chatRoomModel: chatRoomModel)
         super.init(nibName: nil, bundle: nil)
@@ -41,7 +47,6 @@ class ChatViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboardWhenTouchUpBackground()
@@ -50,7 +55,8 @@ class ChatViewController: UIViewController {
         setSendButton()
         setInputBarView()
         initCollectionView()
-//        removeAnimation()
+        initNavigationItem()
+        menuButtonAction()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,6 +67,21 @@ class ChatViewController: UIViewController {
         self.navigationController?.isNavigationBarHidden = true
     }
     
+    private func initNavigationItem(){
+        self.navigationItem.setRightBarButton(UIBarButtonItem(customView: menuButton), animated: false)
+    }
+    
+    private func menuButtonAction(){
+        self.menuButton.rx
+            .tap
+            .bind{
+                let vc = ChatMenuViewController()
+                
+                vc.modalPresentationStyle = .overCurrentContext
+                self.present(vc, animated: false)
+            }.disposed(by: disposeBag)
+    }
+
     private func initCollectionView(){
         chatCollectionView.delegate = self
         chatCollectionView.dataSource = self
