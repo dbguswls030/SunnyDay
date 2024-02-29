@@ -12,7 +12,7 @@ class ChatMenuView: UIView {
     
     private lazy var thumnailImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
@@ -59,14 +59,14 @@ class ChatMenuView: UIView {
         self.addSubview(createdDateLabel)
         
         thumnailImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.left.right.equalToSuperview()
-            make.height.equalTo(150)
+            make.top.equalToSuperview().offset(50)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(100)
         }
         
         chatSubTitleLabel.snp.makeConstraints { make in
             make.bottom.equalTo(thumnailImageView.snp.bottom).offset(-10)
-            make.left.equalTo(thumnailImageView.snp.left).offset(10)
+            make.left.equalToSuperview().offset(10)
         }
         
         chatTitleLabel.snp.makeConstraints { make in

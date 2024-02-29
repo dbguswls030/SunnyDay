@@ -10,8 +10,9 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import FirebaseAuth
+import SideMenu
 
-class ChatViewController: UIViewController {
+class ChatViewController: UIViewController{
     
     // TODO: 임시 ViewModel 만들어서 테스트해보기
     var chatViewModel: ChatViewModel
@@ -37,7 +38,7 @@ class ChatViewController: UIViewController {
         button.setImage(UIImage(systemName: "line.horizontal.3",withConfiguration: UIImage.SymbolConfiguration(pointSize: 22)), for: .normal)
         return button
     }()
-    
+
     init(chatRoomModel: ChatRoomModel) {
         self.chatViewModel = ChatViewModel(chatRoomModel: chatRoomModel)
         super.init(nibName: nil, bundle: nil)
@@ -61,10 +62,15 @@ class ChatViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.backgroundColor = .clear
+        self.navigationController?.navigationBar.alpha = 0.9
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         self.navigationController?.isNavigationBarHidden = true
+        self.navigationController?.navigationBar.alpha = 1
+        self.navigationController?.navigationBar.backgroundColor = .systemBackground
     }
     
     private func initNavigationItem(){
@@ -76,18 +82,24 @@ class ChatViewController: UIViewController {
             .tap
             .bind{
                 let vc = ChatMenuViewController()
+                vc.setData(model: self.chatViewModel.chatRoomModel)
+                let menuVC = SideMenuNavigationController(rootViewController: vc)
                 
-                vc.modalPresentationStyle = .overCurrentContext
-                self.present(vc, animated: false)
+                menuVC.presentationStyle = .menuSlideIn
+                menuVC.menuWidth = self.view.frame.width * 0.8
+                menuVC.sideMenuDelegate = self
+                menuVC.statusBarEndAlpha = 0.0
+                self.present(menuVC, animated: true)
+                
             }.disposed(by: disposeBag)
     }
 
     private func initCollectionView(){
         chatCollectionView.delegate = self
         chatCollectionView.dataSource = self
-        
-        let topInset = navigationController?.navigationBar.isTranslucent == true ? 0 : navigationController?.navigationBar.frame.height ?? 0
-        chatCollectionView.contentInset = UIEdgeInsets(top: topInset + 10, left: 0, bottom: 5, right: 0)
+        let topInset = navigationController?.navigationBar.frame.height ?? 0
+//        let topInset = navigationController?.navigationBar.isTranslucent == true ? 0 : navigationController?.navigationBar.frame.height ?? 0
+        chatCollectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 5, right: 0)
         
         chatCollectionView.register(ChatMyCollectionViewCell.self, forCellWithReuseIdentifier: ChatMyCollectionViewCell.identifier)
         chatCollectionView.register(ChatOtherCollectionViewCell.self, forCellWithReuseIdentifier: ChatOtherCollectionViewCell.identifier)
@@ -136,7 +148,7 @@ class ChatViewController: UIViewController {
         
         self.view.addSubview(chatCollectionView)
         self.view.addSubview(inputBarView)
-
+        
         chatCollectionView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.left.right.equalToSuperview()
@@ -260,3 +272,20 @@ extension ChatViewController: UICollectionViewDelegateFlowLayout{
 }
 
 
+extension ChatViewController: SideMenuNavigationControllerDelegate{
+    
+    func sideMenuWillAppear(menu: SideMenuNavigationController, animated: Bool) {
+        UIView.animate(withDuration: 0.35) {
+            self.view.alpha = 0.6
+            self.navigationController?.navigationBar.alpha = 0.6
+            
+        }
+    }
+    func sideMenuDidDisappear(menu: SideMenuNavigationController, animated: Bool) {
+        UIView.animate(withDuration: 0.35) {
+            self.view.alpha = 1
+            self.navigationController?.navigationBar.alpha = 0.9
+            
+        }
+    }
+}

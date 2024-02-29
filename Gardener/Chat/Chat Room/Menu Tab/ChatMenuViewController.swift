@@ -22,26 +22,35 @@ class ChatMenuViewController: UIViewController {
         return scrollView
     }()
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .gray
-        
+        initUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = false
+    }
+    
+    private func initUI(){
+        self.view.backgroundColor = .systemBackground
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(chatMenuView)
         
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+            
         }
         chatMenuView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+            make.width.equalToSuperview()
         }
     }
     
-    
-    
-    
+    func setData(model: ChatRoomModel){
+        chatMenuView.setData(model: model)
+    }
 }
