@@ -56,6 +56,11 @@ class CreateChatViewController: UIViewController {
         return CreateChatView()
     }()
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

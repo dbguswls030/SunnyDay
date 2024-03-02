@@ -29,6 +29,8 @@
 		9F50D6842B6A8737002E387A /* ChatOtherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D6832B6A8737002E387A /* ChatOtherCollectionViewCell.swift */; };
 		9F50D68C2B6BA52A002E387A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D68B2B6BA52A002E387A /* ChatMessageModel.swift */; };
 		9F50D68E2B6BA535002E387A /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D68D2B6BA535002E387A /* ChatViewModel.swift */; };
+		9F5885A62B92016F00942EE5 /* ChatMemberTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5885A52B92016F00942EE5 /* ChatMemberTableViewCell.swift */; };
+		9F5885A92B92116D00942EE5 /* ChatMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5885A82B92116D00942EE5 /* ChatMenuViewModel.swift */; };
 		9F5AD0B62AB1B5FE002105DE /* BoardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5AD0B52AB1B5FE002105DE /* BoardModel.swift */; };
 		9F5AD0B92AB1C03E002105DE /* BoardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5AD0B82AB1C03E002105DE /* BoardViewModel.swift */; };
 		9F687DC42B43009D00A31A2E /* EditBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F687DC32B43009D00A31A2E /* EditBoardViewController.swift */; };
@@ -126,6 +128,8 @@
 		9F50D6832B6A8737002E387A /* ChatOtherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatOtherCollectionViewCell.swift; sourceTree = "<group>"; };
 		9F50D68B2B6BA52A002E387A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		9F50D68D2B6BA535002E387A /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		9F5885A52B92016F00942EE5 /* ChatMemberTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMemberTableViewCell.swift; sourceTree = "<group>"; };
+		9F5885A82B92116D00942EE5 /* ChatMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMenuViewModel.swift; sourceTree = "<group>"; };
 		9F5AD0B52AB1B5FE002105DE /* BoardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardModel.swift; sourceTree = "<group>"; };
 		9F5AD0B82AB1C03E002105DE /* BoardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewModel.swift; sourceTree = "<group>"; };
 		9F687DC32B43009D00A31A2E /* EditBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBoardViewController.swift; sourceTree = "<group>"; };
@@ -310,8 +314,10 @@
 		9F3D79A02B8E9A630078023D /* Menu Tab */ = {
 			isa = PBXGroup;
 			children = (
+				9F5885A72B92115B00942EE5 /* View Model */,
 				9F3D79A32B8E9AA20078023D /* ChatMenuViewController.swift */,
 				9F3D79A52B8EA4DB0078023D /* ChatMenuView.swift */,
+				9F5885A52B92016F00942EE5 /* ChatMemberTableViewCell.swift */,
 			);
 			path = "Menu Tab";
 			sourceTree = "<group>";
@@ -337,6 +343,14 @@
 			isa = PBXGroup;
 			children = (
 				9F50D68D2B6BA535002E387A /* ChatViewModel.swift */,
+			);
+			path = "View Model";
+			sourceTree = "<group>";
+		};
+		9F5885A72B92115B00942EE5 /* View Model */ = {
+			isa = PBXGroup;
+			children = (
+				9F5885A82B92116D00942EE5 /* ChatMenuViewModel.swift */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -902,9 +916,11 @@
 				9FF51F742B80ED1F00D9CAA8 /* ChatListTopView.swift in Sources */,
 				9F8F6A662B5130C3004ACF69 /* EditCommentViewController.swift in Sources */,
 				9F50D68C2B6BA52A002E387A /* ChatMessageModel.swift in Sources */,
+				9F5885A92B92116D00942EE5 /* ChatMenuViewModel.swift in Sources */,
 				9FB9E3752B2739B900D5B490 /* ReplyNoticeView.swift in Sources */,
 				9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */,
 				9F13E0D329D2D95D00651EA0 /* ChatListViewController.swift in Sources */,
+				9F5885A62B92016F00942EE5 /* ChatMemberTableViewCell.swift in Sources */,
 				9FE3FE1C2B63D8ED00DA26CF /* ChatViewController.swift in Sources */,
 				9FDFBF5D2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift in Sources */,
 				9FDFBF482ABB14AB00F5E9B3 /* CreateBoard.swift in Sources */,

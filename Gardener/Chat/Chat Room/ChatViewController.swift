@@ -39,8 +39,8 @@ class ChatViewController: UIViewController{
         return button
     }()
 
-    init(chatRoomModel: ChatRoomModel) {
-        self.chatViewModel = ChatViewModel(chatRoomModel: chatRoomModel)
+    init(chatRoomId: String) {
+        self.chatViewModel = ChatViewModel(chatRoomId: chatRoomId)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,11 +67,6 @@ class ChatViewController: UIViewController{
         self.navigationController?.navigationBar.alpha = 0.9
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        self.navigationController?.isNavigationBarHidden = true
-        self.navigationController?.navigationBar.alpha = 1
-        self.navigationController?.navigationBar.backgroundColor = .systemBackground
-    }
     
     private func initNavigationItem(){
         self.navigationItem.setRightBarButton(UIBarButtonItem(customView: menuButton), animated: false)
@@ -81,7 +76,7 @@ class ChatViewController: UIViewController{
         self.menuButton.rx
             .tap
             .bind{
-                let vc = ChatMenuViewController()
+                let vc = ChatMenuViewController(chatRoomModel: self.chatViewModel.chatRoomModel.asObservable())
                 vc.setData(model: self.chatViewModel.chatRoomModel)
                 let menuVC = SideMenuNavigationController(rootViewController: vc)
                 
@@ -162,7 +157,11 @@ class ChatViewController: UIViewController{
     }
     
     private func setChatTitle(){
-        self.title = chatViewModel.getChatRoomTitle()
+        chatViewModel.getChatRoomTitle()
+            .bind{ title in
+                self.title = title
+            }
+            .disposed(by: disposeBag)
     }
     
     private func setSendButton(){
@@ -210,7 +209,7 @@ class ChatViewController: UIViewController{
                 self.inputBarView.inputTextView.text = ""
                 return ChatMessageModel(uid: Auth.auth().currentUser!.uid, message: message, date: Date())
             }.flatMap{ messageModel in
-                FirebaseFirestoreManager.shared.sendChatMessage(chatRoom: self.chatViewModel.chatRoomModel, message: messageModel)
+                FirebaseFirestoreManager.shared.sendChatMessage(chatRoomId: self.chatViewModel.chatRoomId, message: messageModel)
             }
             .bind{}
             .disposed(by: disposeBag)

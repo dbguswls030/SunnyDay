@@ -32,7 +32,11 @@ class ChatListViewController: UIViewController {
         setChatTableView()
         initToolButtonItems()
     }
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
     private func initUI(){
         self.view.backgroundColor = .systemBackground
         
@@ -90,7 +94,7 @@ class ChatListViewController: UIViewController {
         
         chatListView.participatedChatTableView.rx.modelSelected(ChatRoomModel.self)
             .subscribe(onNext: { chatRoomModel in
-                let vc = ChatViewController(chatRoomModel: chatRoomModel)
+                let vc = ChatViewController(chatRoomId: chatRoomModel.roomId)
                 vc.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(vc, animated: true)
             })

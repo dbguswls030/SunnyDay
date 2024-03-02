@@ -17,7 +17,7 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         textView.isEditable = false
         textView.showsVerticalScrollIndicator = false
         textView.showsHorizontalScrollIndicator = false
-        textView.backgroundColor = .green
+        textView.backgroundColor = .init(red: 193/255, green: 202/255, blue: 245/255, alpha: 1)
         textView.font = UIFont.systemFont(ofSize: 14)
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 8, bottom: 7, right: 8)
         return textView
@@ -60,7 +60,6 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
             make.right.equalTo(contentTextView.snp.left).offset(-3)
         }
     }
-    
     
     func setData(model: ChatMessageModel){
         self.timeLabel.text = model.date.convertDateToCurrentTime()

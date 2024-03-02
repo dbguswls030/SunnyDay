@@ -523,10 +523,10 @@ class FirebaseFirestoreManager{
     
     
     // MARK: 메시지 전송
-    func sendChatMessage(chatRoom: ChatRoomModel, message: ChatMessageModel) -> Observable<Void>{
+    func sendChatMessage(chatRoomId: String, message: ChatMessageModel) -> Observable<Void>{
         return Observable.create{ emitter in
             do{
-                try self.db.collection("chat").document(chatRoom.roomId).collection("messages").document()
+                try self.db.collection("chat").document(chatRoomId).collection("messages").document()
                     .setData(from: message)
                 emitter.onNext(())
                 emitter.onCompleted()
@@ -537,9 +537,31 @@ class FirebaseFirestoreManager{
         }
     }
     
-    func getFirstChatMessages(chatRoom: ChatRoomModel) -> Observable<[ChatMessageModel]>{
+    // MARK: 채팅방 리스너
+    func addListenerChatRoom(chatRoomId: String) -> Observable<ChatRoomModel>{
         return Observable.create { emitter in
-            let docRef = self.db.collection("chat").document(chatRoom.roomId).collection("messages").order(by: "date", descending: false).limit(toLast: 30)
+            let docRef = self.db.collection("chat").document(chatRoomId)
+            docRef.addSnapshotListener { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let document = snapshot else { return }
+                
+                do{
+                    try emitter.onNext(document.data(as: ChatRoomModel.self))
+                }catch let error{
+                    emitter.onError(error)
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    
+    // MARK: 채팅방 입장 시 메시지 가져오기
+    func getFirstChatMessages(chatRoomId: String) -> Observable<[ChatMessageModel]>{
+        return Observable.create { emitter in
+            let docRef = self.db.collection("chat").document(chatRoomId).collection("messages").order(by: "date", descending: false).limit(toLast: 30)
             
             docRef.getDocuments { snapshot, error in
                 if let error = error{
@@ -558,9 +580,9 @@ class FirebaseFirestoreManager{
     }
     
     // MARK: 메시지 리스너
-    func addListenerChatMessage(chatRoom: ChatRoomModel) -> Observable<[ChatMessageModel]>{
+    func addListenerChatMessage(chatRoomId: String) -> Observable<[ChatMessageModel]>{
         return Observable.create{ emitter in
-            let docRef = self.db.collection("chat").document(chatRoom.roomId).collection("messages").order(by: "date", descending: false)
+            let docRef = self.db.collection("chat").document(chatRoomId).collection("messages").order(by: "date", descending: false)
             docRef.addSnapshotListener { snapshot, error in
                 if let error = error{
                     emitter.onError(error)

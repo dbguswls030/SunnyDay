@@ -11,18 +11,21 @@ import RxCocoa
 
 class ChatViewModel{
     
-    var chatRoomModel: ChatRoomModel
+    let chatRoomId: String
+    var chatRoomModel: Observable<ChatRoomModel>
     var messages = BehaviorRelay<[ChatMessageModel]>(value: [])
     var disposeBag = DisposeBag()
 
     
-    init(chatRoomModel: ChatRoomModel){
-        self.chatRoomModel = chatRoomModel
+    init(chatRoomId: String){
+        self.chatRoomId = chatRoomId
+        self.chatRoomModel = FirebaseFirestoreManager.shared.addListenerChatRoom(chatRoomId: chatRoomId).asObservable()
+        
     }
     
     func getFirstChatMessages() -> Observable<Void>{
         return Observable.create { emitter in
-            FirebaseFirestoreManager.shared.getFirstChatMessages(chatRoom: self.chatRoomModel)
+            FirebaseFirestoreManager.shared.getFirstChatMessages(chatRoomId: self.chatRoomId)
                 .bind{ messages in
                     self.messages.accept(messages)
                     emitter.onNext(())
@@ -35,7 +38,7 @@ class ChatViewModel{
     
     func addListenerChatMessages() -> Observable<([ChatMessageModel], [ChatMessageModel])>{
         return Observable.create{ emitter in
-            FirebaseFirestoreManager.shared.addListenerChatMessage(chatRoom: self.chatRoomModel)
+            FirebaseFirestoreManager.shared.addListenerChatMessage(chatRoomId: self.chatRoomId)
                 .map{ newMessages in
                     return (self.messages.value, newMessages)
                 }
@@ -55,7 +58,7 @@ class ChatViewModel{
     }
     
     
-    func getChatRoomTitle() -> String{
-        return chatRoomModel.title
+    func getChatRoomTitle() -> Observable<String>{
+        return chatRoomModel.map{ return $0.title }
     }
 }

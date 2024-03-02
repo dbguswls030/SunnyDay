@@ -7,37 +7,40 @@
 
 import UIKit
 import SnapKit
+import RxSwift
 
 class ChatMenuView: UIView {
+    
+    var disposeBag = DisposeBag()
     
     private lazy var thumnailImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         return imageView
     }()
     
-    private lazy var chatTitleLabel: UILabel = {
+    private lazy var chatInfoButton: UIButton = {
+        let button = UIButton()
+        button.tintColor = .lightGray
+        button.setImage(UIImage(systemName: "arrowshape.right.circle.fill"), for: .normal)
+        return button
+    }()
+    
+    private lazy var chatMemberListLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
+        label.text = "참여 인원"
+        label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         return label
     }()
     
-    private lazy var chatSubTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        return label
-    }()
-    
-    private lazy var createdDateLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        return label
-    }()
-    
-    private lazy var memberCountLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        return label
+    lazy var chatMemberTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.isScrollEnabled = false
+        tableView.showsVerticalScrollIndicator = false
+        tableView.showsHorizontalScrollIndicator = false
+        return tableView
     }()
     
     override init(frame: CGRect) {
@@ -53,48 +56,46 @@ class ChatMenuView: UIView {
         self.backgroundColor = .systemBackground
         
         self.addSubview(thumnailImageView)
-        self.addSubview(chatTitleLabel)
-        self.addSubview(chatSubTitleLabel)
-        self.addSubview(memberCountLabel)
-        self.addSubview(createdDateLabel)
+        self.addSubview(chatInfoButton)
+        self.addSubview(chatMemberListLabel)
+        self.addSubview(chatMemberTableView)
         
         thumnailImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(50)
+            make.top.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
-            make.width.height.equalTo(100)
+            make.height.lessThanOrEqualTo(140)
+            make.width.equalTo(thumnailImageView.snp.height)
         }
         
-        chatSubTitleLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(thumnailImageView.snp.bottom).offset(-10)
+        chatInfoButton.snp.makeConstraints { make in
+            make.bottom.equalTo(thumnailImageView.snp.bottom)
+            make.right.equalTo(thumnailImageView.snp.right)
+            make.width.height.equalTo(35)
+        }
+        
+        chatMemberListLabel.snp.makeConstraints { make in
+            make.top.equalTo(thumnailImageView.snp.bottom).offset(30)
             make.left.equalToSuperview().offset(10)
+            make.right.equalToSuperview()
+            make.height.equalTo(20)
         }
         
-        chatTitleLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(chatSubTitleLabel.snp.top).offset(-10)
-            make.left.equalTo(chatSubTitleLabel.snp.left)
+        chatMemberTableView.snp.makeConstraints { make in
+            make.top.equalTo(chatMemberListLabel.snp.bottom).offset(5)
+            make.left.right.equalToSuperview()
+            make.bottom.equalToSuperview()
         }
         
-        memberCountLabel.snp.makeConstraints { make in
-            make.top.equalTo(thumnailImageView.snp.bottom).offset(10)
-            make.left.equalToSuperview().offset(10)
-        }
-        
-        createdDateLabel.snp.makeConstraints { make in
-            make.top.equalTo(memberCountLabel.snp.bottom).offset(5)
-            make.left.equalToSuperview().offset(10)
-        }
     }
     
-    func setData(model: ChatRoomModel){
-        thumnailImageView.setImageView(url: model.thumbnailURL)
-        chatTitleLabel.text = model.title
-        chatSubTitleLabel.text = model.subTitle
-        memberCountLabel.text = "\(model.members.count)명"
-        createdDateLabel.text = model.date.convertDate()
+    func setData(model: Observable<ChatRoomModel>){
+        model.bind{ chatRoom in
+            self.thumnailImageView.setImageView(url: chatRoom.thumbnailURL)
+        }.disposed(by: disposeBag)
     }
     
-    func getContentHeight() -> CGFloat{
-        return thumnailImageView.frame.size.height + 10 + memberCountLabel.intrinsicContentSize.height
-        + 5 + createdDateLabel.intrinsicContentSize.height
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.thumnailImageView.layer.cornerRadius = self.thumnailImageView.frame.size.height * 0.1
     }
 }

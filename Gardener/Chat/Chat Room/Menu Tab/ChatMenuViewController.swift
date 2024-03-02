@@ -7,8 +7,13 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class ChatMenuViewController: UIViewController {
+    
+    var disposeBag = DisposeBag()
+    var chatRoomViewModel: ChatMenuViewModel
     
     private lazy var chatMenuView: ChatMenuView = {
         return ChatMenuView()
@@ -25,14 +30,20 @@ class ChatMenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        initChatMemberTableView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.isNavigationBarHidden = true
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        self.navigationController?.isNavigationBarHidden = false
+    init(chatRoomModel: Observable<ChatRoomModel>){
+        chatRoomViewModel = ChatMenuViewModel(chatRoomModel: chatRoomModel)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func initUI(){
@@ -44,13 +55,29 @@ class ChatMenuViewController: UIViewController {
             make.edges.equalToSuperview()
             
         }
-        chatMenuView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-        }
+        chatRoomViewModel.getMembersCount()
+            .bind{ count in
+                self.chatMenuView.snp.makeConstraints { make in
+                    make.edges.equalToSuperview()
+                    make.width.equalToSuperview()
+                    make.height.equalTo(225 + count * 60)
+                }
+            }.disposed(by: disposeBag)
+        
+        
     }
     
-    func setData(model: ChatRoomModel){
+    func setData(model: Observable<ChatRoomModel>){
         chatMenuView.setData(model: model)
+    }
+    
+    func initChatMemberTableView(){
+        self.chatMenuView.chatMemberTableView.register(ChatMemberTableViewCell.self, forCellReuseIdentifier: "chatMemberCell")
+        chatMenuView.chatMemberTableView.rowHeight = 60
+        
+        chatRoomViewModel.getMembers()
+            .bind(to: self.chatMenuView.chatMemberTableView.rx.items(cellIdentifier: "chatMemberCell", cellType: ChatMemberTableViewCell.self)){ index, model, cell in
+                cell.setData(model: model)
+            }.disposed(by: disposeBag)
     }
 }
