@@ -16,6 +16,8 @@ class ChatMemberTableViewCell: UITableViewCell {
     private lazy var profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
+        imageView.layer.borderColor = UIColor.lightGray.cgColor
+        imageView.layer.borderWidth = 0.2
         return imageView
     }()
     
@@ -73,7 +75,6 @@ class ChatMemberTableViewCell: UITableViewCell {
     }
     
     func setData(model: ChatMemberModel){
-        print("setData \(model)")
         FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: model.uid)
             .bind{ userModel in
                 self.profileImageView.setImageView(url:  userModel.profileImageURL)

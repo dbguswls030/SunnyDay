@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import FirebaseFirestore
 
 class ChatViewModel{
     
@@ -15,7 +16,8 @@ class ChatViewModel{
     var chatRoomModel: Observable<ChatRoomModel>
     var messages = BehaviorRelay<[ChatMessageModel]>(value: [])
     var disposeBag = DisposeBag()
-
+    
+    var previousMessagesQuery: Query?
     
     init(chatRoomId: String){
         self.chatRoomId = chatRoomId
@@ -26,7 +28,8 @@ class ChatViewModel{
     func getFirstChatMessages() -> Observable<Void>{
         return Observable.create { emitter in
             FirebaseFirestoreManager.shared.getFirstChatMessages(chatRoomId: self.chatRoomId)
-                .bind{ messages in
+                .bind{ messages, query in
+                    self.previousMessagesQuery = query
                     self.messages.accept(messages)
                     emitter.onNext(())
                     emitter.onCompleted()
@@ -50,13 +53,30 @@ class ChatViewModel{
         }
     }
     
+    func getPreviousMessages() -> Observable<Int>{
+        return Observable.create{ emitter in
+            guard let previousMessagesQuery = self.previousMessagesQuery else{
+                emitter.onCompleted()
+                return Disposables.create()
+            }
+            FirebaseFirestoreManager.shared.getPreviousMessages(query: previousMessagesQuery, chatRoomId: self.chatRoomId)
+                .bind{ previousMessages, query in
+                    self.previousMessagesQuery = query
+                    self.messages.accept(previousMessages+self.messages.value)
+                    emitter.onNext(previousMessages.count)
+                    emitter.onCompleted()
+                }.disposed(by: self.disposeBag)
+            return Disposables.create()
+        }
+    }
+    
+    
     func getChatModel(at index: Int) -> ChatMessageModel? {
         guard index >= 0, index < messages.value.count else {
             return nil
         }
         return messages.value[index]
     }
-    
     
     func getChatRoomTitle() -> Observable<String>{
         return chatRoomModel.map{ return $0.title }

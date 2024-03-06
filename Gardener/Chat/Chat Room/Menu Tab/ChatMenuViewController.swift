@@ -63,8 +63,6 @@ class ChatMenuViewController: UIViewController {
                     make.height.equalTo(225 + count * 60)
                 }
             }.disposed(by: disposeBag)
-        
-        
     }
     
     func setData(model: Observable<ChatRoomModel>){

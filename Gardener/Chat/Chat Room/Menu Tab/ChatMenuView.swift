@@ -63,8 +63,9 @@ class ChatMenuView: UIView {
         thumnailImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
-            make.height.lessThanOrEqualTo(140)
-            make.width.equalTo(thumnailImageView.snp.height)
+//            make.height.lessThanOrEqualTo(140)
+//            make.width.equalTo(thumnailImageView.snp.height)
+            make.width.height.equalTo(140)
         }
         
         chatInfoButton.snp.makeConstraints { make in
@@ -76,16 +77,15 @@ class ChatMenuView: UIView {
         chatMemberListLabel.snp.makeConstraints { make in
             make.top.equalTo(thumnailImageView.snp.bottom).offset(30)
             make.left.equalToSuperview().offset(10)
-            make.right.equalToSuperview()
             make.height.equalTo(20)
         }
         
         chatMemberTableView.snp.makeConstraints { make in
             make.top.equalTo(chatMemberListLabel.snp.bottom).offset(5)
             make.left.right.equalToSuperview()
+            make.width.equalTo(self.snp.width)
             make.bottom.equalToSuperview()
         }
-        
     }
     
     func setData(model: Observable<ChatRoomModel>){

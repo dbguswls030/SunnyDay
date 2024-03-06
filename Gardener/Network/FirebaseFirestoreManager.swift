@@ -559,19 +559,20 @@ class FirebaseFirestoreManager{
     
     
     // MARK: 채팅방 입장 시 메시지 가져오기
-    func getFirstChatMessages(chatRoomId: String) -> Observable<[ChatMessageModel]>{
+    func getFirstChatMessages(chatRoomId: String) -> Observable<([ChatMessageModel],Query)>{
         return Observable.create { emitter in
-            let docRef = self.db.collection("chat").document(chatRoomId).collection("messages").order(by: "date", descending: false).limit(toLast: 30)
+            let docRef = self.db.collection("chat").document(chatRoomId).collection("messages").order(by: "date", descending: true).limit(to: 30)
             
             docRef.getDocuments { snapshot, error in
                 if let error = error{
                     emitter.onError(error)
                 }
                 guard let documents = snapshot?.documents else { return }
+                guard let lastDocuments = documents.last else { return }
                 let messages = documents.compactMap { document in
                     return try? document.data(as: ChatMessageModel.self)
                 }
-                emitter.onNext(messages)
+                emitter.onNext((messages.reversed(), docRef.start(afterDocument: lastDocuments)))
                 emitter.onCompleted()
             }
             
@@ -598,6 +599,30 @@ class FirebaseFirestoreManager{
             return Disposables.create()
         }
     }
+    
+    // MARK: 이전 메시지 가져오기
+    func getPreviousMessages(query: Query, chatRoomId: String) -> Observable<([ChatMessageModel], Query)>{
+        return Observable.create{ emitter in
+            let docRef = query.limit(to: 30)
+            docRef.getDocuments { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let documents = snapshot?.documents else{
+                    emitter.onCompleted()
+                    return
+                }
+                guard let lastDocument = documents.last else { return }
+                let messages = documents.compactMap{
+                    return try? $0.data(as: ChatMessageModel.self)
+                }
+                emitter.onNext((messages.reversed(), docRef.start(afterDocument: lastDocument)))
+                emitter.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+    
     
     // MARK: 채팅방 검색
     func searchChatRoomList(keyword: String) -> Observable<[ChatRoomModel]>{

@@ -14,6 +14,8 @@ class ChatTableViewCell: UITableViewCell {
         var imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        imageView.layer.borderWidth = 0.2
+        imageView.layer.borderColor = UIColor.lightGray.cgColor
         return imageView
     }()
     

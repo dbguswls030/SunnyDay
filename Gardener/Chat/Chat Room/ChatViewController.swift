@@ -134,6 +134,23 @@ class ChatViewController: UIViewController{
                     }
                 }
             }.disposed(by: disposeBag)
+        
+        chatCollectionView.rx.contentOffset
+            .map{ contentOffset -> Bool in
+                return contentOffset.y < 100 && contentOffset.y > 0
+            }
+            .distinctUntilChanged()
+            .filter{$0}
+            .bind{ _ in
+                self.chatViewModel.getPreviousMessages()
+                    .bind{ preCount in
+                        let indexPaths = (0..<preCount).map{ IndexPath(item: $0, section: 0)}
+                        self.chatCollectionView.performBatchUpdates ({
+                            self.chatCollectionView.insertItems(at: indexPaths)
+                        }, completion: nil)
+                    }.disposed(by: self.disposeBag)
+            }.disposed(by: disposeBag)
+            
     }
 
     private func initUI(){
@@ -185,7 +202,8 @@ class ChatViewController: UIViewController{
         inputBarView.inputTextView.rx.text
             .orEmpty
             .distinctUntilChanged()
-            .bind{ text in
+            .bind{ [weak self] text in
+                guard let self = self else {return}
                 let size = CGSize(width: self.inputBarView.inputTextView.frame.width, height: .infinity)
                 let estimatedSize = self.inputBarView.inputTextView.sizeThatFits(size)
                 
@@ -204,12 +222,12 @@ class ChatViewController: UIViewController{
         
         inputBarView.sendButton.rx
             .tap
-            .map{
-                let message = self.inputBarView.inputTextView.text ?? ""
-                self.inputBarView.inputTextView.text = ""
+            .map{ [weak self] in
+                let message = self?.inputBarView.inputTextView.text ?? ""
+                self?.inputBarView.inputTextView.text = ""
                 return ChatMessageModel(uid: Auth.auth().currentUser!.uid, message: message, date: Date())
-            }.flatMap{ messageModel in
-                FirebaseFirestoreManager.shared.sendChatMessage(chatRoomId: self.chatViewModel.chatRoomId, message: messageModel)
+            }.flatMap{ [weak self] messageModel in
+                FirebaseFirestoreManager.shared.sendChatMessage(chatRoomId: self!.chatViewModel.chatRoomId, message: messageModel)
             }
             .bind{}
             .disposed(by: disposeBag)
