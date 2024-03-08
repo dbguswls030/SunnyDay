@@ -1,15 +1,16 @@
 //
-//  ChatCollectionViewCell.swift
+//  MyMessageTableViewCell.swift
 //  Gardener
 //
-//  Created by 유현진 on 1/31/24.
+//  Created by 유현진 on 3/8/24.
 //
 
 import UIKit
 import SnapKit
-class ChatMyCollectionViewCell: UICollectionViewCell {
+
+class MyMessageTableViewCell: UITableViewCell {
     
-    static let identifier = "MyChatCell"
+    static let identifier = "MyMessageCell"
     
     private lazy var contentTextView: UITextView = {
         var textView = UITextView()
@@ -30,8 +31,18 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         initUI()
     }
     
@@ -70,9 +81,5 @@ class ChatMyCollectionViewCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         contentTextView.layer.cornerRadius = min(contentTextView.bounds.height, contentTextView.bounds.width) * 0.4
-    }
-    
-    func getTextViewHeight() -> CGFloat{
-        return contentTextView.intrinsicContentSize.height
     }
 }

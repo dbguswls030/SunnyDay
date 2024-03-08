@@ -1,8 +1,8 @@
 //
-//  ChatOtherCollectionViewCell.swift
+//  OtherMessageTableViewCell.swift
 //  Gardener
 //
-//  Created by 유현진 on 1/31/24.
+//  Created by 유현진 on 3/8/24.
 //
 
 import UIKit
@@ -10,9 +10,9 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class ChatOtherCollectionViewCell: UICollectionViewCell {
-    
-    static let identifier = "OtherChatCell"
+class OtherMessageTableViewCell: UITableViewCell {
+
+    static let identifier = "OtherMessageCell"
     
     var disposeBag = DisposeBag()
     
@@ -50,8 +50,19 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         initUI()
     }
     
@@ -115,9 +126,4 @@ class ChatOtherCollectionViewCell: UICollectionViewCell {
         contentTextView.layer.cornerRadius = min(contentTextView.bounds.height, contentTextView.bounds.width) * 0.4
         profileImageView.layer.cornerRadius = profileImageView.frame.size.height * 0.25
     }
-    
-    func getCellHeight() -> CGFloat{
-        return nickNameLabel.intrinsicContentSize.height + 5 + contentTextView.intrinsicContentSize.height
-    }
-    
 }

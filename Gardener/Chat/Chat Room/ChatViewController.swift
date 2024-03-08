@@ -13,23 +13,26 @@ import FirebaseAuth
 import SideMenu
 
 class ChatViewController: UIViewController{
-    
-    // TODO: 임시 ViewModel 만들어서 테스트해보기
+
     var chatViewModel: ChatViewModel
     
     var disposeBag = DisposeBag()
+    
+    var messageCellHeightDictionary: [IndexPath: CGFloat] = [:]
     
     private lazy var inputBarView: InputBarView = {
         return InputBarView()
     }()
     
-    private lazy var chatCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        var collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.showsVerticalScrollIndicator = false
-        collectionView.alwaysBounceVertical = true
-        return collectionView
+    private lazy var messageTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.separatorStyle = .none
+        tableView.showsHorizontalScrollIndicator = false
+        tableView.alwaysBounceVertical = true
+        tableView.layer.removeAllAnimations()
+        tableView.estimatedRowHeight = 44
+        return tableView
     }()
     
     private lazy var menuButton: UIButton = {
@@ -55,7 +58,8 @@ class ChatViewController: UIViewController{
         setChatTitle()
         setSendButton()
         setInputBarView()
-        initCollectionView()
+        initMessageTableView()
+//        initCollectionView()
         initNavigationItem()
         menuButtonAction()
     }
@@ -66,7 +70,7 @@ class ChatViewController: UIViewController{
         self.navigationController?.navigationBar.backgroundColor = .clear
         self.navigationController?.navigationBar.alpha = 0.9
     }
-    
+  
     
     private func initNavigationItem(){
         self.navigationItem.setRightBarButton(UIBarButtonItem(customView: menuButton), animated: false)
@@ -88,27 +92,26 @@ class ChatViewController: UIViewController{
                 
             }.disposed(by: disposeBag)
     }
-
-    private func initCollectionView(){
-        chatCollectionView.delegate = self
-        chatCollectionView.dataSource = self
-        let topInset = navigationController?.navigationBar.frame.height ?? 0
-//        let topInset = navigationController?.navigationBar.isTranslucent == true ? 0 : navigationController?.navigationBar.frame.height ?? 0
-        chatCollectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 5, right: 0)
+    
+    private func initMessageTableView(){
+        messageTableView.delegate = self
+        messageTableView.dataSource = self
         
-        chatCollectionView.register(ChatMyCollectionViewCell.self, forCellWithReuseIdentifier: ChatMyCollectionViewCell.identifier)
-        chatCollectionView.register(ChatOtherCollectionViewCell.self, forCellWithReuseIdentifier: ChatOtherCollectionViewCell.identifier)
+        let topInset = navigationController?.navigationBar.frame.height ?? 0
+        messageTableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 5, right: 0)
+        
+        messageTableView.register(MyMessageTableViewCell.self, forCellReuseIdentifier: MyMessageTableViewCell.identifier)
+        messageTableView.register(OtherMessageTableViewCell.self, forCellReuseIdentifier: OtherMessageTableViewCell.identifier)
         
         chatViewModel.getFirstChatMessages()
             .bind {
-                self.chatCollectionView.reloadData()
+                self.messageTableView.reloadData()
                 DispatchQueue.main.async {
-                    if self.chatCollectionView.contentSize.height > self.chatCollectionView.bounds.height{
-                        let contentHeight = self.chatCollectionView.contentSize.height
-                        let offsetY = max(0, contentHeight - self.chatCollectionView.bounds.size.height + 10)
-                        self.chatCollectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                    if self.messageTableView.contentSize.height > self.messageTableView.bounds.height{
+                        let contentHeight = self.messageTableView.contentSize.height
+                        let offsetY = max(0, contentHeight - self.messageTableView.bounds.size.height + 10)
+                        self.messageTableView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
                     }
-                    
                 }
             }
             .disposed(by: disposeBag)
@@ -117,25 +120,17 @@ class ChatViewController: UIViewController{
             .skip(1)
             .bind{ messages ,newMessages in
                 self.chatViewModel.messages.accept(messages+newMessages)
-                let startIndex = self.chatCollectionView.numberOfItems(inSection: 0)
+                let startIndex = self.messageTableView.numberOfRows(inSection: 0)
                 let endIndex = startIndex + newMessages.count
                 let indexPaths = (startIndex..<endIndex).map { IndexPath(item: $0, section: 0) }
-                self.chatCollectionView.performBatchUpdates {
-                    self.chatCollectionView.insertItems(at: indexPaths)
-                } completion: { complete in
-                    if complete{
-                        DispatchQueue.main.async {
-                            if self.chatCollectionView.contentSize.height > self.chatCollectionView.bounds.height{
-                                let contentHeight = self.chatCollectionView.contentSize.height
-                                let offsetY = max(0, contentHeight - self.chatCollectionView.bounds.size.height + 10)
-                                self.chatCollectionView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
-                            }
-                        }
-                    }
+                
+                self.messageTableView.insertRows(at: indexPaths, with: .bottom)
+                DispatchQueue.main.async {
+                    self.messageTableView.scrollToRow(at:IndexPath(row: self.messageTableView.numberOfRows(inSection: 0) - 1, section: 0), at: .none, animated: false)
                 }
             }.disposed(by: disposeBag)
         
-        chatCollectionView.rx.contentOffset
+        messageTableView.rx.contentOffset
             .map{ contentOffset -> Bool in
                 return contentOffset.y < 100 && contentOffset.y > 0
             }
@@ -144,13 +139,10 @@ class ChatViewController: UIViewController{
             .bind{ _ in
                 self.chatViewModel.getPreviousMessages()
                     .bind{ preCount in
-                        let indexPaths = (0..<preCount).map{ IndexPath(item: $0, section: 0)}
-                        self.chatCollectionView.performBatchUpdates ({
-                            self.chatCollectionView.insertItems(at: indexPaths)
-                        }, completion: nil)
+                        let indexPaths = (0..<preCount).map{ IndexPath(row: $0, section: 0)}
+                        self.messageTableView.insertRows(at: indexPaths, with: .none)
                     }.disposed(by: self.disposeBag)
             }.disposed(by: disposeBag)
-            
     }
 
     private func initUI(){
@@ -158,10 +150,10 @@ class ChatViewController: UIViewController{
         self.navigationController?.navigationBar.tintColor = .black
         self.navigationController?.navigationBar.topItem?.title = ""
         
-        self.view.addSubview(chatCollectionView)
+        self.view.addSubview(messageTableView)
         self.view.addSubview(inputBarView)
         
-        chatCollectionView.snp.makeConstraints { make in
+        messageTableView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.left.right.equalToSuperview()
             make.bottom.equalTo(inputBarView.snp.top)
@@ -232,65 +224,8 @@ class ChatViewController: UIViewController{
             .bind{}
             .disposed(by: disposeBag)
     }
-    
-    private func configureCell(collectionView: UICollectionView, index: Int, model: ChatMessageModel) -> UICollectionViewCell{
-        if model.uid == Auth.auth().currentUser!.uid{
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as? ChatMyCollectionViewCell else {
-                return UICollectionViewCell()
-            }
-            cell.setData(model: model)
-            return cell
-        }else{
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatOtherCollectionViewCell.identifier, for: IndexPath(item: index, section: 0)) as? ChatOtherCollectionViewCell else {
-                return UICollectionViewCell()
-            }
-            cell.setData(model: model)
-            return cell
-        }
-    }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
 }
-
-extension ChatViewController: UICollectionViewDataSource{
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        chatViewModel.messages.value.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let model = chatViewModel.getChatModel(at: indexPath.item) else {
-            return UICollectionViewCell()
-        }
-        
-        if model.uid == Auth.auth().currentUser!.uid{
-            let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatMyCollectionViewCell.identifier, for: IndexPath(item: indexPath.item, section: 0)) as! ChatMyCollectionViewCell
-            cell.setData(model: model)
-            return cell
-        }else{
-            let cell = self.chatCollectionView.dequeueReusableCell(withReuseIdentifier: ChatOtherCollectionViewCell.identifier, for: IndexPath(item: indexPath.item, section: 0)) as! ChatOtherCollectionViewCell
-            cell.setData(model: model)
-            return cell
-        }
-    }
-}
-
-extension ChatViewController: UICollectionViewDelegateFlowLayout{
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if chatViewModel.getChatModel(at: indexPath.item)?.uid == Auth.auth().currentUser!.uid{
-            let cell = self.configureCell(collectionView: collectionView, index: indexPath.item, model: chatViewModel.getChatModel(at: indexPath.item)!) as! ChatMyCollectionViewCell
-            return CGSize(width: collectionView.bounds.size.width, height: cell.getTextViewHeight())
-        }else{
-            let cell = self.configureCell(collectionView: collectionView, index: indexPath.item, model: chatViewModel.getChatModel(at: indexPath.item)!) as! ChatOtherCollectionViewCell
-            return CGSize(width: collectionView.bounds.size.width, height: cell.getCellHeight())
-        }
-    }
-}
-
-
 extension ChatViewController: SideMenuNavigationControllerDelegate{
-    
     func sideMenuWillAppear(menu: SideMenuNavigationController, animated: Bool) {
         UIView.animate(withDuration: 0.35) {
             self.view.alpha = 0.6
@@ -304,5 +239,45 @@ extension ChatViewController: SideMenuNavigationControllerDelegate{
             self.navigationController?.navigationBar.alpha = 0.9
             
         }
+    }
+}
+
+
+extension ChatViewController: UITableViewDataSource, UITableViewDelegate{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        chatViewModel.messages.value.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let model = chatViewModel.getChatModel(at: indexPath.row) else {
+            return UITableViewCell()
+        }
+        
+        if model.uid == Auth.auth().currentUser!.uid{
+            let cell = self.messageTableView.dequeueReusableCell(withIdentifier: MyMessageTableViewCell.identifier, for: IndexPath(row: indexPath.row, section: 0)) as! MyMessageTableViewCell
+            cell.setData(model: model)
+            return cell
+        }else{
+            let cell = self.messageTableView.dequeueReusableCell(withIdentifier: OtherMessageTableViewCell.identifier, for: IndexPath(row: indexPath.row, section: 0)) as! OtherMessageTableViewCell
+            cell.setData(model: model)
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        messageCellHeightDictionary[indexPath] = cell.frame.size.height
+//        messageCellHeightDictionary.setObject(cell.frame.size.height, forKey: indexPath as NSCopying)
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        if let height = messageCellHeightDictionary.object(forKey: indexPath) as? Double {
+//            return CGFloat(height)
+//        }
+//        return UITableView.automaticDimension
+        return messageCellHeightDictionary[indexPath] ?? UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
+        return false
     }
 }

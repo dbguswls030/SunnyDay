@@ -25,8 +25,6 @@
 		9F3D79A62B8EA4DB0078023D /* ChatMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3D79A52B8EA4DB0078023D /* ChatMenuView.swift */; };
 		9F3DEC922B72094A00D14D6B /* CreateChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3DEC912B72094A00D14D6B /* CreateChatViewController.swift */; };
 		9F50D6802B69E77E002E387A /* InputBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D67F2B69E77E002E387A /* InputBarView.swift */; };
-		9F50D6822B6A15BA002E387A /* ChatMyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D6812B6A15BA002E387A /* ChatMyCollectionViewCell.swift */; };
-		9F50D6842B6A8737002E387A /* ChatOtherCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D6832B6A8737002E387A /* ChatOtherCollectionViewCell.swift */; };
 		9F50D68C2B6BA52A002E387A /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D68B2B6BA52A002E387A /* ChatMessageModel.swift */; };
 		9F50D68E2B6BA535002E387A /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F50D68D2B6BA535002E387A /* ChatViewModel.swift */; };
 		9F5885A62B92016F00942EE5 /* ChatMemberTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5885A52B92016F00942EE5 /* ChatMemberTableViewCell.swift */; };
@@ -52,6 +50,8 @@
 		9FA37F0B2B0518920065BE3D /* ImageSildeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA37F0A2B0518920065BE3D /* ImageSildeViewController.swift */; };
 		9FA37F212B1503700065BE3D /* CommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA37F202B1503700065BE3D /* CommentView.swift */; };
 		9FA37F232B1710670065BE3D /* CommentWriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA37F222B1710670065BE3D /* CommentWriteView.swift */; };
+		9FA4309A2B9ABFB7007BBB36 /* MyMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA430992B9ABFB7007BBB36 /* MyMessageTableViewCell.swift */; };
+		9FA4309C2B9ABFDA007BBB36 /* OtherMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA4309B2B9ABFDA007BBB36 /* OtherMessageTableViewCell.swift */; };
 		9FB122562A87AB6F00C346E7 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */; };
 		9FB122592A87ABDC00C346E7 /* FirebaseFirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */; };
 		9FB1229B2A8E780800C346E7 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB1229A2A8E780800C346E7 /* Toast.swift */; };
@@ -124,8 +124,6 @@
 		9F3D79A52B8EA4DB0078023D /* ChatMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMenuView.swift; sourceTree = "<group>"; };
 		9F3DEC912B72094A00D14D6B /* CreateChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateChatViewController.swift; sourceTree = "<group>"; };
 		9F50D67F2B69E77E002E387A /* InputBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputBarView.swift; sourceTree = "<group>"; };
-		9F50D6812B6A15BA002E387A /* ChatMyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMyCollectionViewCell.swift; sourceTree = "<group>"; };
-		9F50D6832B6A8737002E387A /* ChatOtherCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatOtherCollectionViewCell.swift; sourceTree = "<group>"; };
 		9F50D68B2B6BA52A002E387A /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		9F50D68D2B6BA535002E387A /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		9F5885A52B92016F00942EE5 /* ChatMemberTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMemberTableViewCell.swift; sourceTree = "<group>"; };
@@ -155,6 +153,8 @@
 		9FA37F0A2B0518920065BE3D /* ImageSildeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSildeViewController.swift; sourceTree = "<group>"; };
 		9FA37F202B1503700065BE3D /* CommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentView.swift; sourceTree = "<group>"; };
 		9FA37F222B1710670065BE3D /* CommentWriteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentWriteView.swift; sourceTree = "<group>"; };
+		9FA430992B9ABFB7007BBB36 /* MyMessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMessageTableViewCell.swift; sourceTree = "<group>"; };
+		9FA4309B2B9ABFDA007BBB36 /* OtherMessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherMessageTableViewCell.swift; sourceTree = "<group>"; };
 		9FB122552A87AB6F00C346E7 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
 		9FB122582A87ABDC00C346E7 /* FirebaseFirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseFirestoreManager.swift; sourceTree = "<group>"; };
 		9FB1229A2A8E780800C346E7 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
@@ -599,8 +599,8 @@
 				9F50D6882B6BA2A3002E387A /* View Model */,
 				9F3D79A02B8E9A630078023D /* Menu Tab */,
 				9FE3FE1B2B63D8ED00DA26CF /* ChatViewController.swift */,
-				9F50D6812B6A15BA002E387A /* ChatMyCollectionViewCell.swift */,
-				9F50D6832B6A8737002E387A /* ChatOtherCollectionViewCell.swift */,
+				9FA430992B9ABFB7007BBB36 /* MyMessageTableViewCell.swift */,
+				9FA4309B2B9ABFDA007BBB36 /* OtherMessageTableViewCell.swift */,
 				9F50D67F2B69E77E002E387A /* InputBarView.swift */,
 			);
 			path = "Chat Room";
@@ -897,6 +897,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FA4309C2B9ABFDA007BBB36 /* OtherMessageTableViewCell.swift in Sources */,
 				9FB31D7129DD962F00F02DE0 /* LoginViewController.swift in Sources */,
 				9FA37F0B2B0518920065BE3D /* ImageSildeViewController.swift in Sources */,
 				9F9E11C329C4C3B70090B2E6 /* MainTabBarController.swift in Sources */,
@@ -907,11 +908,11 @@
 				9FB122562A87AB6F00C346E7 /* FirebaseStorageManager.swift in Sources */,
 				9F9E11BF29C4C3B70090B2E6 /* AppDelegate.swift in Sources */,
 				9FEAE4542B2012EF005DC66E /* UserModel.swift in Sources */,
+				9FA4309A2B9ABFB7007BBB36 /* MyMessageTableViewCell.swift in Sources */,
 				9FA37F212B1503700065BE3D /* CommentView.swift in Sources */,
 				9FE3FE112B63AFEF00DA26CF /* ChatListView.swift in Sources */,
 				9FB9E3782B2EF5D400D5B490 /* CommentModel.swift in Sources */,
 				9F3D79A62B8EA4DB0078023D /* ChatMenuView.swift in Sources */,
-				9F50D6842B6A8737002E387A /* ChatOtherCollectionViewCell.swift in Sources */,
 				9F50D6802B69E77E002E387A /* InputBarView.swift in Sources */,
 				9FF51F742B80ED1F00D9CAA8 /* ChatListTopView.swift in Sources */,
 				9F8F6A662B5130C3004ACF69 /* EditCommentViewController.swift in Sources */,
@@ -959,7 +960,6 @@
 				9F0139EF2B1A7A2E00678519 /* CommentViewModel.swift in Sources */,
 				9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */,
 				9FE3FE162B63BB5B00DA26CF /* ChatListViewModel.swift in Sources */,
-				9F50D6822B6A15BA002E387A /* ChatMyCollectionViewCell.swift in Sources */,
 				9FE3FE132B63B7AB00DA26CF /* ChatTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

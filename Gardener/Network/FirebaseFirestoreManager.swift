@@ -603,7 +603,7 @@ class FirebaseFirestoreManager{
     // MARK: 이전 메시지 가져오기
     func getPreviousMessages(query: Query, chatRoomId: String) -> Observable<([ChatMessageModel], Query)>{
         return Observable.create{ emitter in
-            let docRef = query.limit(to: 30)
+            let docRef = query.limit(to: 60)
             docRef.getDocuments { snapshot, error in
                 if let error = error{
                     emitter.onError(error)
