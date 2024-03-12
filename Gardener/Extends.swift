@@ -90,6 +90,8 @@ extension UITextView{
     }
 }
 
+
+
 extension UITextView{
     func resolveHashTags() {
         var hashtagArr: [String]?
@@ -128,5 +130,127 @@ extension UITextView{
           attrString.addAttributes(nonHashtagAttributes, range: nonHashtagRange)
           
         self.attributedText = attrString
+    }
+}
+
+extension UIView {
+    func subviews<T:UIView>(ofType WhatType:T.Type,
+        recursing:Bool = true) -> [T] {
+            var result = self.subviews.compactMap {$0 as? T}
+            guard recursing else { return result }
+            for sub in self.subviews {
+                result.append(contentsOf: sub.subviews(ofType:WhatType))
+            }
+            return result
+    }
+}
+
+
+extension UIViewController {
+    func hideKeyboardWhenTouchUpBackground() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self,
+            action: #selector(UIViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+    }
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+}
+
+extension UIControl{
+    func addAction(for controlEvent: UIControl.Event = .touchUpInside, _ closure: @escaping () -> ()){
+        @objc class EscapeAction: NSObject {
+            let closure: () -> ()
+            
+            init(_ closure: @escaping () -> ()) {
+                self.closure = closure
+            }
+            
+            @objc func invoke() {
+                closure()
+            }
+        }
+        let sleeve = EscapeAction(closure)
+        addTarget(sleeve, action: #selector(EscapeAction.invoke), for: controlEvent)
+        objc_setAssociatedObject(self, "\(UUID())", sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+    }
+}
+extension UIViewController{
+    func showPopUp(title: String? = nil, confirmButtonTitle: String? = nil, completion: @escaping () -> ()){
+        let vc = PopUpViewController()
+        vc.modalPresentationStyle = .overFullScreen
+        if let title = title{
+            vc.setTitleLabel(title: title)
+        }
+        
+        if let confirmButtonTitle = confirmButtonTitle{
+            vc.setConfirmButtonText(text: confirmButtonTitle)
+            vc.confirmButton.addAction {
+                completion()
+            }
+        }
+
+        self.present(vc, animated: false)
+        
+    }
+}
+
+extension UIViewController{
+    func showActivityIndicator(alpha: CGFloat){
+        let overlayView = UIView(frame: view.bounds)
+        overlayView.backgroundColor = UIColor(white: 0, alpha: alpha)
+        
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.center = overlayView.center
+        overlayView.addSubview(activityIndicator)
+        
+        self.view.addSubview(overlayView)
+        activityIndicator.startAnimating()
+    }
+    
+    func hideActivityIndicator(alpha: CGFloat){
+        self.view.subviews.filter { $0.backgroundColor == UIColor(white: 0, alpha: alpha) }.forEach {
+            $0.removeFromSuperview()
+        }
+    }
+}
+
+extension Date{
+    func convertDateToTime() -> String{
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
+        
+        let intervalTime = Int(floor(Date().timeIntervalSince(self) / 60))
+        if intervalTime < 1 {
+            return "방금 전"
+        }else if intervalTime < 60 {
+            return "\(intervalTime)분 전"
+        }else if intervalTime < 60 * 24{
+            return "\(intervalTime/60)시간 전"
+        }else if intervalTime < 60 * 24 * 365{
+            return "\(intervalTime/60/24)일 전"
+        }else{
+            return "\(intervalTime/60/24/365)년 전"
+        }
+    }
+    
+    func convertDateToCurrentTime() -> String{
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "a h:mm"
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
+    
+        return dateFormatter.string(from: self)
+    }
+    
+    func convertDate() -> String{
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd"
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
+        
+        return dateFormatter.string(from: self)
     }
 }

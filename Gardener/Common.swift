@@ -9,25 +9,6 @@ import Foundation
 import UIKit
 import SnapKit
 
-extension UIControl{
-    func addAction(for controlEvent: UIControl.Event = .touchUpInside, _ closure: @escaping () -> ()){
-        @objc class EscapeAction: NSObject {
-            let closure: () -> ()
-            
-            init(_ closure: @escaping () -> ()) {
-                self.closure = closure
-            }
-            
-            @objc func invoke() {
-                closure()
-            }
-        }
-        let sleeve = EscapeAction(closure)
-        addTarget(sleeve, action: #selector(EscapeAction.invoke), for: controlEvent)
-        objc_setAssociatedObject(self, "\(UUID())", sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
-    }
-}
-
 protocol SendDelegateWhenPop: AnyObject{
     func popDeleteBoard()
 }
@@ -45,17 +26,6 @@ enum BoardCategory: String, CaseIterable{
     case question = "질문/답변"
 }
 
-extension UIViewController {
-    func hideKeyboardWhenTouchUpBackground() {
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self,
-            action: #selector(UIViewController.dismissKeyboard))
-        view.addGestureRecognizer(tap)
-    }
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
-    }
-}
-
 class BreakLine: UIView{
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -68,9 +38,8 @@ class BreakLine: UIView{
     }
 }
 
-
 class PopUpViewController: UIViewController{
-    
+
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -168,82 +137,23 @@ class PopUpViewController: UIViewController{
     
 }
 
-extension UIViewController{
-    func showPopUp(title: String? = nil, confirmButtonTitle: String? = nil, completion: @escaping () -> ()){
-        let vc = PopUpViewController()
-        vc.modalPresentationStyle = .overFullScreen
-        if let title = title{
-            vc.setTitleLabel(title: title)
-        }
-        
-        if let confirmButtonTitle = confirmButtonTitle{
-            vc.setConfirmButtonText(text: confirmButtonTitle)
-            vc.confirmButton.addAction {
-                completion()
-            }
+class MessageLabel: UILabel{
+    private var padding = UIEdgeInsets(top: 7, left: 8, bottom: 7, right: 8)
+
+        convenience init(padding: UIEdgeInsets) {
+            self.init()
+            self.padding = padding
         }
 
-        self.present(vc, animated: false)
-        
-    }
-}
-
-extension UIViewController{
-    func showActivityIndicator(alpha: CGFloat){
-        let overlayView = UIView(frame: view.bounds)
-        overlayView.backgroundColor = UIColor(white: 0, alpha: alpha)
-        
-        let activityIndicator = UIActivityIndicatorView(style: .medium)
-        activityIndicator.center = overlayView.center
-        overlayView.addSubview(activityIndicator)
-        
-        self.view.addSubview(overlayView)
-        activityIndicator.startAnimating()
-    }
-    
-    func hideActivityIndicator(alpha: CGFloat){
-        self.view.subviews.filter { $0.backgroundColor == UIColor(white: 0, alpha: alpha) }.forEach {
-            $0.removeFromSuperview()
+        override func drawText(in rect: CGRect) {
+            super.drawText(in: rect.inset(by: padding))
         }
-    }
-}
 
-extension Date{
-    func convertDateToTime() -> String{
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
-        
-        let intervalTime = Int(floor(Date().timeIntervalSince(self) / 60))
-        if intervalTime < 1 {
-            return "방금 전"
-        }else if intervalTime < 60 {
-            return "\(intervalTime)분 전"
-        }else if intervalTime < 60 * 24{
-            return "\(intervalTime/60)시간 전"
-        }else if intervalTime < 60 * 24 * 365{
-            return "\(intervalTime/60/24)일 전"
-        }else{
-            return "\(intervalTime/60/24/365)년 전"
+        override var intrinsicContentSize: CGSize {
+            var contentSize = super.intrinsicContentSize
+            contentSize.height += padding.top + padding.bottom
+            contentSize.width += padding.left + padding.right
+
+            return contentSize
         }
-    }
-    
-    func convertDateToCurrentTime() -> String{
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "a h:mm"
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
-    
-        return dateFormatter.string(from: self)
-    }
-    
-    func convertDate() -> String{
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy.MM.dd"
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
-        
-        return dateFormatter.string(from: self)
-    }
 }

@@ -12,7 +12,7 @@ import RxCocoa
 import FirebaseAuth
 import SideMenu
 
-class ChatViewController: UIViewController{
+class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
 
     var chatViewModel: ChatViewModel
     
@@ -20,18 +20,23 @@ class ChatViewController: UIViewController{
     
     var messageCellHeightDictionary: [IndexPath: CGFloat] = [:]
     
+    var menuInteraction: UIContextMenuInteraction?
+    
     private lazy var inputBarView: InputBarView = {
         return InputBarView()
     }()
     
     private lazy var messageTableView: UITableView = {
         let tableView = UITableView()
-        tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         tableView.showsHorizontalScrollIndicator = false
         tableView.alwaysBounceVertical = true
+        tableView.estimatedSectionHeaderHeight = 0
+        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         tableView.layer.removeAllAnimations()
-        tableView.estimatedRowHeight = 44
+        tableView.estimatedRowHeight = 45
+        tableView.separatorInset = .init(top: 0, left: 0, bottom: 0, right: 0)
+        tableView.isUserInteractionEnabled = true
         return tableView
     }()
     
@@ -54,12 +59,12 @@ class ChatViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboardWhenTouchUpBackground()
+        addMessageContextMenu()
         initUI()
         setChatTitle()
         setSendButton()
         setInputBarView()
         initMessageTableView()
-//        initCollectionView()
         initNavigationItem()
         menuButtonAction()
     }
@@ -71,7 +76,6 @@ class ChatViewController: UIViewController{
         self.navigationController?.navigationBar.alpha = 0.9
     }
   
-    
     private func initNavigationItem(){
         self.navigationItem.setRightBarButton(UIBarButtonItem(customView: menuButton), animated: false)
     }
@@ -97,14 +101,15 @@ class ChatViewController: UIViewController{
         messageTableView.delegate = self
         messageTableView.dataSource = self
         
-        let topInset = navigationController?.navigationBar.frame.height ?? 0
+//        let topInset = navigationController?.navigationBar.frame.height ?? 0
         messageTableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 5, right: 0)
         
         messageTableView.register(MyMessageTableViewCell.self, forCellReuseIdentifier: MyMessageTableViewCell.identifier)
         messageTableView.register(OtherMessageTableViewCell.self, forCellReuseIdentifier: OtherMessageTableViewCell.identifier)
         
         chatViewModel.getFirstChatMessages()
-            .bind {
+            .bind { [weak self] in
+                guard let self = self else { return }
                 self.messageTableView.reloadData()
                 DispatchQueue.main.async {
                     if self.messageTableView.contentSize.height > self.messageTableView.bounds.height{
@@ -118,7 +123,8 @@ class ChatViewController: UIViewController{
         
         chatViewModel.addListenerChatMessages()
             .skip(1)
-            .bind{ messages ,newMessages in
+            .bind{ [weak self] messages ,newMessages in
+                guard let self = self else {return}
                 self.chatViewModel.messages.accept(messages+newMessages)
                 let startIndex = self.messageTableView.numberOfRows(inSection: 0)
                 let endIndex = startIndex + newMessages.count
@@ -136,11 +142,14 @@ class ChatViewController: UIViewController{
             }
             .distinctUntilChanged()
             .filter{$0}
-            .bind{ _ in
+            .bind{ [weak self] _ in
+                guard let self = self else { return }
                 self.chatViewModel.getPreviousMessages()
                     .bind{ preCount in
+//                        UIView.setAnimationsEnabled(false)
                         let indexPaths = (0..<preCount).map{ IndexPath(row: $0, section: 0)}
                         self.messageTableView.insertRows(at: indexPaths, with: .none)
+//                        UIView.setAnimationsEnabled(true)
                     }.disposed(by: self.disposeBag)
             }.disposed(by: disposeBag)
     }
@@ -224,20 +233,37 @@ class ChatViewController: UIViewController{
             .bind{}
             .disposed(by: disposeBag)
     }
+    
+    private func addMessageContextMenu(){
+        menuInteraction = .init(delegate: self)
+    }
+    
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(actionProvider:  { [unowned self] suggestedActions in
+            let copyAction = UIAction(title: "복사", image: UIImage(systemName: "doc.on.doc")) { _ in
+                print("복사하기")
+            }
+            let shareAction = UIAction(title: "공유",image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                print("공유하기")
+            }
+            let menu = UIMenu(preferredElementSize: .large, children: suggestedActions + [copyAction,  shareAction])
+
+            return menu
+        })
+    }
+    
 }
 extension ChatViewController: SideMenuNavigationControllerDelegate{
     func sideMenuWillAppear(menu: SideMenuNavigationController, animated: Bool) {
         UIView.animate(withDuration: 0.35) {
             self.view.alpha = 0.6
             self.navigationController?.navigationBar.alpha = 0.6
-            
         }
     }
     func sideMenuDidDisappear(menu: SideMenuNavigationController, animated: Bool) {
         UIView.animate(withDuration: 0.35) {
             self.view.alpha = 1
             self.navigationController?.navigationBar.alpha = 0.9
-            
         }
     }
 }
@@ -256,28 +282,34 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate{
         if model.uid == Auth.auth().currentUser!.uid{
             let cell = self.messageTableView.dequeueReusableCell(withIdentifier: MyMessageTableViewCell.identifier, for: IndexPath(row: indexPath.row, section: 0)) as! MyMessageTableViewCell
             cell.setData(model: model)
+            cell.addMenuInteraction(vc: self)
             return cell
         }else{
             let cell = self.messageTableView.dequeueReusableCell(withIdentifier: OtherMessageTableViewCell.identifier, for: IndexPath(row: indexPath.row, section: 0)) as! OtherMessageTableViewCell
             cell.setData(model: model)
+            cell.addMenuInteraction(vc: self)
             return cell
         }
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         messageCellHeightDictionary[indexPath] = cell.frame.size.height
-//        messageCellHeightDictionary.setObject(cell.frame.size.height, forKey: indexPath as NSCopying)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        if let height = messageCellHeightDictionary.object(forKey: indexPath) as? Double {
-//            return CGFloat(height)
-//        }
-//        return UITableView.automaticDimension
-        return messageCellHeightDictionary[indexPath] ?? UITableView.automaticDimension
+        return messageCellHeightDictionary[indexPath] ?? 45
     }
     
-    func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
+//    func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
+//        return false
+//    }
+}
+extension ChatViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return false
     }
 }
