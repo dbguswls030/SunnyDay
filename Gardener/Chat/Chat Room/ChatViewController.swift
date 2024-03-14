@@ -113,9 +113,12 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
                 self.messageTableView.reloadData()
                 DispatchQueue.main.async {
                     if self.messageTableView.contentSize.height > self.messageTableView.bounds.height{
-                        let contentHeight = self.messageTableView.contentSize.height
-                        let offsetY = max(0, contentHeight - self.messageTableView.bounds.size.height + 10)
-                        self.messageTableView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+//                        let contentHeight = self.messageTableView.contentSize.height
+//                        let offsetY = max(0, contentHeight - self.messageTableView.bounds.size.height + 10)
+//                        self.messageTableView.setContentOffset(CGPoint(x: 0, y: offsetY), animated: false)
+                        
+                        self.messageTableView.scrollToRow(at:IndexPath(row: self.messageTableView.numberOfRows(inSection: 0) - 1, section: 0), at: .none, animated: false)
+                        
                     }
                 }
             }
@@ -144,16 +147,31 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
             .filter{$0}
             .bind{ [weak self] _ in
                 guard let self = self else { return }
-                self.chatViewModel.getPreviousMessages()
-                    .bind{ preCount in
-//                        UIView.setAnimationsEnabled(false)
-                        let indexPaths = (0..<preCount).map{ IndexPath(row: $0, section: 0)}
-                        self.messageTableView.insertRows(at: indexPaths, with: .none)
-//                        UIView.setAnimationsEnabled(true)
-                    }.disposed(by: self.disposeBag)
+                self.insertPreviousMessage()
             }.disposed(by: disposeBag)
+        
     }
-
+    private func insertPreviousMessage(){
+        self.chatViewModel.getPreviousMessages()
+            .bind{ preCount in
+                let previousMessageContentHeight = self.messageTableView.contentSize.height
+                let indexPaths = (0..<preCount).map{ IndexPath(row: $0, section: 0)}
+                UIView.setAnimationsEnabled(false)
+                self.messageTableView.beginUpdates()
+                let previousMessageContentOffsetY = self.messageTableView.contentOffset.y
+                self.messageTableView.insertRows(at: indexPaths, with: .none)
+                self.messageTableView.endUpdates()
+                DispatchQueue.main.async {
+                    self.messageTableView.setContentOffset(.init(x: 0, y: (self.messageTableView.contentSize.height - previousMessageContentHeight) + previousMessageContentOffsetY), animated: false)
+                    UIView.setAnimationsEnabled(true)
+                }
+                
+                
+            }.disposed(by: self.disposeBag)
+    }
+    
+    
+    
     private func initUI(){
         self.view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.tintColor = .black
