@@ -20,8 +20,6 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     
     var messageCellHeightDictionary: [IndexPath: CGFloat] = [:]
     
-    var menuInteraction: UIContextMenuInteraction?
-    
     private lazy var inputBarView: InputBarView = {
         return InputBarView()
     }()
@@ -59,7 +57,6 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboardWhenTouchUpBackground()
-        addMessageContextMenu()
         initUI()
         setChatTitle()
         setSendButton()
@@ -84,16 +81,14 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
         self.menuButton.rx
             .tap
             .bind{
-                let vc = ChatMenuViewController(chatRoomModel: self.chatViewModel.chatRoomModel.asObservable())
+                let vc = ChatMenuViewController(chatRoomModel: self.chatViewModel.chatRoomModel.asObservable(), vc: self)
                 vc.setData(model: self.chatViewModel.chatRoomModel)
                 let menuVC = SideMenuNavigationController(rootViewController: vc)
-                
                 menuVC.presentationStyle = .menuSlideIn
                 menuVC.menuWidth = self.view.frame.width * 0.8
                 menuVC.sideMenuDelegate = self
                 menuVC.statusBarEndAlpha = 0.0
                 self.present(menuVC, animated: true)
-                
             }.disposed(by: disposeBag)
     }
     
@@ -252,19 +247,15 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
             .disposed(by: disposeBag)
     }
     
-    private func addMessageContextMenu(){
-        menuInteraction = .init(delegate: self)
-    }
-    
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(actionProvider:  { [unowned self] suggestedActions in
             let copyAction = UIAction(title: "복사", image: UIImage(systemName: "doc.on.doc")) { _ in
-                print("복사하기")
+                if let message = interaction.view as? UILabel{
+                    UIPasteboard.general.string = message.text
+                }
             }
-            let shareAction = UIAction(title: "공유",image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                print("공유하기")
-            }
-            let menu = UIMenu(preferredElementSize: .large, children: suggestedActions + [copyAction,  shareAction])
+            
+            let menu = UIMenu(preferredElementSize: .large, children: suggestedActions + [copyAction,  ])
 
             return menu
         })
@@ -305,6 +296,7 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate{
         }else{
             let cell = self.messageTableView.dequeueReusableCell(withIdentifier: OtherMessageTableViewCell.identifier, for: IndexPath(row: indexPath.row, section: 0)) as! OtherMessageTableViewCell
             cell.setData(model: model)
+            cell.addProfileImageTapAction(uid: model.uid, superVC: self)
             cell.addMenuInteraction(vc: self)
             return cell
         }
@@ -322,6 +314,15 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate{
         return messageCellHeightDictionary[indexPath] ?? 45
     }
     
+//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        let reply = UIContextualAction(style: .normal, title: nil) { (_, _, success: @escaping (Bool) -> Void) in
+//            print("ㅎㅇ")
+//            success(true)
+//        }
+//        reply.backgroundColor = .clear
+//        reply.image = UIImage(systemName: "arrow.uturn.right")
+//        return .init(actions: [reply])
+//    }
 //    func tableView(_ tableView: UITableView, shouldSpringLoadRowAt indexPath: IndexPath, with context: UISpringLoadedInteractionContext) -> Bool {
 //        return false
 //    }

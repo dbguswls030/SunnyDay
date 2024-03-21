@@ -35,6 +35,8 @@
 		9F742C192B1C58C700777DDC /* CommentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F742C182B1C58C600777DDC /* CommentCollectionViewCell.swift */; };
 		9F8C52E12B8245C600FD1438 /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8C52E02B8245C600FD1438 /* UserViewModel.swift */; };
 		9F8F6A662B5130C3004ACF69 /* EditCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8F6A652B5130C3004ACF69 /* EditCommentViewController.swift */; };
+		9F91D9642BA6D40700DEE04C /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91D9632BA6D40700DEE04C /* ProfileViewController.swift */; };
+		9F91D9662BA6D4ED00DEE04C /* ProfileHalfView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F91D9652BA6D4ED00DEE04C /* ProfileHalfView.swift */; };
 		9F95B9D72A2DB9E200A5E247 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95B9D62A2DB9E200A5E247 /* CategoryViewController.swift */; };
 		9F95B9D92A2DC8B100A5E247 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95B9D82A2DC8B100A5E247 /* Common.swift */; };
 		9F95BA032A31DC3800A5E247 /* ShowPhotoPickerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F95BA022A31DC3800A5E247 /* ShowPhotoPickerCollectionViewCell.swift */; };
@@ -135,6 +137,8 @@
 		9F742C182B1C58C600777DDC /* CommentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCollectionViewCell.swift; sourceTree = "<group>"; };
 		9F8C52E02B8245C600FD1438 /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
 		9F8F6A652B5130C3004ACF69 /* EditCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCommentViewController.swift; sourceTree = "<group>"; };
+		9F91D9632BA6D40700DEE04C /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		9F91D9652BA6D4ED00DEE04C /* ProfileHalfView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHalfView.swift; sourceTree = "<group>"; };
 		9F95B9D62A2DB9E200A5E247 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		9F95B9D82A2DC8B100A5E247 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		9F95BA022A31DC3800A5E247 /* ShowPhotoPickerCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPhotoPickerCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -410,6 +414,15 @@
 			path = "Edit Comment";
 			sourceTree = "<group>";
 		};
+		9F91D9612BA5BCA900DEE04C /* profile Half View */ = {
+			isa = PBXGroup;
+			children = (
+				9F91D9632BA6D40700DEE04C /* ProfileViewController.swift */,
+				9F91D9652BA6D4ED00DEE04C /* ProfileHalfView.swift */,
+			);
+			path = "profile Half View";
+			sourceTree = "<group>";
+		};
 		9F95B9DA2A2DCA1C00A5E247 /* Category */ = {
 			isa = PBXGroup;
 			children = (
@@ -603,6 +616,7 @@
 				9FA430992B9ABFB7007BBB36 /* MyMessageTableViewCell.swift */,
 				9FA4309B2B9ABFDA007BBB36 /* OtherMessageTableViewCell.swift */,
 				9F50D67F2B69E77E002E387A /* InputBarView.swift */,
+				9F91D9612BA5BCA900DEE04C /* profile Half View */,
 			);
 			path = "Chat Room";
 			sourceTree = "<group>";
@@ -924,6 +938,7 @@
 				9F0414862A6557BF00DD6F2C /* SignUpViewController.swift in Sources */,
 				9F13E0D329D2D95D00651EA0 /* ChatListViewController.swift in Sources */,
 				9F5885A62B92016F00942EE5 /* ChatMemberTableViewCell.swift in Sources */,
+				9F91D9662BA6D4ED00DEE04C /* ProfileHalfView.swift in Sources */,
 				9FE3FE1C2B63D8ED00DA26CF /* ChatViewController.swift in Sources */,
 				9FDFBF5D2ABC65B700F5E9B3 /* BoardImageCollectionViewCell.swift in Sources */,
 				9FDFBF482ABB14AB00F5E9B3 /* CreateBoard.swift in Sources */,
@@ -961,6 +976,7 @@
 				9F0414882A6557DB00DD6F2C /* SignUpView.swift in Sources */,
 				9F0139EF2B1A7A2E00678519 /* CommentViewModel.swift in Sources */,
 				9F13E0D729D2D97200651EA0 /* CommunityViewController.swift in Sources */,
+				9F91D9642BA6D40700DEE04C /* ProfileViewController.swift in Sources */,
 				9FE3FE162B63BB5B00DA26CF /* ChatListViewModel.swift in Sources */,
 				9FE3FE132B63B7AB00DA26CF /* ChatTableViewCell.swift in Sources */,
 			);

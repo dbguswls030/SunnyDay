@@ -57,7 +57,9 @@ class ChatMemberTableViewCell: UITableViewCell {
     
     func initUI(){
         self.backgroundColor = .systemBackground
-        
+        let clearView = UIView()
+        clearView.backgroundColor = .clear
+        self.selectedBackgroundView = clearView
         self.addSubview(profileImageView)
         self.addSubview(nickNameLabel)
         
@@ -86,5 +88,4 @@ class ChatMemberTableViewCell: UITableViewCell {
         super.layoutSubviews()
         profileImageView.layer.cornerRadius = profileImageView.frame.size.height * 0.25
     }
-    
 }

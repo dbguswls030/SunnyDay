@@ -13,7 +13,9 @@ import RxCocoa
 class ChatMenuViewController: UIViewController {
     
     var disposeBag = DisposeBag()
+    
     var chatRoomViewModel: ChatMenuViewModel
+    var modalDelegate: UIViewController
     
     private lazy var chatMenuView: ChatMenuView = {
         return ChatMenuView()
@@ -37,8 +39,9 @@ class ChatMenuViewController: UIViewController {
         self.navigationController?.isNavigationBarHidden = true
     }
     
-    init(chatRoomModel: Observable<ChatRoomModel>){
+    init(chatRoomModel: Observable<ChatRoomModel>, vc: UIViewController){
         chatRoomViewModel = ChatMenuViewModel(chatRoomModel: chatRoomModel)
+        modalDelegate = vc
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -53,8 +56,8 @@ class ChatMenuViewController: UIViewController {
         
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            
         }
+        
         chatRoomViewModel.getMembersCount()
             .bind{ count in
                 self.chatMenuView.snp.makeConstraints { make in
@@ -69,13 +72,29 @@ class ChatMenuViewController: UIViewController {
         chatMenuView.setData(model: model)
     }
     
-    func initChatMemberTableView(){
+    private func initChatMemberTableView(){
         self.chatMenuView.chatMemberTableView.register(ChatMemberTableViewCell.self, forCellReuseIdentifier: "chatMemberCell")
         chatMenuView.chatMemberTableView.rowHeight = 60
         
         chatRoomViewModel.getMembers()
             .bind(to: self.chatMenuView.chatMemberTableView.rx.items(cellIdentifier: "chatMemberCell", cellType: ChatMemberTableViewCell.self)){ index, model, cell in
                 cell.setData(model: model)
+            }.disposed(by: disposeBag)
+        
+        self.chatMenuView.chatMemberTableView.rx
+            .itemSelected
+            .bind{ indexPath in
+                self.showProfileHalfView(index: indexPath.row)
+            }.disposed(by: disposeBag)
+    }
+    
+    
+    private func showProfileHalfView(index: Int){
+        self.chatRoomViewModel.getMember(index: index)
+            .bind{ memberModel in
+                let vc = ProfileViewController(uid: memberModel.uid)
+                vc.modalPresentationStyle = .overFullScreen
+                self.present(vc, animated: false)
             }.disposed(by: disposeBag)
     }
 }

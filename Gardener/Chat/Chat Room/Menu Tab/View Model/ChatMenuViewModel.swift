@@ -20,7 +20,14 @@ class ChatMenuViewModel{
     func getMembers() -> Observable<[ChatMemberModel]>{
         return chatRoomModel.map{$0.members}
     }
+    
     func getMembersCount() -> Observable<Int>{
         return chatRoomModel.map{$0.members.count}
+    }
+    
+    func getMember(index: Int) -> Observable<ChatMemberModel>{
+        return self.chatRoomModel.map{
+            $0.members[index]
+        }
     }
 }

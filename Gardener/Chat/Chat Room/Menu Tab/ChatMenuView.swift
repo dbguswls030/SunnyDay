@@ -91,7 +91,9 @@ class ChatMenuView: UIView {
     func setData(model: Observable<ChatRoomModel>){
         model.bind{ chatRoom in
             self.thumnailImageView.setImageView(url: chatRoom.thumbnailURL)
+            self.chatMemberListLabel.text = "참여 인원 \(chatRoom.members.count)"
         }.disposed(by: disposeBag)
+        
     }
     
     override func layoutSubviews() {

@@ -18,9 +18,9 @@ class OtherMessageTableViewCell: UITableViewCell {
     
     var menuInteraction: UIContextMenuInteraction!
     
-    private lazy var profileImageView: UIImageView = {
-        var imageView = UIImageView()
-        imageView.clipsToBounds = true
+    private lazy var profileImageView: ProfileImageView = {
+        var imageView = ProfileImageView()
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
     
@@ -122,6 +122,18 @@ class OtherMessageTableViewCell: UITableViewCell {
         self.messageLabel.text = model.message
         self.messageLabel.sizeToFit()
         getUserInfo(uid: model.uid)
+    }
+    
+    func addProfileImageTapAction(uid: String, superVC: UIViewController){
+        let tapGesture = UITapGestureRecognizer()
+        self.profileImageView.addGestureRecognizer(tapGesture)
+        
+        tapGesture.rx.event
+            .bind{ _ in
+                let vc = ProfileViewController(uid: uid)
+                vc.modalPresentationStyle = .overCurrentContext
+                superVC.present(vc, animated: false)
+            }.disposed(by: self.disposeBag)
     }
     
     private func getUserInfo(uid: String){

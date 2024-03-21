@@ -157,3 +157,18 @@ class MessageLabel: UILabel{
             return contentSize
         }
 }
+
+
+class ProfileImageView: UIImageView{
+    override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
+        self.clipsToBounds = true
+        self.layer.borderColor = UIColor.lightGray.cgColor
+        self.layer.borderWidth = 0.2
+    }
+    
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
