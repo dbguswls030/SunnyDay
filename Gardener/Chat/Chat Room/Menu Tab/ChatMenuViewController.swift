@@ -37,7 +37,6 @@ class ChatMenuViewController: UIViewController {
     
     private lazy var exitButton: UIButton = {
         let button = UIButton()
-//        button.isUserInteractionEnabled = true
         button.tintColor = .lightGray
         var configuration = UIButton.Configuration.plain()
         configuration.image = UIImage(systemName: "rectangle.portrait.and.arrow.right")
@@ -75,10 +74,12 @@ class ChatMenuViewController: UIViewController {
         self.view.addSubview(bottomSafeAreaView)
         
         scrollView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.left.right.equalToSuperview()
             make.bottom.equalTo(bottomSafeAreaView.snp.top)
         }
         
+        // TODO: size refactor
         chatRoomViewModel.getMembersCount()
             .bind{ count in
                 self.chatMenuView.snp.makeConstraints { make in

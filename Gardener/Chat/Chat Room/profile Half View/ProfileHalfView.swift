@@ -40,7 +40,6 @@ class ProfileHalfView: UIView {
         var attributedTitle = AttributeContainer()
         attributedTitle.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         configuration.attributedTitle = .init("차단", attributes: attributedTitle)
-        
         button.setImage(UIImage(systemName: "xmark.circle", withConfiguration: UIImage.SymbolConfiguration.init(pointSize: 22)), for: .normal)
         button.tintColor = .black
         configuration.imagePlacement = .top
