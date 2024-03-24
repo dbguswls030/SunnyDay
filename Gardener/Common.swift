@@ -96,13 +96,12 @@ class PopUpViewController: UIViewController{
             make.left.equalToSuperview().offset(55)
             make.right.equalToSuperview().offset(-55)
         }
-        
-        [cancelButton, confirmButton].map{ button in
-            self.stackView.addArrangedSubview(button)
-            button.snp.makeConstraints { make in
-                make.height.equalTo(button.snp.width).multipliedBy(0.3)
-            }
+    
+        self.stackView.addArrangedSubview(cancelButton)
+        cancelButton.snp.makeConstraints { make in
+            make.height.equalTo(cancelButton.snp.width).multipliedBy(0.3)
         }
+        
         
         titleLabel.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(20)
@@ -115,6 +114,15 @@ class PopUpViewController: UIViewController{
             make.right.equalToSuperview().offset(-15)
             make.top.equalTo(titleLabel.snp.bottom).offset(20)
             make.bottom.equalToSuperview().offset(-20)
+            make.height.equalTo(35)
+        }
+    }
+    
+    func addConfirmButton(){
+        self.stackView.addArrangedSubview(confirmButton)
+        
+        confirmButton.snp.makeConstraints { make in
+            make.height.equalTo(confirmButton.snp.width).multipliedBy(0.3)
         }
     }
     
@@ -124,6 +132,7 @@ class PopUpViewController: UIViewController{
 
     
     func setConfirmButtonText(text: String){
+        addConfirmButton()
         self.confirmButton.setTitle(text, for: .normal)
     }
     
@@ -132,7 +141,16 @@ class PopUpViewController: UIViewController{
     }
     
     override func viewDidLoad() {
+        
+    }
+    
+    init(){
+        super.init(nibName: nil, bundle: nil)
         initUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
 }

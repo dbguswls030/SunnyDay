@@ -13,7 +13,7 @@ import RxCocoa
 
 class ChatListViewModel{
     var disposeBag = DisposeBag()
-    let chatRooms = BehaviorRelay<[ChatRoomModel]>(value: [])
+    var chatRooms = BehaviorRelay<[ChatRoomModel]>(value: [])
     
     init(){
         FirebaseFirestoreManager.shared.addListenerParticipatedChatRoomId(uid: Auth.auth().currentUser!.uid)
@@ -21,5 +21,18 @@ class ChatListViewModel{
                 return FirebaseFirestoreManager.shared.getChatRoomWithChatRoomId(chatRoomIdList: participatedChatRoomIdList)
             }.bind(to: chatRooms)
             .disposed(by: disposeBag)
+    }
+    
+    func isAmMaster(index: Int) -> Bool{
+        return (chatRooms.value[index].members.filter{ $0.uid == Auth.auth().currentUser?.uid }.first
+            .map{ $0.level == 0 ? true : false } != nil)
+    }
+    
+    func getChatRoom(index: Int) -> ChatRoomModel{
+        return chatRooms.value[index]
+    }
+   
+    func isAlone(index: Int) -> Bool{
+        return chatRooms.value[index].members.count == 1 ? true : false
     }
 }

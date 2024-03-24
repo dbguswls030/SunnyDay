@@ -94,6 +94,7 @@ class ProfileViewController: UIViewController {
             }.disposed(by: self.disposeBag)
     }
 }
+
 extension ProfileViewController: UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard touch.view?.isDescendant(of: self.scrollView) == false else { return false }

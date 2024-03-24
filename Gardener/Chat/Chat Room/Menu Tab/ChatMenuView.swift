@@ -60,6 +60,7 @@ class ChatMenuView: UIView {
         self.addSubview(chatMemberListLabel)
         self.addSubview(chatMemberTableView)
         
+        
         thumnailImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
@@ -86,6 +87,8 @@ class ChatMenuView: UIView {
             make.width.equalTo(self.snp.width)
             make.bottom.equalToSuperview()
         }
+
+        
     }
     
     func setData(model: Observable<ChatRoomModel>){

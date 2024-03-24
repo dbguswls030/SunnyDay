@@ -89,6 +89,22 @@ class FirebaseFirestoreManager{
         }
     }
     
+    func userExitedChatRoom(uid: String, chatRoomId: String) -> Observable<Void>{
+        return Observable.create(){ emitter in
+            self.db.collection("user").document(uid)
+                .collection("chat").document(chatRoomId).delete() { error in
+                if let error = error{
+                    print("failed userExitedChatRoom \(error.localizedDescription)")
+                    emitter.onError(error)
+                }
+                emitter.onNext(())
+                emitter.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+    
+    
     // MARK: 유저가 참여한 채팅방 Id 가져오기
     func addListenerParticipatedChatRoomId(uid: String) -> Observable<[String]>{
         return Observable.create { emitter in
@@ -476,6 +492,36 @@ class FirebaseFirestoreManager{
                 emitter.onCompleted()
             }catch let error{
                 emitter.onError(error)
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: 채팅방 나가기
+    func exitChatRoom(roomId: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            let docRef = self.db.collection("chat").document(roomId)
+            docRef.getDocument { document, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let document = document, document.exists else {
+                    print("exitChatRoom document does not exist")
+                    return
+                }
+                do{
+                    let currentMembers = try document.data(as: ChatRoomModel.self)
+                    let removedMembers =  currentMembers.members.filter{ $0.uid != Auth.auth().currentUser?.uid }
+                    docRef.updateData(["members": removedMembers]) { error in
+                        if let error = error{
+                            emitter.onError(error)
+                        }
+                        emitter.onNext(())
+                        emitter.onCompleted()
+                    }
+                }catch let error{
+                    emitter.onError(error)
+                }
             }
             return Disposables.create()
         }

@@ -30,4 +30,29 @@ class ChatMenuViewModel{
             $0.members[index]
         }
     }
+    
+    func isAmMaster(uid: String) -> Observable<Bool>{
+        return chatRoomModel.map {
+            return $0
+        }.compactMap { model in
+            return model.members.filter{
+                $0.uid == uid
+            }.first
+        }.map { model in
+            model.level == 0 ? true : false
+        }
+    }
+    
+    func isAlone() -> Observable<Bool>{
+        return chatRoomModel.map { model in
+            model.members.count == 1 ? true : false
+        }
+    }
+    
+    func getChatRoomId() -> Observable<String>{
+        return chatRoomModel.map{ model in
+            model.roomId
+        }
+    }
+    
 }
