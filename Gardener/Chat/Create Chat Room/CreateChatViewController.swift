@@ -166,14 +166,15 @@ class CreateChatViewController: UIViewController {
         getUser.flatMap { userModel -> Observable<ChatRoomModel> in
             let title = self.createChatView.titleTextField.text!.trimmingCharacters(in: .whitespaces)
             let subTitle = self.createChatView.subTitleTextView.text!.trimmingCharacters(in: .whitespaces)
-            let model = ChatRoomModel(title: title, subTitle: subTitle, members: [ChatMemberModel(uid: uid, level: 0)])
+            let model = ChatRoomModel(title: title, subTitle: subTitle)
             return FirebaseFirestoreManager.shared.createChatRoomWithRx(model: model)
+            
         }.flatMap{ chatRoomModel -> Observable<(String, ChatRoomModel)> in
             return FirebaseStorageManager.shared.uploadChatThumbnailImage(path: chatRoomModel.roomId, image: thumnailImage).map{ url in (url, chatRoomModel)}
         }.flatMap{ url, chatRoomModel in
             return FirebaseFirestoreManager.shared.updateChatRoomThumbnail(chatRoomModel: chatRoomModel, thumbailURL: url).map{ chatRoomModel }
         }.flatMap{ chatRoomModel in
-            return FirebaseFirestoreManager.shared.userEnteredChatRoom(uid: uid, chatRoomId: chatRoomModel.roomId)
+            return Observable.zip(FirebaseFirestoreManager.shared.userEnteredChatRoom(uid: uid, chatRoomId: chatRoomModel.roomId), FirebaseFirestoreManager.shared.addChatRoomMember(chatRoomId: chatRoomModel.roomId, member: TestChatMemberModel(level: 0, uid: uid)))
         }.bind{ _ in
             self.hideActivityIndicator(alpha: 0.2)
             UIView.animate(withDuration: 0.2) {

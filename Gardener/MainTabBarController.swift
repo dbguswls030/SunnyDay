@@ -7,13 +7,17 @@
 
 import UIKit
 import FirebaseAuth
+import RxSwift
 class MainTabBarController: UITabBarController {
+    
+    var disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
         connectNavigationControllerToTabBarController()
         setUI()
+        
 //        loginThenShowUserInfo()
     }
     func connectNavigationControllerToTabBarController(){

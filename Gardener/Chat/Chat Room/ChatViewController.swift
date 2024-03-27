@@ -284,7 +284,7 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let model = chatViewModel.getChatModel(at: indexPath.row) else {
+        guard let model = chatViewModel.getChatMessageModel(at: indexPath.row) else {
             return UITableViewCell()
         }
         

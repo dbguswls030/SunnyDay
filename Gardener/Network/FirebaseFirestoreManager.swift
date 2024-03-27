@@ -497,35 +497,88 @@ class FirebaseFirestoreManager{
         }
     }
     
-    // MARK: 채팅방 나가기
-    func exitChatRoom(roomId: String) -> Observable<Void>{
+    
+    // MARK: 채팅방 나가기 -> 채팅방 멤버 삭제
+    func exitChatRoom(roomId: String, uid: String) -> Observable<Void>{
         return Observable.create{ emitter in
             let docRef = self.db.collection("chat").document(roomId)
-            docRef.getDocument { document, error in
+            docRef.collection("members").document(uid).delete { error in
                 if let error = error{
                     emitter.onError(error)
                 }
-                guard let document = document, document.exists else {
-                    print("exitChatRoom document does not exist")
-                    return
-                }
-                do{
-                    let currentMembers = try document.data(as: ChatRoomModel.self)
-                    let removedMembers =  currentMembers.members.filter{ $0.uid != Auth.auth().currentUser?.uid }
-                    docRef.updateData(["members": removedMembers]) { error in
-                        if let error = error{
-                            emitter.onError(error)
-                        }
-                        emitter.onNext(())
-                        emitter.onCompleted()
-                    }
-                }catch let error{
-                    emitter.onError(error)
-                }
+                self.db.collection("chat").document(roomId).updateData(["memberCount" : FieldValue.increment(Int64(-1))])
+                emitter.onNext(())
+                emitter.onCompleted()
+            }
+
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: 채팅방 인원 추가
+    func addChatRoomMember(chatRoomId: String, member: TestChatMemberModel) -> Observable<Void>{
+        return Observable.create{ emitter in
+            do {
+                try self.db.collection("chat").document(chatRoomId).collection("members").document(member.uid!).setData(from: member)
+                self.db.collection("chat").document(chatRoomId).updateData(["memberCount" : FieldValue.increment(Int64(1))])
+                emitter.onNext(())
+                emitter.onCompleted()
+            }catch let error{
+                emitter.onError(error)
             }
             return Disposables.create()
         }
     }
+    
+    // MARK: 채팅방 인원 찾기
+    func getChatMember(chatRoomId: String, uid: String) -> Observable<TestChatMemberModel>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("members").document(uid)
+                .getDocument { snapshot, error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
+                    guard let document = snapshot else {
+                        emitter.onCompleted()
+                        return
+                    }
+                    do{
+                        let model = try document.data(as: TestChatMemberModel.self)
+                        emitter.onNext(model)
+                        emitter.onCompleted()
+                    }catch let error{
+                        emitter.onError(error)
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: 채팅방 인원 가져오기
+    func addListenerChatMembers(chatRoomId: String) -> Observable<[TestChatMemberModel]>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("members")
+                .addSnapshotListener { snapshot, error in
+                    if let error = error {
+                        emitter.onError(error)
+                    }
+                    
+                    guard let documents = snapshot?.documents else{
+                        emitter.onCompleted()
+                        return
+                    }
+                    
+                    let members = documents.compactMap { document in
+                        try? document.data(as: TestChatMemberModel.self)
+                    }
+                    emitter.onNext(members)
+                    emitter.onCompleted()
+            }
+            return Disposables.create()
+            
+        }
+    }
+    
     
     // MARK: 채팅방 섬네일 수정
     func updateChatRoomThumbnail(chatRoomModel: ChatRoomModel, thumbailURL: String) -> Observable<Void>{
@@ -670,6 +723,8 @@ class FirebaseFirestoreManager{
     }
     
     
+    
+    
     // MARK: 채팅방 검색
     func searchChatRoomList(keyword: String) -> Observable<[ChatRoomModel]>{
         return Observable.create{ emitter in
@@ -679,5 +734,123 @@ class FirebaseFirestoreManager{
     }
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // MARK: FireStore 수정
+    
+    
+    // MARK: 채팅방 모델의 Members 필드를 하위 컬렉션으로 이동
+    func moveMembersFieldToLowerCollection() -> Observable<Void>{
+        return Observable.create{ emitter in
+            let docRef = self.db.collection("chat")
+            docRef.getDocuments { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let documents = snapshot?.documents else {
+                    emitter.onCompleted()
+                    return
+                }
+                var members = [ChatMemberModel]()
+                for document in documents {
+                    do {
+                        let model = try document.data(as: ChatRoomModel.self)
+//                        model.members.forEach { memberModel in
+//                            members.append(memberModel)
+//                        }
+                    }catch let error{
+                        emitter.onError(error)
+                    }
+                    
+                    members.forEach { memberModel in
+                        document.reference.collection("members").document(memberModel.uid).setData(["level" : memberModel.level])
+                    }
+                    
+                    emitter.onNext(())
+                    emitter.onCompleted()
+                }
+                // members의 내용을 다 읽어서
+                // members 컬렉션에 다 넣기
+                
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: chatRoomModel에  members "필드" 삭제
+    func deleteMembersFieldInChatRoomModel() -> Observable<Void>{
+        return Observable.create{ emitter in
+            let docRef = self.db.collection("chat")
+            docRef.getDocuments { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let documents = snapshot?.documents else {
+                    emitter.onCompleted()
+                    return
+                }
+                for document in documents {
+                    document.reference.updateData(["members" : FieldValue.delete()])
+                }
+                emitter.onNext(())
+                emitter.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: 채팅방 모델에 likeCount 필드 추가하기
+    func insertLikeCountInChatRoomModel() -> Observable<Void>{
+        return Observable.create{ emitter in
+            let docRef = self.db.collection("chat")
+            docRef.getDocuments { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let documents = snapshot?.documents else {
+                    emitter.onCompleted()
+                    return
+                }
+                for document in documents {
+                    document.reference.updateData(["likeCount" : 0])
+                }
+                
+                emitter.onNext(())
+                emitter.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func insertMembersCountInChatRoomModel() -> Observable<Void>{
+        return Observable.create{ emitter in
+            let docRef = self.db.collection("chat")
+            docRef.getDocuments { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let documents = snapshot?.documents else {
+                    emitter.onCompleted()
+                    return
+                }
+                for document in documents {
+                    document.reference.updateData(["memberCount" : 0])
+                }
+                
+                emitter.onNext(())
+                emitter.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
 }

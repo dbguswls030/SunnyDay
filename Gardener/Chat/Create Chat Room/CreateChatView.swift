@@ -17,7 +17,7 @@ class CreateChatView: UIView {
     lazy var thumnailImage: UIButton = {
         var button = UIButton()
         button.setImage(UIImage(named: "ralo"), for: .normal)
-        button.contentMode = .scaleAspectFill
+        button.contentMode = .scaleAspectFit
         button.clipsToBounds = true
         return button
     }()

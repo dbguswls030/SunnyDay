@@ -142,16 +142,16 @@ class ChatMenuView: UIView {
             make.left.right.equalToSuperview()
             make.width.equalTo(self.snp.width)
             make.bottom.equalToSuperview()
-        }        
+        }
     }
     
     func setData(model: Observable<ChatRoomModel>){
         model.bind{ chatRoomModel in
             self.chatTitleLabel.text = chatRoomModel.title
-            self.chatMemberCountLabel.text = "인원 \(chatRoomModel.members.count)명"
+            self.chatMemberCountLabel.text = "인원 \(chatRoomModel.memberCount)명"
             self.chatCreateAtLabel.text = "생성일 \(chatRoomModel.date.convertDate())"
-            self.chatMemberListLabel.text = "참여 인원 \(chatRoomModel.members.count)"
-            // TODO: 좋아요 갯수
+            self.chatMemberListLabel.text = "참여 인원 \(chatRoomModel.memberCount)"
+            self.chatLikeCountLabel.text = "좋아요 \(chatRoomModel.likeCount)개"
         }.disposed(by: disposeBag)
     }
     

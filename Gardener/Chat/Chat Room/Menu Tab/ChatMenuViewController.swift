@@ -119,7 +119,7 @@ class ChatMenuViewController: UIViewController {
             Observable.zip(self.chatRoomViewModel.isAmMaster(uid: uid), self.chatRoomViewModel.isAlone(), self.chatRoomViewModel.getChatRoomId())
                 .bind{ master, alone, chatRoomId in
                     let userAccess = FirebaseFirestoreManager.shared.userExitedChatRoom(uid: uid, chatRoomId: chatRoomId)
-                    let chatAccess = FirebaseFirestoreManager.shared.exitChatRoom(roomId: chatRoomId)
+                    let chatAccess = FirebaseFirestoreManager.shared.exitChatRoom(roomId: chatRoomId, uid: uid)
                     let checkObservables = [userAccess,chatAccess]
                     
                     if master, alone{
@@ -150,7 +150,7 @@ class ChatMenuViewController: UIViewController {
         self.chatMenuView.chatMemberTableView.register(ChatMemberTableViewCell.self, forCellReuseIdentifier: "chatMemberCell")
         chatMenuView.chatMemberTableView.rowHeight = 60
         
-        chatRoomViewModel.getMembers()
+        chatRoomViewModel.chatMembers
             .bind(to: self.chatMenuView.chatMemberTableView.rx.items(cellIdentifier: "chatMemberCell", cellType: ChatMemberTableViewCell.self)){ index, model, cell in
                 cell.setData(model: model)
             }.disposed(by: disposeBag)
@@ -164,11 +164,14 @@ class ChatMenuViewController: UIViewController {
     
     
     private func showProfileHalfView(index: Int){
-        self.chatRoomViewModel.getMember(index: index)
-            .bind{ memberModel in
-                let vc = ProfileViewController(uid: memberModel.uid)
-                vc.modalPresentationStyle = .overFullScreen
-                self.present(vc, animated: false)
-            }.disposed(by: disposeBag)
+        let memberModel = self.chatRoomViewModel.getMember(index: index)
+        guard let uid = memberModel.uid else {
+            print("ChatMemberTableViewCell showProfileHalfView not exist model.uid")
+            return
+        }
+    
+        let vc = ProfileViewController(uid: uid)
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: false)
     }
 }

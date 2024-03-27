@@ -117,28 +117,52 @@ extension ChatListViewController: UITableViewDelegate{
             
             showPopUp(title: "정말 채팅방에서 나가시겠습니까?", confirmButtonTitle: "나가기") { [weak self] in
                 guard let self = self else { return }
-                let userAccess = FirebaseFirestoreManager.shared.userExitedChatRoom(uid: Auth.auth().currentUser!.uid, chatRoomId: self.chatViewModel.getChatRoom(index: indexPath.row).roomId)
-                let chatAccess = FirebaseFirestoreManager.shared.exitChatRoom(roomId: self.chatViewModel.getChatRoom(index: indexPath.row).roomId)
+                guard let uid = Auth.auth().currentUser?.uid else { return }
+                let userAccess = FirebaseFirestoreManager.shared.userExitedChatRoom(uid: uid, chatRoomId: self.chatViewModel.getChatRoom(index: indexPath.row).roomId)
+                let chatAccess = FirebaseFirestoreManager.shared.exitChatRoom(roomId: self.chatViewModel.getChatRoom(index: indexPath.row).roomId, uid: uid)
                 let checkObservables = [userAccess, chatAccess]
                 
-                if self.chatViewModel.isAmMaster(index: indexPath.row){
-                    if self.chatViewModel.isAlone(index: indexPath.row){
-                        Observable.zip(checkObservables)
-                            .bind{ _ in
-                                success(true)
+                self.chatViewModel.isAmMaster(index: indexPath.row, uid: uid)
+                    .bind{ result in
+                        if result{
+                            if self.chatViewModel.isAlone(index: indexPath.row){
+                                Observable.zip(checkObservables)
+                                    .bind{ _ in
+                                        success(true)
+                                        self.dismiss(animated: false)
+                                    }.disposed(by: self.disposeBag)
+                            }else{
                                 self.dismiss(animated: false)
-                            }.disposed(by: disposeBag)
-                    }else{
-                        self.dismiss(animated: false)
-                        showPopUp(title: "관리자는 채팅방에 남겨진 인원들을 두고 떠날 수 없어요!") {}
-                    }
-                }else{
-                    Observable.zip(checkObservables)
-                        .bind{ _ in
-                            success(true)
-                            self.dismiss(animated: false)
-                        }.disposed(by: disposeBag)
-                }
+                                self.showPopUp(title: "관리자는 채팅방에 남겨진 인원들을 두고 떠날 수 없어요!") {}
+                            }
+                        }else{
+                            Observable.zip(checkObservables)
+                                .bind{ _ in
+                                    success(true)
+                                    self.dismiss(animated: false)
+                                }.disposed(by: self.disposeBag)
+                        }
+                        
+                    }.disposed(by: self.disposeBag)
+                
+//                if self.chatViewModel.isAmMaster(index: indexPath.row, uid: uid){
+//                    if self.chatViewModel.isAlone(index: indexPath.row){
+//                        Observable.zip(checkObservables)
+//                            .bind{ _ in
+//                                success(true)
+//                                self.dismiss(animated: false)
+//                            }.disposed(by: disposeBag)
+//                    }else{
+//                        self.dismiss(animated: false)
+//                        showPopUp(title: "관리자는 채팅방에 남겨진 인원들을 두고 떠날 수 없어요!") {}
+//                    }
+//                }else{
+//                    Observable.zip(checkObservables)
+//                        .bind{ _ in
+//                            success(true)
+//                            self.dismiss(animated: false)
+//                        }.disposed(by: disposeBag)
+//                }
             }
         }
         return .init(actions: [exit])

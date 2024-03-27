@@ -76,8 +76,12 @@ class ChatMemberTableViewCell: UITableViewCell {
         }
     }
     
-    func setData(model: ChatMemberModel){
-        FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: model.uid)
+    func setData(model: TestChatMemberModel){
+        guard let uid = model.uid else {
+            print("ChatMemberTableViewCell setData exist model.uid")
+            return
+        }
+        FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: uid)
             .bind{ userModel in
                 self.profileImageView.setImageView(url:  userModel.profileImageURL)
                 self.nickNameLabel.text = userModel.nickName

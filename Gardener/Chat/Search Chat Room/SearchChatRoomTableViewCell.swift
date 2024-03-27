@@ -97,6 +97,6 @@ class SearchChatRoomTableViewCell: UITableViewCell {
         self.chatTitleLabel.text = model.title
         self.chatSubTitleLabel.text = model.subTitle
         self.thumbnailImageView.setImageView(url: model.thumbnailURL)
-        self.memberCountLabel.text = "\(model.members.count)"
+        self.memberCountLabel.text = "\(model.memberCount)"
     }
 }

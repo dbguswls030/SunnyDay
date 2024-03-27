@@ -1,5 +1,5 @@
 //
-//  ChatModel.swift
+//  ChatMessageModel.swift
 //  Gardener
 //
 //  Created by 유현진 on 2/1/24.

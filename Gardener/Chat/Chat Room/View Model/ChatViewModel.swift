@@ -71,7 +71,7 @@ class ChatViewModel{
     }
     
     
-    func getChatModel(at index: Int) -> ChatMessageModel? {
+    func getChatMessageModel(at index: Int) -> ChatMessageModel? {
         guard index >= 0, index < messages.value.count else {
             return nil
         }

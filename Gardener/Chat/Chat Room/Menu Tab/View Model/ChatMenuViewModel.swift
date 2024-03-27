@@ -10,42 +10,43 @@ import RxSwift
 import RxCocoa
 
 class ChatMenuViewModel{
-    
+    var disposeBag = DisposeBag()
     var chatRoomModel: Observable<ChatRoomModel>
+    var chatMembers = BehaviorRelay<[TestChatMemberModel]>(value: [])
     
     init(chatRoomModel: Observable<ChatRoomModel>) {
         self.chatRoomModel = chatRoomModel
+        getChatRoomId()
+            .flatMap{ roomId in
+                return FirebaseFirestoreManager.shared.addListenerChatMembers(chatRoomId: roomId)
+            }.bind(to: chatMembers)
+            .disposed(by: self.disposeBag)
     }
     
-    func getMembers() -> Observable<[ChatMemberModel]>{
-        return chatRoomModel.map{$0.members}
+    func getMembers() -> [TestChatMemberModel]{
+        return chatMembers.value
     }
     
     func getMembersCount() -> Observable<Int>{
-        return chatRoomModel.map{$0.members.count}
+        return chatRoomModel.map{$0.memberCount}
     }
     
-    func getMember(index: Int) -> Observable<ChatMemberModel>{
-        return self.chatRoomModel.map{
-            $0.members[index]
-        }
+    func getMember(index: Int) -> TestChatMemberModel{
+        return chatMembers.value[index]
     }
     
     func isAmMaster(uid: String) -> Observable<Bool>{
-        return chatRoomModel.map {
-            return $0
-        }.compactMap { model in
-            return model.members.filter{
-                $0.uid == uid
-            }.first
-        }.map { model in
-            model.level == 0 ? true : false
-        }
+        return getChatRoomId()
+            .flatMap { roomId in
+                return FirebaseFirestoreManager.shared.getChatMember(chatRoomId: roomId, uid: uid)
+            }.map{
+                $0.level == 0
+            }
     }
     
     func isAlone() -> Observable<Bool>{
         return chatRoomModel.map { model in
-            model.members.count == 1 ? true : false
+            model.memberCount == 1 ? true : false
         }
     }
     

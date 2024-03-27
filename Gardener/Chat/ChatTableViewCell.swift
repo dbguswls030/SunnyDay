@@ -124,6 +124,6 @@ class ChatTableViewCell: UITableViewCell {
         self.chatSubTitleLabel.text = model.subTitle
         self.chatThumbnailImageView.setImageView(url: model.thumbnailURL)
         self.updateDateLabel.text = model.date.convertDateToCurrentTime()
-        self.memberCountLabel.text = "\(model.members.count)"
+        self.memberCountLabel.text = "\(model.memberCount)"
     }
 }
