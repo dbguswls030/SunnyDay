@@ -144,8 +144,8 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
                 guard let self = self else { return }
                 self.insertPreviousMessage()
             }.disposed(by: disposeBag)
-        
     }
+    
     private func insertPreviousMessage(){
         self.chatViewModel.getPreviousMessages()
             .bind{ preCount in

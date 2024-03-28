@@ -8,10 +8,13 @@
 import UIKit
 import SnapKit
 import RxSwift
+import FirebaseAuth
 
 class ChatMenuView: UIView {
     
     var disposeBag = DisposeBag()
+    
+    var chatRoomId: String?
     
     private lazy var chatTitleLabel: UILabel = {
         let label = UILabel()
@@ -52,6 +55,24 @@ class ChatMenuView: UIView {
         return label
     }()
     
+    private lazy var chatLikeButton: UIButton = {
+        var button = UIButton()
+        var configuration = UIButton.Configuration.plain()
+        button.configurationUpdateHandler = { [unowned self] button in
+            switch button.state{
+            case .selected:
+                button.configuration?.image = UIImage(systemName: "heart.fill",withConfiguration: UIImage.SymbolConfiguration(pointSize: 15))
+                button.tintColor = .red
+            default:
+                button.configuration?.image = UIImage(systemName: "heart",withConfiguration: UIImage.SymbolConfiguration(pointSize: 15))
+                button.tintColor = .black
+            }
+        }
+        configuration.background.backgroundColor = .clear
+        button.configuration = configuration
+        return button
+    }()
+    
     private lazy var chatInfoBreakLine: BreakLine = {
         return BreakLine()
     }()
@@ -76,6 +97,7 @@ class ChatMenuView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         initUI()
+        addChatLikeButtonAction()
     }
     
     required init?(coder: NSCoder) {
@@ -88,10 +110,11 @@ class ChatMenuView: UIView {
         self.addSubview(chatCreateAtLabel)
         self.addSubview(chatLikeCountLabel)
         self.addSubview(chatMemberCountLabel)
-    
+        self.addSubview(chatInfoButton)
+        self.addSubview(chatLikeButton)
         self.addSubview(chatInfoBreakLine)
         
-        self.addSubview(chatInfoButton)
+        
         self.addSubview(chatMemberListLabel)
         self.addSubview(chatMemberTableView)
         
@@ -123,6 +146,12 @@ class ChatMenuView: UIView {
             make.left.equalTo(chatMemberCountLabel.snp.right).offset(10)
         }
         
+        chatLikeButton.snp.makeConstraints { make in
+            make.top.equalTo(chatTitleLabel.snp.bottom).offset(5)
+            make.right.equalToSuperview().offset(-15)
+            make.width.height.equalTo(35)
+        }
+        
         chatInfoBreakLine.snp.makeConstraints { make in
             make.top.equalTo(chatMemberCountLabel.snp.bottom).offset(20)
             make.left.equalToSuperview().offset(10)
@@ -146,12 +175,15 @@ class ChatMenuView: UIView {
     }
     
     func setData(model: Observable<ChatRoomModel>){
-        model.bind{ chatRoomModel in
+        model.bind{ [weak self] chatRoomModel in
+            guard let self = self else { return }
             self.chatTitleLabel.text = chatRoomModel.title
             self.chatMemberCountLabel.text = "인원 \(chatRoomModel.memberCount)명"
             self.chatCreateAtLabel.text = "생성일 \(chatRoomModel.date.convertDate())"
             self.chatMemberListLabel.text = "참여 인원 \(chatRoomModel.memberCount)"
             self.chatLikeCountLabel.text = "좋아요 \(chatRoomModel.likeCount)개"
+            self.setLikeButton(chatRoomId: chatRoomModel.roomId)
+            self.chatRoomId = chatRoomModel.roomId
         }.disposed(by: disposeBag)
     }
     
@@ -160,6 +192,38 @@ class ChatMenuView: UIView {
             .tap
             .bind{ _ in
                 // TODO: 채팅방 정보 보기
+            }.disposed(by: self.disposeBag)
+    }
+    
+    func setLikeButton(chatRoomId: String){
+        FirebaseFirestoreManager.shared.isLikeChatRoom(chatRoomId: chatRoomId, uid: Auth.auth().currentUser!.uid)
+            .bind{ result in
+                if result{
+                    self.chatLikeButton.isSelected = true
+                }else{
+                    self.chatLikeButton.isSelected = false
+                }
+            }.disposed(by: self.disposeBag)
+    }
+    
+    func addChatLikeButtonAction(){
+        chatLikeButton.rx
+            .tap
+            .debounce(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
+            .bind{ _ in
+                guard let chatRoomId = self.chatRoomId else { return }
+                guard let uid = Auth.auth().currentUser?.uid else { return }
+                if self.chatLikeButton.isSelected{
+                    FirebaseFirestoreManager.shared.unLikeChatRoom(chatRoomId: chatRoomId, uid: uid)
+                        .bind{
+                            
+                        }.disposed(by: self.disposeBag)
+                }else{
+                    FirebaseFirestoreManager.shared.likeChatRoom(chatRoomId: chatRoomId, uid: uid)
+                        .bind{
+                            
+                        }.disposed(by: self.disposeBag)
+                }
             }.disposed(by: self.disposeBag)
     }
     

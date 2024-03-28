@@ -722,8 +722,65 @@ class FirebaseFirestoreManager{
         }
     }
     
+    // MARK: 채팅방 좋아요
+    func likeChatRoom(chatRoomId: String, uid: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("like").document(uid).setData([:]) { error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                self.db.collection("chat").document(chatRoomId).updateData(["likeCount" : FieldValue.increment(Int64(1))]) { error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
+                    emitter.onNext(())
+                    emitter.onCompleted()
+                }
+            }
+            return Disposables.create()
+        }
+    }
     
+    // MAKR: 채팅방 좋아요 취소
+    func unLikeChatRoom(chatRoomId: String, uid: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("like").document(uid).delete() { error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                self.db.collection("chat").document(chatRoomId).updateData(["likeCount" : FieldValue.increment(Int64(-1))]) { error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
+                    emitter.onNext(())
+                    emitter.onCompleted()
+                }
+            }
+            return Disposables.create()
+        }
+    }
     
+    // MARK: 채팅방 좋아요 유무 찾기
+    func isLikeChatRoom(chatRoomId: String, uid: String) -> Observable<Bool>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("like").document(uid)
+                .getDocument { snapshot, error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
+                    
+                    guard let document = snapshot, document.exists else {
+                        emitter.onNext(false)
+                        emitter.onCompleted()
+                        return
+                    }
+                    
+                    emitter.onNext(true)
+                    emitter.onCompleted()
+                }
+            return Disposables.create()
+        }
+    }
     
     // MARK: 채팅방 검색
     func searchChatRoomList(keyword: String) -> Observable<[ChatRoomModel]>{

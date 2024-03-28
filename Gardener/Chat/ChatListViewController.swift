@@ -144,25 +144,6 @@ extension ChatListViewController: UITableViewDelegate{
                         }
                         
                     }.disposed(by: self.disposeBag)
-                
-//                if self.chatViewModel.isAmMaster(index: indexPath.row, uid: uid){
-//                    if self.chatViewModel.isAlone(index: indexPath.row){
-//                        Observable.zip(checkObservables)
-//                            .bind{ _ in
-//                                success(true)
-//                                self.dismiss(animated: false)
-//                            }.disposed(by: disposeBag)
-//                    }else{
-//                        self.dismiss(animated: false)
-//                        showPopUp(title: "관리자는 채팅방에 남겨진 인원들을 두고 떠날 수 없어요!") {}
-//                    }
-//                }else{
-//                    Observable.zip(checkObservables)
-//                        .bind{ _ in
-//                            success(true)
-//                            self.dismiss(animated: false)
-//                        }.disposed(by: disposeBag)
-//                }
             }
         }
         return .init(actions: [exit])
