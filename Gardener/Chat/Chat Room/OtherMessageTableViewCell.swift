@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import FirebaseAuth
 
 class OtherMessageTableViewCell: UITableViewCell {
 
@@ -124,14 +125,14 @@ class OtherMessageTableViewCell: UITableViewCell {
         getUserInfo(uid: model.uid)
     }
     
-    func addProfileImageTapAction(uid: String, superVC: UIViewController){
+    func addProfileImageTapAction(profileUid: String, chatRoomId: String, superVC: UIViewController){
         let tapGesture = UITapGestureRecognizer()
         self.profileImageView.addGestureRecognizer(tapGesture)
-        
+
         tapGesture.rx.event
             .bind{ _ in
-                let vc = ProfileViewController(uid: uid)
-                vc.modalPresentationStyle = .overCurrentContext
+                let vc = ProfileViewController(profileUid: profileUid, chatRoomId: chatRoomId, myUid: Auth.auth().currentUser!.uid)
+                vc.modalPresentationStyle = .overFullScreen
                 superVC.present(vc, animated: false)
             }.disposed(by: self.disposeBag)
     }

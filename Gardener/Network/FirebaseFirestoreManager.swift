@@ -89,6 +89,8 @@ class FirebaseFirestoreManager{
         }
     }
     
+    
+    // MARK: 채팅방 나가기
     func userExitedChatRoom(uid: String, chatRoomId: String) -> Observable<Void>{
         return Observable.create(){ emitter in
             self.db.collection("user").document(uid)
@@ -397,7 +399,6 @@ class FirebaseFirestoreManager{
             
             if snapshot.count == 0{
                 print("reply count == 0")
-                // TODO: parentId가 같고 dept가 0인 거에 isEmptyReply를 true
                 self.updateIsEmptyReplyForTrueInComment(documentId: documentId, parentId: parentId) {
                     completion()
                 }
@@ -790,10 +791,43 @@ class FirebaseFirestoreManager{
         }
     }
     
+    // MARK: 채팅방 추방 리스너(채팅 멤버에 내가 없으면 방 나가짐)
+    func addListenerExpulsionChat(chatRoomId: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("members").document(Auth.auth().currentUser!.uid).addSnapshotListener { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let document = snapshot else{ return }
+                
+                if !document.exists{
+                    emitter.onNext(())
+                }
+            }
+            return Disposables.create()
+        }
+    }
     
-    
-    
-    
+    // MARK: 채팅방에서 나의 권한
+    func WhoAreYouAtChatRoom(chatRoomId: String, uid: String) -> Observable<Int>{
+        return Observable.create { emitter in
+            self.db.collection("chat").document(chatRoomId).collection("members").document(uid).getDocument { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                
+                guard let document = snapshot else{
+                    return
+                }
+                if let level = document.data()?["level"] as? Int{
+                    emitter.onNext(level)
+                    emitter.onCompleted()
+                }
+
+            }
+            return Disposables.create()
+        }
+    }
     
     
     

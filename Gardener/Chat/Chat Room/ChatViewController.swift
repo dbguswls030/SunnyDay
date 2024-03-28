@@ -64,6 +64,7 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
         initMessageTableView()
         initNavigationItem()
         menuButtonAction()
+        addListenerExpulsionChat()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +74,21 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
         self.navigationController?.navigationBar.alpha = 0.9
     }
   
+    private func addListenerExpulsionChat(){
+        // TODO: 삭제시에만 동작하도록 해야함
+        FirebaseFirestoreManager.shared.addListenerExpulsionChat(chatRoomId: chatViewModel.chatRoomId)
+            .skip(1)
+            .flatMap{
+                
+                FirebaseFirestoreManager.shared.userExitedChatRoom(uid: Auth.auth().currentUser!.uid, chatRoomId: self.chatViewModel.chatRoomId)
+            }.bind{
+                self.showPopUp(title: "\(self.title ?? "") 채팅방에서 추방당하셨습니다.") {
+                    
+                }
+                self.navigationController?.popViewController(animated: true)
+            }.disposed(by: self.disposeBag)
+    }
+    
     private func initNavigationItem(){
         self.navigationItem.setRightBarButton(UIBarButtonItem(customView: menuButton), animated: false)
     }
@@ -296,7 +312,7 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate{
         }else{
             let cell = self.messageTableView.dequeueReusableCell(withIdentifier: OtherMessageTableViewCell.identifier, for: IndexPath(row: indexPath.row, section: 0)) as! OtherMessageTableViewCell
             cell.setData(model: model)
-            cell.addProfileImageTapAction(uid: model.uid, superVC: self)
+            cell.addProfileImageTapAction(profileUid: model.uid, chatRoomId: chatViewModel.chatRoomId, superVC: self)
             cell.addMenuInteraction(vc: self)
             return cell
         }

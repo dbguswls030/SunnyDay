@@ -170,8 +170,11 @@ class ChatMenuViewController: UIViewController {
             return
         }
     
-        let vc = ProfileViewController(uid: uid)
-        vc.modalPresentationStyle = .overFullScreen
-        self.present(vc, animated: false)
+        chatRoomViewModel.getChatRoomId()
+            .bind{ roomId in
+                let vc = ProfileViewController(profileUid: uid, chatRoomId: roomId, myUid: Auth.auth().currentUser!.uid)
+                vc.modalPresentationStyle = .overFullScreen
+                self.present(vc, animated: false)
+            }.disposed(by: disposeBag)
     }
 }

@@ -12,7 +12,9 @@ import RxCocoa
 
 class ProfileViewController: UIViewController {
     
-    var uid: String
+    let myUid: String
+    let profileUid: String
+    let chatRoomId: String
     
     var disposeBag = DisposeBag()
     
@@ -34,7 +36,8 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
-        profileHalfView.setData(uid: self.uid)
+        profileHalfView.setData(profileUid: self.profileUid, myUid: self.myUid, chatRoomId: self.chatRoomId)
+        addExpulsionButtonAction()
         addTapGestureDismiss()
     }
 
@@ -48,8 +51,10 @@ class ProfileViewController: UIViewController {
         }
     }
     
-    init(uid: String){
-        self.uid = uid
+    init(profileUid: String, chatRoomId: String, myUid: String){
+        self.profileUid = profileUid
+        self.chatRoomId = chatRoomId
+        self.myUid = myUid
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -74,6 +79,35 @@ class ProfileViewController: UIViewController {
         }
     }
     
+    private func addExpulsionButtonAction(){
+        profileHalfView.expulsionButton.isUserInteractionEnabled = true
+        profileHalfView.expulsionButton.rx
+            .tap
+            .bind{ _ in
+                self.showPopUp(title:"정말 추방하시겠습니까?", confirmButtonTitle: "추방하기") { [weak self] in
+                    guard let self = self else { return }
+                    FirebaseFirestoreManager.shared.WhoAreYouAtChatRoom(chatRoomId: self.chatRoomId, uid: self.profileUid)
+                        .bind{ level in
+                            if level == 2{
+                                FirebaseFirestoreManager.shared.exitChatRoom(roomId: self.chatRoomId, uid: self.profileUid)
+                                    .bind{
+                                        self.dismiss(animated: false) {
+                                            self.dismiss(animated: false)
+                                        }
+                                    }.disposed(by: self.disposeBag)
+                            }else{
+                                self.dismiss(animated: false)
+                                self.showPopUp(title: "관리자와 매니저는 추방할 수 없어요!") {
+                                    
+                                }
+                                
+                            }
+                        }.disposed(by: self.disposeBag)
+                    
+                }
+            }.disposed(by: self.disposeBag)
+    }
+    
     private func addTapGestureDismiss(){
         let tapGesture = UITapGestureRecognizer()
         tapGesture.delegate = self
@@ -93,6 +127,8 @@ class ProfileViewController: UIViewController {
                 }
             }.disposed(by: self.disposeBag)
     }
+    
+    
 }
 
 extension ProfileViewController: UIGestureRecognizerDelegate{

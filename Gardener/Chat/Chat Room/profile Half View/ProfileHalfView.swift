@@ -48,8 +48,9 @@ class ProfileHalfView: UIView {
         return button
     }()
     
-    private lazy var expulsionButton: UIButton = {
+    lazy var expulsionButton: UIButton = {
         let button = UIButton()
+        button.isEnabled = false
         button.tintColor = .red
         var configuration = UIButton.Configuration.plain()
         var attributedTitle = AttributeContainer()
@@ -114,6 +115,7 @@ class ProfileHalfView: UIView {
             make.left.equalToSuperview().offset(20)
             make.right.equalToSuperview().offset(-20)
             make.height.equalTo(60)
+            make.bottom.equalTo(-10)
         }
         
         isolationButton.snp.makeConstraints { make in
@@ -129,19 +131,28 @@ class ProfileHalfView: UIView {
         }
     }
     
-    func setData(uid: String){
-        FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: uid)
+    func setData(profileUid: String, myUid: String, chatRoomId: String){
+        FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: profileUid)
             .bind{ userModel in
                 self.profileImageView.setImageView(url: userModel.profileImageURL)
                 self.nickNameLabel.text = userModel.nickName
+                self.setExpulsionButtonEnable(chatRoomId: chatRoomId, uid: myUid)
             }.disposed(by: disposeBag)
     }
     
+    func setExpulsionButtonEnable(chatRoomId: String, uid: String){
+        FirebaseFirestoreManager.shared.WhoAreYouAtChatRoom(chatRoomId: chatRoomId, uid: uid)
+            .bind{ level in
+                if level == 2{
+                    self.expulsionButton.isEnabled = false
+                }else{
+                    self.expulsionButton.isEnabled = true
+                }
+                
+            }.disposed(by: disposeBag)
+    }
     
     override func layoutSubviews() {
         profileImageView.layer.cornerRadius = 50 * 0.25
-//        expulsionButton.layer.cornerRadius = expulsionButton.bounds.height * 0.15
-//        isolationButton.layer.cornerRadius = isolationButton.bounds.height * 0.15
-//        reportButton.layer.cornerRadius = reportButton.bounds.height * 0.15
     }
 }
