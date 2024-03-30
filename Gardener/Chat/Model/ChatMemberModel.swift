@@ -15,12 +15,9 @@ enum ChatClass{
     case member
 }
 
-struct ChatMemberModel: Codable{
-    var uid: String
-    var level: Int
-}
 
-struct TestChatMemberModel: Codable{
+
+struct ChatMemberModel: Codable{
     @DocumentID var uid: String?
     var level: Int
     

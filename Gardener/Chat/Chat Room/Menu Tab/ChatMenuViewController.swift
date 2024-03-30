@@ -51,7 +51,7 @@ class ChatMenuViewController: UIViewController {
         super.viewDidLoad()
         initUI()
         initChatMemberTableView()
-        addExitButtonAction()
+//        addExitButtonAction()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -117,18 +117,18 @@ class ChatMenuViewController: UIViewController {
             guard let self = self, let uid = Auth.auth().currentUser?.uid else { return }
          
             Observable.zip(self.chatRoomViewModel.isAmMaster(uid: uid), self.chatRoomViewModel.isAlone(), self.chatRoomViewModel.getChatRoomId())
-                .bind{ master, alone, chatRoomId in
+                .bind{ isMaster, isAlone, chatRoomId in
                     let userAccess = FirebaseFirestoreManager.shared.userExitedChatRoom(uid: uid, chatRoomId: chatRoomId)
                     let chatAccess = FirebaseFirestoreManager.shared.exitChatRoom(roomId: chatRoomId, uid: uid)
                     let checkObservables = [userAccess,chatAccess]
                     
-                    if master, alone{
+                    if isMaster, isAlone{
                         Observable.zip(checkObservables)
                             .bind{ _ in
                                 self.dismiss(animated: false)
                             }.disposed(by: self.disposeBag)
      
-                    }else if master{
+                    }else if isMaster{
                         self.dismiss(animated: false)
                         self.showPopUp(title: "관리자는 채팅방에 남겨진 인원들을 두고 떠날 수 없어요!") {}
                     }else{
@@ -152,6 +152,7 @@ class ChatMenuViewController: UIViewController {
         
         chatRoomViewModel.chatMembers
             .bind(to: self.chatMenuView.chatMemberTableView.rx.items(cellIdentifier: "chatMemberCell", cellType: ChatMemberTableViewCell.self)){ index, model, cell in
+                print(index)
                 cell.setData(model: model)
             }.disposed(by: disposeBag)
         

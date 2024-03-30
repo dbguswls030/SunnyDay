@@ -76,7 +76,7 @@ class ChatMemberTableViewCell: UITableViewCell {
         }
     }
     
-    func setData(model: TestChatMemberModel){
+    func setData(model: ChatMemberModel){
         guard let uid = model.uid else {
             print("ChatMemberTableViewCell setData exist model.uid")
             return

@@ -517,7 +517,7 @@ class FirebaseFirestoreManager{
     }
     
     // MARK: 채팅방 인원 추가
-    func addChatRoomMember(chatRoomId: String, member: TestChatMemberModel) -> Observable<Void>{
+    func addChatRoomMember(chatRoomId: String, member: ChatMemberModel) -> Observable<Void>{
         return Observable.create{ emitter in
             do {
                 try self.db.collection("chat").document(chatRoomId).collection("members").document(member.uid!).setData(from: member)
@@ -532,7 +532,7 @@ class FirebaseFirestoreManager{
     }
     
     // MARK: 채팅방 인원 찾기
-    func getChatMember(chatRoomId: String, uid: String) -> Observable<TestChatMemberModel>{
+    func getChatMember(chatRoomId: String, uid: String) -> Observable<ChatMemberModel>{
         return Observable.create{ emitter in
             self.db.collection("chat").document(chatRoomId).collection("members").document(uid)
                 .getDocument { snapshot, error in
@@ -544,7 +544,7 @@ class FirebaseFirestoreManager{
                         return
                     }
                     do{
-                        let model = try document.data(as: TestChatMemberModel.self)
+                        let model = try document.data(as: ChatMemberModel.self)
                         emitter.onNext(model)
                         emitter.onCompleted()
                     }catch let error{
@@ -556,7 +556,7 @@ class FirebaseFirestoreManager{
     }
     
     // MARK: 채팅방 인원 가져오기
-    func addListenerChatMembers(chatRoomId: String) -> Observable<[TestChatMemberModel]>{
+    func addListenerChatMembers(chatRoomId: String) -> Observable<[ChatMemberModel]>{
         return Observable.create{ emitter in
             self.db.collection("chat").document(chatRoomId).collection("members")
                 .addSnapshotListener { snapshot, error in
@@ -570,10 +570,9 @@ class FirebaseFirestoreManager{
                     }
                     
                     let members = documents.compactMap { document in
-                        try? document.data(as: TestChatMemberModel.self)
+                        try? document.data(as: ChatMemberModel.self)
                     }
                     emitter.onNext(members)
-                    emitter.onCompleted()
             }
             return Disposables.create()
             
@@ -852,7 +851,7 @@ class FirebaseFirestoreManager{
                     emitter.onCompleted()
                     return
                 }
-                var members = [ChatMemberModel]()
+//                var members = [ChatMemberModel]()
                 for document in documents {
                     do {
                         let model = try document.data(as: ChatRoomModel.self)
@@ -863,10 +862,10 @@ class FirebaseFirestoreManager{
                         emitter.onError(error)
                     }
                     
-                    members.forEach { memberModel in
-                        document.reference.collection("members").document(memberModel.uid).setData(["level" : memberModel.level])
-                    }
-                    
+//                    members.forEach { memberModel in
+//                        document.reference.collection("members").document(memberModel.uid).setData(["level" : memberModel.level])
+//                    }
+//                    
                     emitter.onNext(())
                     emitter.onCompleted()
                 }
