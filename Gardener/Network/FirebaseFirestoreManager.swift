@@ -575,7 +575,6 @@ class FirebaseFirestoreManager{
                     emitter.onNext(members)
             }
             return Disposables.create()
-            
         }
     }
     
@@ -658,9 +657,9 @@ class FirebaseFirestoreManager{
     
     
     // MARK: 채팅방 입장 시 메시지 가져오기
-    func getFirstChatMessages(chatRoomId: String) -> Observable<([ChatMessageModel],Query)>{
+    func getFirstChatMessages(chatRoomId: String, firstVisitedDate: Timestamp) -> Observable<([ChatMessageModel],Query)>{
         return Observable.create { emitter in
-            let docRef = self.db.collection("chat").document(chatRoomId).collection("messages").order(by: "date", descending: true).limit(to: 30)
+            let docRef = self.db.collection("chat").document(chatRoomId).collection("messages").whereField("date", isGreaterThan: firstVisitedDate).order(by: "date", descending: true).limit(to: 30)
             
             docRef.getDocuments { snapshot, error in
                 if let error = error{
@@ -829,6 +828,52 @@ class FirebaseFirestoreManager{
     }
     
     
+    // MARK: 채팅방 입장 시 최근 입장 시간 갱신
+    func updateVisitedDate(chatRoomId: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            
+            self.db.collection("chat").document(chatRoomId).collection("members").document(Auth.auth().currentUser!.uid).getDocument { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                
+                guard let document = snapshot else{
+                    return
+                }
+                document.reference.updateData(["updateVisitedDate" : Date()]) { error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
+                    emitter.onNext(())
+                    emitter.onCompleted()
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func getFirstVisitedDate(chatRoomId: String) -> Observable<Timestamp>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("members").document(Auth.auth().currentUser!.uid).getDocument { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                guard let document = snapshot else{
+                    return
+                }
+                if let firstVisitedDate = document.data()?["firstVisitedDate"] as? Timestamp{
+                    emitter.onNext(firstVisitedDate)
+                    emitter.onCompleted()
+                }else{
+                    emitter.onCompleted()
+                }
+            }
+            return Disposables.create()
+        }
+    }
+  
+    
+    
     
     
     
@@ -837,6 +882,41 @@ class FirebaseFirestoreManager{
     
     
     // MARK: FireStore 수정
+    
+    // MARK: 채팅방 생성 일자 찾아서 채팅방 입장 멤버 두개에 넣어주기
+    
+    func insertVistedDate() -> Observable<Void>{
+        return Observable.create { emitter in
+            self.db.collection("chat").getDocuments { snapshot, error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                
+                guard let documents = snapshot?.documents else { return }
+                
+                documents.forEach { document in
+                    if let date = document.data()["date"]{
+                        document.reference.collection("members").getDocuments { subSnapshot, error in
+                            if let error = error{
+                                emitter.onError(error)
+                            }
+                            guard let documents = subSnapshot?.documents else { return }
+                            documents.forEach { subDocument in
+                                subDocument.reference.updateData(["firstVisitedDate" : date,
+                                                                  "updateVisitedDate" : date])
+                            }
+                        }
+                    }
+                }
+                emitter.onNext(())
+                emitter.onCompleted()
+                
+            }
+            return Disposables.create()
+        }
+    }
+    
+    
     
     
     // MARK: 채팅방 모델의 Members 필드를 하위 컬렉션으로 이동

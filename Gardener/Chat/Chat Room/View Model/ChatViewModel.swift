@@ -27,7 +27,8 @@ class ChatViewModel{
     
     func getFirstChatMessages() -> Observable<Void>{
         return Observable.create { emitter in
-            FirebaseFirestoreManager.shared.getFirstChatMessages(chatRoomId: self.chatRoomId)
+            FirebaseFirestoreManager.shared.getFirstVisitedDate(chatRoomId: self.chatRoomId)
+                .flatMap{ FirebaseFirestoreManager.shared.getFirstChatMessages(chatRoomId: self.chatRoomId, firstVisitedDate: $0) }
                 .bind{ messages, query in
                     self.previousMessagesQuery = query
                     self.messages.accept(messages)

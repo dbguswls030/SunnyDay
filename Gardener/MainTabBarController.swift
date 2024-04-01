@@ -18,6 +18,9 @@ class MainTabBarController: UITabBarController {
         connectNavigationControllerToTabBarController()
         setUI()
         
+        
+        
+        
 //        loginThenShowUserInfo()
     }
     func connectNavigationControllerToTabBarController(){

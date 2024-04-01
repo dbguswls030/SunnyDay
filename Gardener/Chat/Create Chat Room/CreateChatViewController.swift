@@ -162,13 +162,13 @@ class CreateChatViewController: UIViewController {
         guard let uid = Auth.auth().currentUser?.uid else{
             return
         }
+        
         let getUser = FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: uid)
         getUser.flatMap { userModel -> Observable<ChatRoomModel> in
             let title = self.createChatView.titleTextField.text!.trimmingCharacters(in: .whitespaces)
             let subTitle = self.createChatView.subTitleTextView.text!.trimmingCharacters(in: .whitespaces)
             let model = ChatRoomModel(title: title, subTitle: subTitle)
             return FirebaseFirestoreManager.shared.createChatRoomWithRx(model: model)
-            
         }.flatMap{ chatRoomModel -> Observable<(String, ChatRoomModel)> in
             return FirebaseStorageManager.shared.uploadChatThumbnailImage(path: chatRoomModel.roomId, image: thumnailImage).map{ url in (url, chatRoomModel)}
         }.flatMap{ url, chatRoomModel in

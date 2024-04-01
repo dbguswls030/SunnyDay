@@ -51,7 +51,7 @@ class ChatMenuViewController: UIViewController {
         super.viewDidLoad()
         initUI()
         initChatMemberTableView()
-//        addExitButtonAction()
+        addExitButtonAction()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -127,7 +127,6 @@ class ChatMenuViewController: UIViewController {
                             .bind{ _ in
                                 self.dismiss(animated: false)
                             }.disposed(by: self.disposeBag)
-     
                     }else if isMaster{
                         self.dismiss(animated: false)
                         self.showPopUp(title: "관리자는 채팅방에 남겨진 인원들을 두고 떠날 수 없어요!") {}
@@ -152,7 +151,7 @@ class ChatMenuViewController: UIViewController {
         
         chatRoomViewModel.chatMembers
             .bind(to: self.chatMenuView.chatMemberTableView.rx.items(cellIdentifier: "chatMemberCell", cellType: ChatMemberTableViewCell.self)){ index, model, cell in
-                print(index)
+//                print(index)
                 cell.setData(model: model)
             }.disposed(by: disposeBag)
         

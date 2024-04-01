@@ -67,6 +67,14 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
         addListenerExpulsionChat()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        FirebaseFirestoreManager.shared.updateVisitedDate(chatRoomId: chatViewModel.chatRoomId)
+            .bind{
+                print("finish")
+            }.disposed(by: self.disposeBag)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.isNavigationBarHidden = false
         self.navigationController?.navigationBar.shadowImage = UIImage()
@@ -176,8 +184,6 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
                     self.messageTableView.setContentOffset(.init(x: 0, y: (self.messageTableView.contentSize.height - previousMessageContentHeight) + previousMessageContentOffsetY), animated: false)
                     UIView.setAnimationsEnabled(true)
                 }
-                
-                
             }.disposed(by: self.disposeBag)
     }
     
