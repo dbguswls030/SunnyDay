@@ -71,7 +71,7 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
         super.viewWillDisappear(animated)
         FirebaseFirestoreManager.shared.updateVisitedDate(chatRoomId: chatViewModel.chatRoomId)
             .bind{
-                print("finish")
+
             }.disposed(by: self.disposeBag)
     }
     
@@ -83,7 +83,6 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     }
   
     private func addListenerExpulsionChat(){
-        // TODO: 삭제시에만 동작하도록 해야함
         FirebaseFirestoreManager.shared.addListenerExpulsionChat(chatRoomId: chatViewModel.chatRoomId)
             .skip(1)
             .flatMap{

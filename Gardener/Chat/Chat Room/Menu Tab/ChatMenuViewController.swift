@@ -169,9 +169,10 @@ class ChatMenuViewController: UIViewController {
             print("ChatMemberTableViewCell showProfileHalfView not exist model.uid")
             return
         }
-    
+        if uid == Auth.auth().currentUser!.uid{ return } // 나 자신은 하프뷰 X
         chatRoomViewModel.getChatRoomId()
-            .bind{ roomId in
+            .bind{ [weak self] roomId in
+                guard let self = self else { return }
                 let vc = ProfileViewController(profileUid: uid, chatRoomId: roomId, myUid: Auth.auth().currentUser!.uid)
                 vc.modalPresentationStyle = .overFullScreen
                 self.present(vc, animated: false)

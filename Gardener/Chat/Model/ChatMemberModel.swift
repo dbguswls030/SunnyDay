@@ -14,9 +14,6 @@ enum ChatClass{
     case manager
     case member
 }
-
-
-
 struct ChatMemberModel: Codable{
     @DocumentID var uid: String?
     var level: Int

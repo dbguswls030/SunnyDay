@@ -14,15 +14,17 @@ class MainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        FirebaseFirestoreManager.shared.insertIsExpelledInMessageField()
+//            .bind{
+//                print("finish")
+//            }.disposed(by: self.disposeBag)
         
         connectNavigationControllerToTabBarController()
         setUI()
         
-        
-        
-        
 //        loginThenShowUserInfo()
     }
+    
     func connectNavigationControllerToTabBarController(){
         let gardenViewController = UINavigationController(rootViewController: GardenViewController())
         let communityViewController = UINavigationController(rootViewController: CommunityViewController())

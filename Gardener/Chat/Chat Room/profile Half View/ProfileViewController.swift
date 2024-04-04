@@ -83,18 +83,31 @@ class ProfileViewController: UIViewController {
         profileHalfView.expulsionButton.isUserInteractionEnabled = true
         profileHalfView.expulsionButton.rx
             .tap
-            .bind{ _ in
+            .bind{ [weak self] _ in
+                guard let self = self else { return }
                 self.showPopUp(title:"정말 추방하시겠습니까?", confirmButtonTitle: "추방하기") { [weak self] in
                     guard let self = self else { return }
                     FirebaseFirestoreManager.shared.WhoAreYouAtChatRoom(chatRoomId: self.chatRoomId, uid: self.profileUid)
-                        .bind{ level in
+                        .bind{ [weak self] level in
+                            guard let self = self else { return }
                             if level == 2{
-                                FirebaseFirestoreManager.shared.exitChatRoom(roomId: self.chatRoomId, uid: self.profileUid)
-                                    .bind{
-                                        self.dismiss(animated: false) {
-                                            self.dismiss(animated: false)
+                                Observable.zip(FirebaseFirestoreManager.shared.userExitedChatRoom(uid: self.profileUid, chatRoomId: self.chatRoomId),
+                                               FirebaseFirestoreManager.shared.exitChatRoom(roomId: self.chatRoomId, uid: self.profileUid)
+                                               ,FirebaseFirestoreManager.shared.updateExpelledUserMessage(chatRoomId: self.chatRoomId, uid: self.profileUid))
+                                .observe(on: MainScheduler.instance)
+                                .bind{ [weak self] _ in
+                                    guard let self = self else { return }
+                                    self.dismiss(animated: false)
+                                    UIView.animate(withDuration: 0.3) { [weak self] in
+                                        self?.scrollView.snp.updateConstraints { make in
+                                            make.bottom.equalTo(210)
                                         }
-                                    }.disposed(by: self.disposeBag)
+                                        self?.view.backgroundColor = .clear
+                                        self?.view.layoutIfNeeded()
+                                    } completion: { [weak self] _ in
+                                        self?.dismiss(animated: false)
+                                    }
+                                }.disposed(by: self.disposeBag)
                             }else{
                                 self.dismiss(animated: false)
                                 self.showPopUp(title: "관리자와 매니저는 추방할 수 없어요!") {

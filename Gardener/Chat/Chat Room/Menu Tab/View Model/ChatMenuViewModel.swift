@@ -20,7 +20,7 @@ class ChatMenuViewModel{
             .flatMap{ roomId in
                 return FirebaseFirestoreManager.shared.addListenerChatMembers(chatRoomId: roomId)
             }
-            .skip(1) // MARK: logical Error 처음에 리턴 갯수가 이상함
+//            .skip(1) // MARK: logical Error 처음에 리턴 갯수가 이상함
             .bind(to: chatMembers)
             .disposed(by: self.disposeBag)
     }
