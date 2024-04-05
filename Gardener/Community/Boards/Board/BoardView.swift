@@ -33,7 +33,7 @@ class BoardView: UIView {
         let label = UILabel()
         label.tintColor = .black
         label.font = .systemFont(ofSize: 14, weight: .semibold)
-        label.text = "어무기"
+//        label.text = "어무기"
         return label
     }()
     
@@ -51,7 +51,7 @@ class BoardView: UIView {
     
     private lazy var boardContent: UILabel = {
         let label = UILabel()
-        label.text = "고구마근기를 해야겠어요~"
+//        label.text = "고구마근기를 해야겠어요~"
         label.tintColor = .black
         label.font = .systemFont(ofSize: 16)
         label.numberOfLines = 0
@@ -114,7 +114,7 @@ class BoardView: UIView {
     }
     
     private func initUI(){
-        self.backgroundColor = .white
+        self.backgroundColor = .systemBackground
         self.addSubview(navigationBottomBreakLine)
         self.addSubview(boardTitleLabel)
         self.addSubview(profileImage)

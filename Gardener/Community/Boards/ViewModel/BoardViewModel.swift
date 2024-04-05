@@ -20,7 +20,7 @@ class BoardViewModel{
                 return
             }
             guard !models.isEmpty else{
-                return
+                return 
             }
             self.setPaging(data: false)
             self.boards += models

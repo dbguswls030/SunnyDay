@@ -9,25 +9,6 @@ import Foundation
 import UIKit
 import SnapKit
 
-extension UIControl{
-    func addAction(for controlEvent: UIControl.Event = .touchUpInside, _ closure: @escaping () -> ()){
-        @objc class EscapeAction: NSObject {
-            let closure: () -> ()
-            
-            init(_ closure: @escaping () -> ()) {
-                self.closure = closure
-            }
-            
-            @objc func invoke() {
-                closure()
-            }
-        }
-        let sleeve = EscapeAction(closure)
-        addTarget(sleeve, action: #selector(EscapeAction.invoke), for: controlEvent)
-        objc_setAssociatedObject(self, "\(UUID())", sleeve, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
-    }
-}
-
 protocol SendDelegateWhenPop: AnyObject{
     func popDeleteBoard()
 }
@@ -45,17 +26,6 @@ enum BoardCategory: String, CaseIterable{
     case question = "질문/답변"
 }
 
-extension UIViewController {
-    func hideKeyboard() {
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self,
-            action: #selector(UIViewController.dismissKeyboard))
-        view.addGestureRecognizer(tap)
-    }
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
-    }
-}
-
 class BreakLine: UIView{
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -68,9 +38,8 @@ class BreakLine: UIView{
     }
 }
 
-
 class PopUpViewController: UIViewController{
-    
+
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -110,7 +79,7 @@ class PopUpViewController: UIViewController{
     
     private lazy var contentView: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.layer.cornerRadius = 15
         view.sizeToFit()
         return view
@@ -127,14 +96,12 @@ class PopUpViewController: UIViewController{
             make.left.equalToSuperview().offset(55)
             make.right.equalToSuperview().offset(-55)
         }
-        
-        [cancelButton, confirmButton].map{ button in
-            self.stackView.addArrangedSubview(button)
-            button.snp.makeConstraints { make in
-                make.height.equalTo(button.snp.width).multipliedBy(0.3)
-            }
-            
+    
+        self.stackView.addArrangedSubview(cancelButton)
+        cancelButton.snp.makeConstraints { make in
+            make.height.equalTo(cancelButton.snp.width).multipliedBy(0.3)
         }
+        
         
         titleLabel.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(20)
@@ -147,6 +114,15 @@ class PopUpViewController: UIViewController{
             make.right.equalToSuperview().offset(-15)
             make.top.equalTo(titleLabel.snp.bottom).offset(20)
             make.bottom.equalToSuperview().offset(-20)
+            make.height.equalTo(35)
+        }
+    }
+    
+    func addConfirmButton(){
+        self.stackView.addArrangedSubview(confirmButton)
+        
+        confirmButton.snp.makeConstraints { make in
+            make.height.equalTo(confirmButton.snp.width).multipliedBy(0.3)
         }
     }
     
@@ -156,6 +132,7 @@ class PopUpViewController: UIViewController{
 
     
     func setConfirmButtonText(text: String){
+        addConfirmButton()
         self.confirmButton.setTitle(text, for: .normal)
     }
     
@@ -164,72 +141,52 @@ class PopUpViewController: UIViewController{
     }
     
     override func viewDidLoad() {
+        
+    }
+    
+    init(){
+        super.init(nibName: nil, bundle: nil)
         initUI()
     }
     
-}
-
-extension UIViewController{
-    func showPopUp(title: String? = nil, confirmButtonTitle: String? = nil, completion: @escaping () -> ()){
-        let vc = PopUpViewController()
-        vc.modalPresentationStyle = .overFullScreen
-        if let title = title{
-            vc.setTitleLabel(title: title)
-        }
-        
-        if let confirmButtonTitle = confirmButtonTitle{
-            vc.setConfirmButtonText(text: confirmButtonTitle)
-            vc.confirmButton.addAction {
-                completion()
-            }
-        }
-
-        self.present(vc, animated: false)
-        
-    }
-}
-
-extension UIViewController{
-    func showActivityIndicator(alpha: CGFloat){
-        let overlayView = UIView(frame: view.bounds)
-        overlayView.backgroundColor = UIColor(white: 0, alpha: alpha)
-        
-        let activityIndicator = UIActivityIndicatorView(style: .medium)
-        activityIndicator.center = overlayView.center
-        overlayView.addSubview(activityIndicator)
-        
-        self.view.addSubview(overlayView)
-        activityIndicator.startAnimating()
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    func hideActivityIndicator(alpha: CGFloat){
-        self.view.subviews.filter { $0.backgroundColor == UIColor(white: 0, alpha: alpha) }.forEach {
-            $0.removeFromSuperview()
-        }
-    }
 }
 
-extension Date{
-    func convertDateToTime() -> String{
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
-        guard let convertDate = dateFormatter.date(from: dateFormatter.string(from: self)) else {
-            return "알 수 없음"
+class MessageLabel: UILabel{
+    private var padding = UIEdgeInsets(top: 7, left: 8, bottom: 7, right: 8)
+
+        convenience init(padding: UIEdgeInsets) {
+            self.init()
+            self.padding = padding
         }
-        
-        let intervalTime = Int(floor(Date().timeIntervalSince(convertDate) / 60))
-        if intervalTime < 1 {
-            return "방금 전"
-        }else if intervalTime < 60 {
-            return "\(intervalTime)분 전"
-        }else if intervalTime < 60 * 24{
-            return "\(intervalTime/60)시간 전"
-        }else if intervalTime < 60 * 24 * 365{
-            return "\(intervalTime/60/24)일 전"
-        }else{
-            return "\(intervalTime/60/24/365)년 전"
+
+        override func drawText(in rect: CGRect) {
+            super.drawText(in: rect.inset(by: padding))
         }
+
+        override var intrinsicContentSize: CGSize {
+            var contentSize = super.intrinsicContentSize
+            contentSize.height += padding.top + padding.bottom
+            contentSize.width += padding.left + padding.right
+
+            return contentSize
+        }
+}
+
+
+class ProfileImageView: UIImageView{
+    override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
+        self.clipsToBounds = true
+        self.layer.borderColor = UIColor.lightGray.cgColor
+        self.layer.borderWidth = 0.2
+    }
+    
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

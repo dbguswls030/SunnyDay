@@ -36,8 +36,4 @@ class UserModel: Codable{
         likeBoards = try container.decode([String].self, forKey: .likeBoards)
         likeComments = try container.decode([String].self, forKey: .likeComments)
     }
-    
-//    required init(from decoder: Decoder) throws {
-//        <#code#>
-//    }
 }
