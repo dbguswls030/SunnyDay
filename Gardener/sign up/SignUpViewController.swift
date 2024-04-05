@@ -28,7 +28,7 @@ class SignUpViewController: UIViewController {
         // Do any additional setup after loading the view.
         initUI()
         initObserver()
-        hideKeyboard()
+        hideKeyboardWhenTouchUpBackground()
     }
     
     private func initUI(){

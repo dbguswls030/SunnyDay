@@ -38,7 +38,7 @@ class ReplyNoticeView: UIView {
     }
     
     private func initUI(){
-        self.backgroundColor = .white
+        self.backgroundColor = .systemBackground
         self.addSubview(topBreakLine)
         self.addSubview(noticeLabel)
         self.addSubview(cancelButton)

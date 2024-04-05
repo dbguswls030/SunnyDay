@@ -97,7 +97,7 @@ class LoginView: UIView{
     }
     
     private func initUI(){
-        backgroundColor = .white
+        backgroundColor = .systemBackground
         self.addSubview(profileTitle)
         self.addSubview(profileTitleBottomLine)
         self.addSubview(tempImage)

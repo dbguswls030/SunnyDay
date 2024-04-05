@@ -18,11 +18,10 @@ class CommentWriteView: UIView, UITextViewDelegate{
         let textView = UITextView()
         textView.font = UIFont.systemFont(ofSize: 14)
         textView.backgroundColor = .systemGray6
-        textView.layer.cornerRadius = 13
         textView.delegate = self
         textView.text = "댓글을 입력해 주세요."
         textView.textColor = .lightGray
-        textView.contentInset = .init(top: 0, left: 6, bottom: 0, right: 6)
+        textView.contentInset = .init(top: 0, left: 8, bottom: 0, right: 8)
         textView.isScrollEnabled = false
         return textView
     }()
@@ -46,7 +45,7 @@ class CommentWriteView: UIView, UITextViewDelegate{
     }
     
     private func initUI(){
-        self.backgroundColor = .white
+        self.backgroundColor = .systemBackground
         
         self.addSubview(topBreakLine)
         self.addSubview(commentTextView)
@@ -125,5 +124,10 @@ extension CommentWriteView{
                 }
             }
         }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        commentTextView.layer.cornerRadius = commentTextView.frame.size.width * 0.05
     }
 }

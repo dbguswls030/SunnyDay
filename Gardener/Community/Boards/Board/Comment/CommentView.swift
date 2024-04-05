@@ -51,7 +51,7 @@ class CommentView: UIView{
     }
     
     private func initUI(){
-        self.backgroundColor = .white
+        self.backgroundColor = .systemBackground
         self.addSubview(commentLabel)
         self.addSubview(commentCountLabel)
         self.addSubview(commentCollectionView)
