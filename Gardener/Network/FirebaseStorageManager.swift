@@ -120,8 +120,7 @@ class FirebaseStorageManager{
     }
     
     // MARK: 채팅방 섬네일 저장
-    
-    func uploadChatThumbnailImage(path: String, image: UIImage) -> Observable<String>{
+    func uploadChatThumbnailImage(chatRoomId: String, image: UIImage) -> Observable<String>{
         return Observable.create() { emitter in
             // Warning: 용량 제한
             guard let imageData = image.jpegData(compressionQuality: 0.4) else {
@@ -133,7 +132,7 @@ class FirebaseStorageManager{
             metaData.contentType = "image/png"
             
             let imageName = UUID().uuidString + String(Date().timeIntervalSince1970)
-            let firebaseReference = Storage.storage().reference().child("chat").child("\(path)").child("thumbnail").child("\(imageName)")
+            let firebaseReference = Storage.storage().reference().child("chat").child(chatRoomId).child("thumbnail").child("\(imageName)")
             firebaseReference.putData(imageData, metadata: metaData) { metaData, error in
                 if let error = error{
                     print("putdata Error\(error.localizedDescription)")
@@ -143,6 +142,20 @@ class FirebaseStorageManager{
                     emitter.onNext(url!.absoluteString)
                     emitter.onCompleted()
                 }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // MARK: 채팅방 섬네일 삭제
+    func deleteChatThumbnailImage(chatRoomId: String, thumbnailURL: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            Storage.storage().reference().child("chat").child(chatRoomId).child("thumbnail").child(thumbnailURL).delete { error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                emitter.onNext(())
+                emitter.onCompleted()
             }
             return Disposables.create()
         }

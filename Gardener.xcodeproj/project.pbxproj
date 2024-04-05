@@ -18,6 +18,7 @@
 		9F13E0D929D2D97C00651EA0 /* GardenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F13E0D829D2D97C00651EA0 /* GardenViewController.swift */; };
 		9F13E0DF29D2E6AF00651EA0 /* UI.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F13E0DE29D2E6AF00651EA0 /* UI.storyboard */; };
 		9F28C5A22B78FA1300E73BBF /* ChatMemberModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F28C5A12B78FA1300E73BBF /* ChatMemberModel.swift */; };
+		9F2D03972BBE7D0600953012 /* EditChatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2D03962BBE7D0600953012 /* EditChatRoomViewController.swift */; };
 		9F3201792B84C5D2002C816A /* SearchChatRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3201782B84C5D2002C816A /* SearchChatRoomViewModel.swift */; };
 		9F3357CB2A22F2030078843A /* CreateBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */; };
 		9F35C0E12B838A9C00A7AE2D /* SearchChatRoomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F35C0E02B838A9C00A7AE2D /* SearchChatRoomTableViewCell.swift */; };
@@ -119,6 +120,7 @@
 		9F13E0D829D2D97C00651EA0 /* GardenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenViewController.swift; sourceTree = "<group>"; };
 		9F13E0DE29D2E6AF00651EA0 /* UI.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = UI.storyboard; sourceTree = "<group>"; };
 		9F28C5A12B78FA1300E73BBF /* ChatMemberModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMemberModel.swift; sourceTree = "<group>"; };
+		9F2D03962BBE7D0600953012 /* EditChatRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditChatRoomViewController.swift; sourceTree = "<group>"; };
 		9F3201782B84C5D2002C816A /* SearchChatRoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchChatRoomViewModel.swift; sourceTree = "<group>"; };
 		9F3357CA2A22F2030078843A /* CreateBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateBoardViewController.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		9F34313A2BA04950009A8ACB /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -308,6 +310,14 @@
 			path = Chat;
 			sourceTree = "<group>";
 		};
+		9F2D03952BBE7CB100953012 /* Edit Chat Room */ = {
+			isa = PBXGroup;
+			children = (
+				9F2D03962BBE7D0600953012 /* EditChatRoomViewController.swift */,
+			);
+			path = "Edit Chat Room";
+			sourceTree = "<group>";
+		};
 		9F3201772B84C5BA002C816A /* View Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -323,6 +333,7 @@
 				9F3D79A32B8E9AA20078023D /* ChatMenuViewController.swift */,
 				9F3D79A52B8EA4DB0078023D /* ChatMenuView.swift */,
 				9F5885A52B92016F00942EE5 /* ChatMemberTableViewCell.swift */,
+				9F2D03952BBE7CB100953012 /* Edit Chat Room */,
 			);
 			path = "Menu Tab";
 			sourceTree = "<group>";
@@ -953,6 +964,7 @@
 				9F5AD0B92AB1C03E002105DE /* BoardViewModel.swift in Sources */,
 				9F8C52E12B8245C600FD1438 /* UserViewModel.swift in Sources */,
 				9F9E11C129C4C3B70090B2E6 /* SceneDelegate.swift in Sources */,
+				9F2D03972BBE7D0600953012 /* EditChatRoomViewController.swift in Sources */,
 				9F687DC42B43009D00A31A2E /* EditBoardViewController.swift in Sources */,
 				9F95BA052A31DC5100A5E247 /* SelectedPhotoCollectionViewCell.swift in Sources */,
 				9FCBD8382AE872A500FBBE27 /* Extends.swift in Sources */,

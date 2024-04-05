@@ -88,7 +88,10 @@ class ChatListViewController: UIViewController {
         chatListView.participatedChatTableView.delegate = self
         chatViewModel.chatRooms
             .bind(to: chatListView.participatedChatTableView.rx.items(cellIdentifier: "chatCell", cellType: ChatTableViewCell.self)) { index, item, cell in
-                cell.setData(model: item)
+                FirebaseFirestoreManager.shared.addListenerChatRoom(chatRoomId: item.roomId)
+                    .bind{ model in
+                        cell.setData(model: model)
+                    }.disposed(by: self.disposeBag)
             }
             .disposed(by: disposeBag)
         

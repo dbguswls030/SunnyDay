@@ -1,8 +1,8 @@
 //
-//  CreateChatViewController.swift
+//  EditChatRoomViewController.swift
 //  Gardener
 //
-//  Created by 유현진 on 2/6/24.
+//  Created by 유현진 on 4/4/24.
 //
 
 import UIKit
@@ -11,9 +11,12 @@ import SnapKit
 import RxCocoa
 import PhotosUI
 import FirebaseAuth
-class CreateChatViewController: UIViewController {
 
+class EditChatRoomViewController: UIViewController {
+    
     var disposeBag = DisposeBag()
+    var chatRoomModel: ChatRoomModel
+    var isChangedThumbnailImage = false
     
     private lazy var topView: UIView = {
         var view = UIView()
@@ -23,7 +26,7 @@ class CreateChatViewController: UIViewController {
     
     private lazy var titleLabel: UILabel = {
         var label = UILabel()
-        label.text = "채팅방 만들기"
+        label.text = "채팅방 수정하기"
         label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         return label
     }()
@@ -36,9 +39,9 @@ class CreateChatViewController: UIViewController {
         return button
     }()
     
-    private lazy var createButton: UIButton = {
+    private lazy var editButton: UIButton = {
         var button = UIButton()
-        button.setTitle("완료", for: .normal)
+        button.setTitle("수정", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         button.setTitleColor(.black, for: .normal)
         button.setTitleColor(.lightGray, for: .disabled)
@@ -52,36 +55,40 @@ class CreateChatViewController: UIViewController {
         return scrollView
     }()
     
-    private lazy var createChatView: CreateChatView = {
+    private lazy var editChatView: CreateChatView = {
         return CreateChatView()
     }()
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.isNavigationBarHidden = true
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         hideKeyboardWhenTouchUpBackground()
         initUI()
+        initSubTitleTextView()
         backButtonAction()
         thumnailButtonAddTarget()
-        toggleCreateButton()
-        touchUpCreateButton()
+        touchUpEditButton()
+        setData()
+        // Do any additional setup after loading the view.
     }
     
-
+    init(chatRoomModel: ChatRoomModel){
+        self.chatRoomModel = chatRoomModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
     private func initUI(){
         self.view.backgroundColor = .systemBackground
         self.view.addSubview(topView)
         self.view.addSubview(scrollView)
         self.topView.addSubview(titleLabel)
         self.topView.addSubview(backButton)
-        self.topView.addSubview(createButton)
-        self.scrollView.addSubview(createChatView)
+        self.topView.addSubview(editButton)
+        self.scrollView.addSubview(editChatView)
         
         topView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
@@ -106,25 +113,25 @@ class CreateChatViewController: UIViewController {
             make.width.height.equalTo(45)
         }
         
-        createButton.snp.makeConstraints { make in
+        editButton.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
             make.right.equalToSuperview().offset(-5)
             make.width.height.equalTo(45)
         }
         
-        createChatView.snp.makeConstraints { make in
+        editChatView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalToSuperview()
             make.height.equalToSuperview().offset(1)
         }
     }
-
+    
     @objc private func backButtonAction(){
         self.dismiss(animated: true)
     }
     
     private func thumnailButtonAddTarget(){
-        self.createChatView.thumnailImage.rx
+        self.editChatView.thumnailImage.rx
             .tap
             .bind{
                 self.touchUpThumnailButton()
@@ -132,31 +139,63 @@ class CreateChatViewController: UIViewController {
         
     }
     
-    private func toggleCreateButton(){
-        self.createChatView.titleTextField.rx
+    private func toggleEditButton(){
+        let titleObservable = self.editChatView.titleTextField.rx
             .text
             .orEmpty
-            .bind{ text in
-                if text.trimmingCharacters(in: .whitespaces).count == 0 {
-                    self.createButton.isEnabled = false
+        
+        let subTitleObservable = self.editChatView.subTitleTextView.rx
+            .text
+            .orEmpty
+        
+        Observable.zip(titleObservable, subTitleObservable)
+            .bind{ title, subTitle in
+                if title.trimmingCharacters(in: .whitespaces).count == 0 {
+                    self.editButton.isEnabled = false
                 }else{
-                    self.createButton.isEnabled = true
+                    self.editButton.isEnabled = true
                 }
             }.disposed(by: disposeBag)
     }
     
-    private func touchUpCreateButton(){
-        self.createButton.rx
+    func setData(){
+        self.editChatView.titleTextField.text = self.chatRoomModel.title
+        self.editChatView.subTitleTextView.text = self.chatRoomModel.subTitle
+        self.showActivityIndicator(alpha: 0.2)
+        self.editChatView.initLimitLabel()
+        URLSession.shared.dataTask(with: URL(string: self.chatRoomModel.thumbnailURL)!) { data, response, error in
+            guard let data = data, error == nil else {
+                return
+            }
+            DispatchQueue.main.async {
+                self.editChatView.thumnailImage.setImage(UIImage(data: data), for: .normal)
+                self.hideActivityIndicator(alpha: 0.2)
+                self.toggleEditButton()
+            }
+        }.resume()
+    }
+    
+    private func initSubTitleTextView(){
+        if self.editChatView.subTitleTextView.text.isEmpty{
+            
+        }else{
+            self.editChatView.subTitleTextView.textColor = .black
+            self.editChatView.subTitleTextView.resolveHashTags()
+        }
+    }
+    
+    private func touchUpEditButton(){
+        self.editButton.rx
             .tap
             .bind{
                 self.showActivityIndicator(alpha: 0.2)
                 self.dismissKeyboard()
-                self.createChatRoomAPI()
+                self.editChatRoomAPI()
             }.disposed(by: disposeBag)
     }
     
-    func createChatRoomAPI(){
-        guard let thumnailImage = self.createChatView.thumnailImage.imageView!.image else {
+    func editChatRoomAPI(){
+        guard let thumnailImage = self.editChatView.thumnailImage.imageView!.image else {
             return
         }
         guard let uid = Auth.auth().currentUser?.uid else{
@@ -164,18 +203,27 @@ class CreateChatViewController: UIViewController {
         }
         
         let getUser = FirebaseFirestoreManager.shared.getUserInfoWithRx(uid: uid)
-        getUser.flatMap { userModel -> Observable<ChatRoomModel> in
-            let title = self.createChatView.titleTextField.text!.trimmingCharacters(in: .whitespaces)
-            let subTitle = self.createChatView.subTitleTextView.text!.trimmingCharacters(in: .whitespaces)
-            let model = ChatRoomModel(title: title, subTitle: subTitle)
-            return FirebaseFirestoreManager.shared.createChatRoomWithRx(model: model)
-        }.flatMap{ chatRoomModel -> Observable<(String, ChatRoomModel)> in
-            return FirebaseStorageManager.shared.uploadChatThumbnailImage(chatRoomId: chatRoomModel.roomId, image: thumnailImage).map{ url in (url, chatRoomModel)}
-        }.flatMap{ url, chatRoomModel in
-            return FirebaseFirestoreManager.shared.updateChatRoomThumbnail(chatRoomId: chatRoomModel.roomId, thumbailURL: url).map{ chatRoomModel }
-        }.flatMap{ chatRoomModel in
-            return Observable.zip(FirebaseFirestoreManager.shared.userEnteredChatRoom(uid: uid, chatRoomId: chatRoomModel.roomId), FirebaseFirestoreManager.shared.addChatRoomMember(chatRoomId: chatRoomModel.roomId, member: ChatMemberModel(level: 0, uid: uid)))
-        }.bind{ _ in
+        getUser.flatMap { userModel in
+            let title = self.editChatView.titleTextField.text!.trimmingCharacters(in: .whitespaces)
+            let subTitle = self.editChatView.subTitleTextView.text!.trimmingCharacters(in: .whitespaces)
+            return FirebaseFirestoreManager.shared.updateChatRoom(chatRoomId: self.chatRoomModel.roomId, title: title, subTitle: subTitle)
+        }.flatMap{
+            if self.isChangedThumbnailImage{
+                return FirebaseStorageManager.shared.uploadChatThumbnailImage(chatRoomId: self.chatRoomModel.roomId, image: thumnailImage).flatMap{
+                    return FirebaseFirestoreManager.shared.updateChatRoomThumbnail(chatRoomId: self.chatRoomModel.roomId, thumbailURL: $0).flatMap{
+                        return FirebaseStorageManager.shared.deleteChatThumbnailImage(chatRoomId: self.chatRoomModel.roomId, thumbnailURL: self.chatRoomModel.thumbnailURL)
+                    }
+                }
+            }else{
+                return Observable.just(())
+            }
+        }
+//        .flatMap{ url in
+//            return FirebaseFirestoreManager.shared.updateChatRoomThumbnail(chatRoomId: self.chatRoomModel.roomId, thumbailURL: url)
+//        }.flatMap{
+//            return FirebaseStorageManager.shared.deleteChatThumbnailImage(chatRoomId: self.chatRoomModel.roomId, thumbnailURL: self.chatRoomModel.thumbnailURL)
+//        }
+        .bind{ _ in
             self.hideActivityIndicator(alpha: 0.2)
             UIView.animate(withDuration: 0.2) {
                 self.view.alpha = 0
@@ -187,12 +235,12 @@ class CreateChatViewController: UIViewController {
     
     private func touchUpThumnailButton(){
         let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-    
+        
         let showAlbum = UIAlertAction(title: "앨범에서 선택", style: .default) { action in
             self.showMyAlbum()
         }
         let removeProfile = UIAlertAction(title: "기본 이미지로 변경", style: .destructive) { action in
-            self.createChatView.thumnailImage.setImage(UIImage(named: "ralo"), for: .normal)
+            self.editChatView.thumnailImage.setImage(UIImage(named: "ralo"), for: .normal)
         }
         let actionCancel = UIAlertAction(title: "취소", style: .cancel)
         
@@ -203,17 +251,19 @@ class CreateChatViewController: UIViewController {
         self.present(actionSheetController, animated: true)
     }
 }
-extension CreateChatViewController: PHPickerViewControllerDelegate{
+extension EditChatRoomViewController: PHPickerViewControllerDelegate{
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         dismiss(animated: true)
         
         if let itemProvider = results.first?.itemProvider, itemProvider.canLoadObject(ofClass: UIImage.self){
-            let previousImage = self.createChatView.thumnailImage.imageView?.image
+            let previousImage = self.editChatView.thumnailImage.imageView?.image
             self.showActivityIndicator(alpha: 0)
             itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
                 DispatchQueue.main.async {
-                    guard let self = self, let image = image as? UIImage, self.createChatView.thumnailImage != previousImage else { return }
-                    self.createChatView.thumnailImage.setImage(image, for: .normal)
+                    guard let self = self, let image = image as? UIImage, self.editChatView.thumnailImage != previousImage else { return }
+                    self.editChatView.thumnailImage.setImage(image, for: .normal)
+                    self.editButton.isEnabled = true
+                    self.isChangedThumbnailImage = true
                     self.hideActivityIndicator(alpha: 0)
                 }
             }
@@ -232,3 +282,4 @@ extension CreateChatViewController: PHPickerViewControllerDelegate{
         self.present(picker, animated: true)
     }
 }
+

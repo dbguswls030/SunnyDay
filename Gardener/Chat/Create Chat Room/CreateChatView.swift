@@ -17,7 +17,7 @@ class CreateChatView: UIView {
     lazy var thumnailImage: UIButton = {
         var button = UIButton()
         button.setImage(UIImage(named: "ralo"), for: .normal)
-        button.contentMode = .scaleAspectFit
+        button.contentMode = .scaleToFill
         button.clipsToBounds = true
         return button
     }()
@@ -135,7 +135,14 @@ class CreateChatView: UIView {
         }
     }
     
-    
+    func initLimitLabel(){
+        if let titleText = self.titleTextField.text{
+            self.titleTextLimitLabel.text = "\(titleText.count)/15"
+        }
+        if let subTitleText = self.subTitleTextView.text{
+            self.subTitleLimitLabel.text = "\(subTitleText.count)/60"
+        }
+    }
     
     private func changedTitleTextField(){
         titleTextField.rx

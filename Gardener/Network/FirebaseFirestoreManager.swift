@@ -498,6 +498,21 @@ class FirebaseFirestoreManager{
         }
     }
     
+    // MARK: 채팅방 정보 수정
+    func updateChatRoom(chatRoomId: String, title: String, subTitle: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId)
+                .updateData(["title" : title,
+                             "subTitle" : subTitle]) { error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
+                    emitter.onNext(())
+                    emitter.onCompleted()
+                }
+            return Disposables.create()
+        }
+    }
     
     // MARK: 채팅방 나가기 -> 채팅방 멤버 삭제
     func exitChatRoom(roomId: String, uid: String) -> Observable<Void>{
@@ -580,9 +595,9 @@ class FirebaseFirestoreManager{
     
     
     // MARK: 채팅방 섬네일 수정
-    func updateChatRoomThumbnail(chatRoomModel: ChatRoomModel, thumbailURL: String) -> Observable<Void>{
+    func updateChatRoomThumbnail(chatRoomId: String, thumbailURL: String) -> Observable<Void>{
         return Observable.create { emitter in
-            self.db.collection("chat").document(chatRoomModel.roomId).updateData(["thumbnailURL" : thumbailURL]) { error in
+            self.db.collection("chat").document(chatRoomId).updateData(["thumbnailURL" : thumbailURL]) { error in
                 if let error = error {
                     emitter.onError(error)
                 }
@@ -904,7 +919,52 @@ class FirebaseFirestoreManager{
     
     
     
+    
+    
+    
+    
+    
+    
+    func addChatBlockMember(chatRoomId: String, myUid: String, blockUid: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("members").document(myUid).collection("blockMembers").document(blockUid).setData([:]) { error in
+                if let error = error{
+                    emitter.onError(error)
+                }
+                emitter.onNext(())
+                emitter.onCompleted()
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+   
+    
+    
+    
+    
     // MARK: FireStore 수정
+    
+    func insertBlockMember(chatRoomId: String, uid: String) -> Observable<Void>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").getDocuments { snapshot, error in
+                guard let documents = snapshot?.documents else { return }
+                
+                documents.forEach { document in
+                    document.reference.collection("members").getDocuments { subSnapshot, error in
+                        guard let subDocuments = subSnapshot?.documents else { return }
+                        subDocuments.forEach { subDocument in
+                            subDocument.reference.collection("blockMembers")
+                        }
+                        
+                    }
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
     
     
     // MARK: 추방하고나서 하프뷰 다시 열리는 오류 수정 테스트용 멤버필드 재생성

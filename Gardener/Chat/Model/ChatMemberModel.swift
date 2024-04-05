@@ -12,7 +12,7 @@ import FirebaseFirestoreSwift
 enum ChatClass{
     case master
     case manager
-    case member
+    case common
 }
 struct ChatMemberModel: Codable{
     @DocumentID var uid: String?

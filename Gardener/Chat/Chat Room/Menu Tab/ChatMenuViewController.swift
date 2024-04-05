@@ -47,11 +47,25 @@ class ChatMenuViewController: UIViewController {
         return button
     }()
     
+    private lazy var settingButton: UIButton = {
+        let button = UIButton()
+        button.tintColor = .lightGray
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = UIImage(systemName: "gearshape")
+        configuration.preferredSymbolConfigurationForImage = .init(pointSize: 14)
+        configuration.imagePlacement = .top
+        configuration.imagePadding = 10
+        button.configuration = configuration
+        button.isHidden = true
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
         initChatMemberTableView()
         addExitButtonAction()
+        initSettingButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,11 +108,19 @@ class ChatMenuViewController: UIViewController {
             make.bottom.equalToSuperview()
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-50)
         }
+        
         bottomSafeAreaView.addSubview(exitButton)
+        bottomSafeAreaView.addSubview(settingButton)
         
         exitButton.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.left.equalToSuperview().offset(5)
+            make.width.height.equalTo(45)
+        }
+        
+        settingButton.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.right.equalToSuperview().offset(-5)
             make.width.height.equalTo(45)
         }
     }
@@ -111,12 +133,11 @@ class ChatMenuViewController: UIViewController {
             }.disposed(by: self.disposeBag)
     }
     
-    
     func exitButtonAction(){
         showPopUp(title: "정말 채팅방에서 나가시겠습니까?", confirmButtonTitle: "나가기") { [weak self] in
             guard let self = self, let uid = Auth.auth().currentUser?.uid else { return }
          
-            Observable.zip(self.chatRoomViewModel.isAmMaster(uid: uid), self.chatRoomViewModel.isAlone(), self.chatRoomViewModel.getChatRoomId())
+            Observable.zip(self.chatRoomViewModel.isAmNotCommon(uid: uid), self.chatRoomViewModel.isAlone(), self.chatRoomViewModel.getChatRoomId())
                 .bind{ isMaster, isAlone, chatRoomId in
                     let userAccess = FirebaseFirestoreManager.shared.userExitedChatRoom(uid: uid, chatRoomId: chatRoomId)
                     let chatAccess = FirebaseFirestoreManager.shared.exitChatRoom(roomId: chatRoomId, uid: uid)
@@ -138,6 +159,32 @@ class ChatMenuViewController: UIViewController {
                     }
                 }.disposed(by: self.disposeBag)
         }
+    }
+    
+    func initSettingButton(){
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        self.chatRoomViewModel.isAmMaster(uid: uid)
+            .bind{ [weak self] isMaster in
+                guard let self = self else { return }
+                if isMaster{
+                    self.settingButton.isHidden = false
+                    self.settingButtonAction()
+                }
+            }.disposed(by: self.disposeBag)
+    }
+    
+    func settingButtonAction(){
+        self.settingButton.rx
+            .tap
+            .bind{ _ in
+                self.chatRoomViewModel.chatRoomModel
+                    .bind{ [weak self] in
+                        guard let self = self else { return }
+                        let vc = EditChatRoomViewController(chatRoomModel: $0)
+                        vc.modalPresentationStyle = .overFullScreen
+                        self.present(vc, animated: true)
+                    }.disposed(by: self.disposeBag)
+            }.disposed(by: self.disposeBag)
     }
     
     
