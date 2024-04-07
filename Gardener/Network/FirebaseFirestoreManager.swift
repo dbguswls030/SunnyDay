@@ -122,6 +122,7 @@ class FirebaseFirestoreManager{
                 documents.forEach { document in
                     chatRoomIdList.append(document.documentID)
                 }
+                print(chatRoomIdList)
                 emitter.onNext(chatRoomIdList)
             }
             return Disposables.create()
@@ -517,6 +518,7 @@ class FirebaseFirestoreManager{
     // MARK: 채팅방 나가기 -> 채팅방 멤버 삭제
     func exitChatRoom(roomId: String, uid: String) -> Observable<Void>{
         return Observable.create{ emitter in
+            
             let docRef = self.db.collection("chat").document(roomId)
             docRef.collection("members").document(uid).delete { error in
                 if let error = error{

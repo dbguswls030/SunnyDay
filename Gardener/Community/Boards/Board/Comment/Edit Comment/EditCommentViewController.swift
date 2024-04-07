@@ -68,6 +68,7 @@ class EditCommentViewController: UIViewController {
     
     @objc private func editComment(){
         guard let model = model else { return }
+        dismissKeyboard()
         showActivityIndicator(alpha: 0.0)
         FirebaseFirestoreManager.shared.updateComment(boardDocumentId: boardDocumentId!, commentDocumentId: model.documentId!, content: self.contentTextView.text) { [weak self] in
             guard let self = self else {return}

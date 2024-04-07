@@ -88,10 +88,11 @@ class ChatListViewController: UIViewController {
         chatListView.participatedChatTableView.delegate = self
         chatViewModel.chatRooms
             .bind(to: chatListView.participatedChatTableView.rx.items(cellIdentifier: "chatCell", cellType: ChatTableViewCell.self)) { index, item, cell in
-                FirebaseFirestoreManager.shared.addListenerChatRoom(chatRoomId: item.roomId)
-                    .bind{ model in
-                        cell.setData(model: model)
-                    }.disposed(by: self.disposeBag)
+//                FirebaseFirestoreManager.shared.addListenerChatRoom(chatRoomId: item.roomId)
+//                    .bind{ model in
+//                        cell.setData(model: model)
+//                    }.disposed(by: self.disposeBag)
+                cell.setData(model: item)
             }
             .disposed(by: disposeBag)
         
@@ -123,7 +124,7 @@ extension ChatListViewController: UITableViewDelegate{
                 guard let uid = Auth.auth().currentUser?.uid else { return }
                 let userAccess = FirebaseFirestoreManager.shared.userExitedChatRoom(uid: uid, chatRoomId: self.chatViewModel.getChatRoom(index: indexPath.row).roomId)
                 let chatAccess = FirebaseFirestoreManager.shared.exitChatRoom(roomId: self.chatViewModel.getChatRoom(index: indexPath.row).roomId, uid: uid)
-                let checkObservables = [userAccess, chatAccess]
+                let checkObservables = [userAccess]
                 
                 self.chatViewModel.isAmMaster(index: indexPath.row, uid: uid)
                     .bind{ result in

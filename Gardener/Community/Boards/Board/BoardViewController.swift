@@ -603,8 +603,8 @@ class GetElementHeightOfComment{
 extension BoardViewController: DelegateEditBoard{
     func endEditBoard(model: BoardModel) {
         self.model = model
-        
         setData()
+        
         DispatchQueue.main.async {
             self.boardView.imageCollectionView.reloadData()
         }

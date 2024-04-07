@@ -7,13 +7,19 @@
 
 import UIKit
 import RxSwift
+import FirebaseAuth
 class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .blue
         // Do any additional setup after loading the view.
-       
+//        let firebaseAuth = Auth.auth()
+//        do {
+//            try firebaseAuth.signOut()
+//        } catch let signOutError as NSError {
+//            print("Error signing out: %@", signOutError)
+//        }
     }
     
 

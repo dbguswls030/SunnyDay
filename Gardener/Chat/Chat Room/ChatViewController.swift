@@ -71,7 +71,7 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
         super.viewWillDisappear(animated)
         FirebaseFirestoreManager.shared.updateVisitedDate(chatRoomId: chatViewModel.chatRoomId)
             .bind{
-
+                
             }.disposed(by: self.disposeBag)
     }
     
@@ -84,11 +84,8 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
   
     private func addListenerExpulsionChat(){
         FirebaseFirestoreManager.shared.addListenerExpulsionChat(chatRoomId: chatViewModel.chatRoomId)
-            .skip(1)
-            .flatMap{
-                
-                FirebaseFirestoreManager.shared.userExitedChatRoom(uid: Auth.auth().currentUser!.uid, chatRoomId: self.chatViewModel.chatRoomId)
-            }.bind{
+            .bind{
+                self.view.endEditing(true)
                 self.showPopUp(title: "\(self.title ?? "") 채팅방에서 추방당하셨습니다.") {
                     
                 }

@@ -107,7 +107,8 @@ extension LoginViewController{
     @objc func verifyPhoneNumber(_ sender: Any?){
         self.dismissKeyboard()
         self.showActivityIndicator(alpha: 0.2)
-        PhoneAuthProvider.provider().verifyPhoneNumber("+1 5555555", uiDelegate: nil){ verification, error in
+        guard let phoneNumber = self.loginView.phoneNumberTextField.text else { return }
+        PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil){ verification, error in
             if let error = error {
                 print("phoneNumber verifing error \(error.localizedDescription)")
                 self.hideActivityIndicator(alpha: 0.2)
@@ -126,7 +127,8 @@ extension LoginViewController{
     @objc func start(_ sender: Any?){
         self.dismissKeyboard()
         self.showActivityIndicator(alpha: 0.2)
-        let credential = PhoneAuthProvider.provider().credential(withVerificationID: self.verificationId, verificationCode: "123456")
+        guard let verficationCode = self.loginView.certificationNumberTextField.text else { return }
+        let credential = PhoneAuthProvider.provider().credential(withVerificationID: self.verificationId, verificationCode: verficationCode)
         Auth.auth().signIn(with: credential){ [weak self] success, error in
             guard let self = self else {return}
             if let error = error {
