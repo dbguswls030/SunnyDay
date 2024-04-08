@@ -122,7 +122,6 @@ class FirebaseFirestoreManager{
                 documents.forEach { document in
                     chatRoomIdList.append(document.documentID)
                 }
-                print(chatRoomIdList)
                 emitter.onNext(chatRoomIdList)
             }
             return Disposables.create()
@@ -613,27 +612,32 @@ class FirebaseFirestoreManager{
     
     // MARK: 채팅방Id로 채팅방 가져오기
     func getChatRoomWithChatRoomId(chatRoomIdList: [String]) -> Observable<[ChatRoomModel]>{
-        let observables = chatRoomIdList.map{ chatRoomId in
-            return Observable<ChatRoomModel>.create { emitter in
-                let docRef = self.db.collection("chat").document(chatRoomId)
-                docRef.getDocument { snapshot, error in
-                    if let error = error{
-                        emitter.onError(error)
-                    }
-                    guard let snapshot = snapshot else { return }
-                    
-                    do{
-                        let chatRoomModel = try snapshot.data(as: ChatRoomModel.self)
-                        emitter.onNext(chatRoomModel)
+        return Observable.create{ emitter in
+            if chatRoomIdList.isEmpty {
+                emitter.onNext([])
+                emitter.onCompleted()
+            }else{
+                self.db.collection("chat").whereField(FieldPath.documentID(), in: chatRoomIdList)
+                    .getDocuments { snapshot, error in
+                        if let error = error{
+                            emitter.onError(error)
+                        }
+                        guard let documents = snapshot?.documents else{
+                            emitter.onNext([])
+                            emitter.onCompleted()
+                            return
+                        }
+                        
+                        let chatRoomList = documents.compactMap{ document in
+                            return try? document.data(as: ChatRoomModel.self)
+                        }
+                        
+                        emitter.onNext(chatRoomList)
                         emitter.onCompleted()
-                    }catch let error{
-                        emitter.onError(error)
                     }
-                }
-                return Disposables.create()
             }
+            return Disposables.create()
         }
-        return Observable.zip(observables)
     }
     
     
@@ -972,8 +976,9 @@ class FirebaseFirestoreManager{
     // MARK: 추방하고나서 하프뷰 다시 열리는 오류 수정 테스트용 멤버필드 재생성
     func reMakeMember() -> Observable<Void>{
         return Observable.create{ emitter in
-            self.db.collection("chat").document("EF5B506D-BE47-4CED-98CD-84252C308BFE1708180673.2582211").updateData(["memberCount" : FieldValue.increment(Int64(1))])
-            self.db.collection("chat").document("EF5B506D-BE47-4CED-98CD-84252C308BFE1708180673.2582211")
+            self.db.collection("user").document("7mHuOKIPBBSNeIIA3nPxOhyOkso1").collection("chat").document("57719431-4019-4E16-8C6B-D41070F34CA51712585064.94737").setData([:])
+            self.db.collection("chat").document("57719431-4019-4E16-8C6B-D41070F34CA51712585064.94737").updateData(["memberCount" : FieldValue.increment(Int64(1))])
+            self.db.collection("chat").document("57719431-4019-4E16-8C6B-D41070F34CA51712585064.94737")
                 .collection("members").document("7mHuOKIPBBSNeIIA3nPxOhyOkso1").setData(["level" : 2,
                                                                                          "firstVisitedDate" : Timestamp(),
                                                                                          "updateVisitedDate" : Timestamp()]) { error in

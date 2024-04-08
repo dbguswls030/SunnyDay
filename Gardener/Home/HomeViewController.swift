@@ -9,19 +9,20 @@ import UIKit
 import RxSwift
 import FirebaseAuth
 class HomeViewController: UIViewController {
-    
+    var disposeBag = DisposeBag()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .blue
-        // Do any additional setup after loading the view.
-//        let firebaseAuth = Auth.auth()
-//        do {
-//            try firebaseAuth.signOut()
-//        } catch let signOutError as NSError {
-//            print("Error signing out: %@", signOutError)
-//        }
+ 
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        FirebaseFirestoreManager.shared.reMakeMember()
+            .bind{
+                print("remake")
+            }.disposed(by: self.disposeBag)
+    }
 
     /*
     // MARK: - Navigation
