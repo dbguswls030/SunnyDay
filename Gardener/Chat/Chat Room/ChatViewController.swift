@@ -53,7 +53,9 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    deinit{
+        print("deinit")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboardWhenTouchUpBackground()
@@ -100,7 +102,8 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     private func menuButtonAction(){
         self.menuButton.rx
             .tap
-            .bind{
+            .bind{ [weak self] in
+                guard let self = self else { return }
                 let vc = ChatMenuViewController(chatRoomModel: self.chatViewModel.chatRoomModel.asObservable(), vc: self)
                 vc.setData(model: self.chatViewModel.chatRoomModel)
                 let menuVC = SideMenuNavigationController(rootViewController: vc)

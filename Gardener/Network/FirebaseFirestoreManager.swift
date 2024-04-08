@@ -555,7 +555,7 @@ class FirebaseFirestoreManager{
                     if let error = error{
                         emitter.onError(error)
                     }
-                    guard let document = snapshot else {
+                    guard let document = snapshot, document.exists else {
                         emitter.onCompleted()
                         return
                     }
@@ -817,14 +817,19 @@ class FirebaseFirestoreManager{
     // MARK: 채팅방 추방 리스너(채팅 멤버에 내가 없으면 방 나가짐)
     func addListenerExpulsionChat(chatRoomId: String) -> Observable<Void>{
         return Observable.create{ emitter in
-            self.db.collection("chat").document(chatRoomId).collection("members").document(Auth.auth().currentUser!.uid).addSnapshotListener { snapshot, error in
+             self.db.collection("chat").document(chatRoomId).collection("members").whereField(FieldPath.documentID(), in: [Auth.auth().currentUser!.uid]).addSnapshotListener { snapshot, error in
                 if let error = error{
                     emitter.onError(error)
                 }
-                guard let document = snapshot else{ return }
-                
-                if !document.exists{
-                    emitter.onNext(())
+                 
+                guard let documents = snapshot?.documentChanges else{
+                    return
+                }
+                documents.forEach { change in
+                    if change.type == .removed {
+                        emitter.onNext(())
+                        emitter.onCompleted()
+                    }
                 }
             }
             return Disposables.create()
@@ -862,7 +867,8 @@ class FirebaseFirestoreManager{
                     emitter.onError(error)
                 }
                 
-                guard let document = snapshot else{
+                guard let document = snapshot, document.exists else{
+                    emitter.onCompleted()
                     return
                 }
                 document.reference.updateData(["updateVisitedDate" : Date()]) { error in
@@ -982,6 +988,9 @@ class FirebaseFirestoreManager{
                 .collection("members").document("7mHuOKIPBBSNeIIA3nPxOhyOkso1").setData(["level" : 2,
                                                                                          "firstVisitedDate" : Timestamp(),
                                                                                          "updateVisitedDate" : Timestamp()]) { error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
                     emitter.onNext(())
                     emitter.onCompleted()
                 }

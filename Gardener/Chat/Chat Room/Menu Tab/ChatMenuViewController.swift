@@ -67,6 +67,12 @@ class ChatMenuViewController: UIViewController {
         addExitButtonAction()
         initSettingButton()
     }
+    override func viewWillDisappear(_ animated: Bool) {
+//        disposeBag = DisposeBag()
+    }
+    deinit{
+        print("sideMenu deinit")
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.isNavigationBarHidden = true
@@ -157,6 +163,7 @@ class ChatMenuViewController: UIViewController {
                                 self.dismiss(animated: false)
                             }.disposed(by: self.disposeBag)
                     }
+                    self.dismiss(animated: false)
                 }.disposed(by: self.disposeBag)
         }
     }
