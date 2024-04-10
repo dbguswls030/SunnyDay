@@ -570,23 +570,41 @@ class FirebaseFirestoreManager{
             return Disposables.create()
         }
     }
-    
-    // MARK: 채팅방 인원 가져오기
-    func addListenerChatMembers(chatRoomId: String) -> Observable<[ChatMemberModel]>{
-        return Observable.create{ emitter in
+    // MARK: 채팅방 인원 수 리스너
+    func addListenerChatMemberCount(chatRoomId: String) -> Observable<Void>{
+        return Observable.create { emitter in
             self.db.collection("chat").document(chatRoomId).collection("members")
                 .addSnapshotListener { snapshot, error in
-                    if let error = error {
-                        emitter.onError(error)
-                    }
+                    if let error = error { emitter.onError(error) }
                     
-                    guard let documents = snapshot?.documents else{
+                    guard let changes = snapshot?.documentChanges else {
                         emitter.onCompleted()
                         return
                     }
                     
-                    let members = documents.compactMap { document in
-                        try? document.data(as: ChatMemberModel.self)
+                    if changes.contains(where: { $0.type == .added || $0.type == .removed }){
+                        emitter.onNext(())
+                    } 
+            }
+            return Disposables.create()
+        }
+    }
+    // MARK: 채팅방 인원 가져오기
+    func getChatMembers(chatRoomId: String) -> Observable<[ChatMemberModel]>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("members")
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        emitter.onError(error)
+                    }
+                    
+                    guard let document = snapshot?.documents else{
+                        emitter.onCompleted()
+                        return
+                    }
+                    
+                    let members = document.compactMap { document in
+                        return try? document.data(as: ChatMemberModel.self)
                     }
                     emitter.onNext(members)
             }

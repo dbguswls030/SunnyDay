@@ -79,7 +79,6 @@ class ChatListViewController: UIViewController {
     private func initToolButtonItems(){
         searchChatRoomButtonAction()
         createChatRoomButtonAction()
-        
     }
     
     private func setChatTableView(){
@@ -94,17 +93,17 @@ class ChatListViewController: UIViewController {
         
         
         chatListView.participatedChatTableView.rx.modelSelected(ChatRoomModel.self)
-            .subscribe(onNext: { chatRoomModel in
+            .bind{ [weak self] chatRoomModel in
                 let vc = ChatViewController(chatRoomId: chatRoomModel.roomId)
                 vc.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(vc, animated: true)
-            })
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
             .disposed(by: disposeBag)
         
         chatListView.participatedChatTableView.rx.itemSelected
-            .bind(onNext: { indexPath in
-                self.chatListView.participatedChatTableView.deselectRow(at: indexPath, animated: true)
-            })
+            .bind{ [weak self] indexPath in
+                self?.chatListView.participatedChatTableView.deselectRow(at: indexPath, animated: true)
+            }
             .disposed(by: disposeBag)
     }
     

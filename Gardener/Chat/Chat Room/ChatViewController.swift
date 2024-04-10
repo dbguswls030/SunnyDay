@@ -71,10 +71,11 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        FirebaseFirestoreManager.shared.updateVisitedDate(chatRoomId: chatViewModel.chatRoomId)
-            .bind{
-                
-            }.disposed(by: self.disposeBag)
+        disposeBag = DisposeBag()
+//        FirebaseFirestoreManager.shared.updateVisitedDate(chatRoomId: chatViewModel.chatRoomId)
+//            .bind{
+//                
+//            }.disposed(by: self.disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -104,8 +105,8 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
             .tap
             .bind{ [weak self] in
                 guard let self = self else { return }
-                let vc = ChatMenuViewController(chatRoomModel: self.chatViewModel.chatRoomModel.asObservable(), vc: self)
-                vc.setData(model: self.chatViewModel.chatRoomModel)
+                // TODO: RoomId 전달 하기
+                let vc = ChatMenuViewController(chatRoomId: self.chatViewModel.chatRoomId)
                 let menuVC = SideMenuNavigationController(rootViewController: vc)
                 menuVC.presentationStyle = .menuSlideIn
                 menuVC.menuWidth = self.view.frame.width * 0.8

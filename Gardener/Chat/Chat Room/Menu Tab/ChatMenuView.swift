@@ -91,6 +91,7 @@ class ChatMenuView: UIView {
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
         tableView.separatorStyle = .none
+        
         return tableView
     }()
     
@@ -168,23 +169,19 @@ class ChatMenuView: UIView {
         
         chatMemberTableView.snp.makeConstraints { make in
             make.top.equalTo(chatMemberListLabel.snp.bottom).offset(5)
-            make.left.right.equalToSuperview()
+            make.left.right.bottom.equalToSuperview()
             make.width.equalTo(self.snp.width)
-            make.bottom.equalToSuperview()
         }
     }
     
-    func setData(model: Observable<ChatRoomModel>){
-        model.bind{ [weak self] chatRoomModel in
-            guard let self = self else { return }
-            self.chatTitleLabel.text = chatRoomModel.title
-            self.chatMemberCountLabel.text = "인원 \(chatRoomModel.memberCount)명"
-            self.chatCreateAtLabel.text = "생성일 \(chatRoomModel.date.convertDate())"
-            self.chatMemberListLabel.text = "참여 인원 \(chatRoomModel.memberCount)"
-            self.chatLikeCountLabel.text = "좋아요 \(chatRoomModel.likeCount)개"
-            self.setLikeButton(chatRoomId: chatRoomModel.roomId)
-            self.chatRoomId = chatRoomModel.roomId
-        }.disposed(by: disposeBag)
+    func setData(model: ChatRoomModel){
+        self.chatTitleLabel.text = model.title
+        self.chatMemberCountLabel.text = "인원 \(model.memberCount)명"
+        self.chatCreateAtLabel.text = "생성일 \(model.date.convertDate())"
+        self.chatMemberListLabel.text = "참여 인원 \(model.memberCount)"
+        self.chatLikeCountLabel.text = "좋아요 \(model.likeCount)개"
+        self.setLikeButton(chatRoomId: model.roomId)
+        self.chatRoomId = model.roomId
     }
     
     func addChatInfoButtonAction(){
@@ -197,11 +194,11 @@ class ChatMenuView: UIView {
     
     func setLikeButton(chatRoomId: String){
         FirebaseFirestoreManager.shared.isLikeChatRoom(chatRoomId: chatRoomId, uid: Auth.auth().currentUser!.uid)
-            .bind{ result in
+            .bind{ [weak self] result in
                 if result{
-                    self.chatLikeButton.isSelected = true
+                    self?.chatLikeButton.isSelected = true
                 }else{
-                    self.chatLikeButton.isSelected = false
+                    self?.chatLikeButton.isSelected = false
                 }
             }.disposed(by: self.disposeBag)
     }

@@ -11,22 +11,22 @@ import RxCocoa
 
 class ChatMenuViewModel{
     var disposeBag = DisposeBag()
-    var chatRoomModel: Observable<ChatRoomModel>
+    var chatRoomModel = BehaviorSubject<ChatRoomModel>(value: .init(title: "", subTitle: ""))
+
     var chatMembers = BehaviorRelay<[ChatMemberModel]>(value: [])
     
-    init(chatRoomModel: Observable<ChatRoomModel>) {
-        self.chatRoomModel = chatRoomModel
-        getChatRoomId()
-            .flatMap{ roomId in
-                return FirebaseFirestoreManager.shared.addListenerChatMembers(chatRoomId: roomId)
+    init(chatRoomId: String) {
+        FirebaseFirestoreManager.shared.addListenerChatRoom(chatRoomId: chatRoomId)
+            .bind(to: self.chatRoomModel)
+            .disposed(by: self.disposeBag)
+        
+        FirebaseFirestoreManager.shared.addListenerChatMemberCount(chatRoomId: chatRoomId)
+            .flatMap {
+                FirebaseFirestoreManager.shared.getChatMembers(chatRoomId: chatRoomId)
             }
-//            .skip(1) // MARK: logical Error 처음에 리턴 갯수가 이상함
+        //            .skip(1) // MARK: logical Error 처음에 리턴 갯수가 이상함
             .bind(to: chatMembers)
             .disposed(by: self.disposeBag)
-    }
-    
-    func getMembers() -> [ChatMemberModel]{
-        return chatMembers.value
     }
     
     func getMembersCount() -> Observable<Int>{

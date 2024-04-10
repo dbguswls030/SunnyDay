@@ -18,10 +18,10 @@ class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-//        FirebaseFirestoreManager.shared.reMakeMember()
-//            .bind{
-//                print("remake")
-//            }.disposed(by: self.disposeBag)
+        FirebaseFirestoreManager.shared.reMakeMember()
+            .bind{
+                print("remake")
+            }.disposed(by: self.disposeBag)
     }
 
     /*
