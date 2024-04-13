@@ -7,15 +7,22 @@
 
 import UIKit
 import RxSwift
+import FirebaseAuth
 class HomeViewController: UIViewController {
-    
+    var disposeBag = DisposeBag()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .blue
-        // Do any additional setup after loading the view.
-       
+ 
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        FirebaseFirestoreManager.shared.reMakeMember()
+            .bind{
+                print("remake")
+            }.disposed(by: self.disposeBag)
+    }
 
     /*
     // MARK: - Navigation

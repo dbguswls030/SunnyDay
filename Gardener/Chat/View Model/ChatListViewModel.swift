@@ -28,10 +28,6 @@ class ChatListViewModel{
             .map{
                 $0.level == 0
             }
-//        return (chatRooms.value[index].members.filter{ $0.uid == Auth.auth().currentUser?.uid }.first
-//            .map{ $0.level == 0 ? true : false } != nil)
-//        
-        
     }
     
     func getChatRoom(index: Int) -> ChatRoomModel{

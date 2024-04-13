@@ -24,6 +24,7 @@ class CommentViewModel{
             }
             self.setPaging(data: false)
             self.query = query
+            print(self.comments.count)
             self.comments += models
             
             if models.count < 10{
