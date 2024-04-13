@@ -64,6 +64,7 @@ class BoardViewController: UIViewController {
             print("model is empty")
             return
         }
+        self.commentViewModel.resetViewModel()
         self.commentViewModel.setCommentModel(documentId: documentId) { [weak self] in
             guard let self = self else { return }
             if self.commentViewModel.numberOfModel() == 0 {
@@ -167,7 +168,7 @@ class BoardViewController: UIViewController {
     }
     
     private func reinitCommentViewModel(){
-        self.commentViewModel.resetViewModel()
+        
         initCommentViewModel()
     }
 
@@ -603,8 +604,8 @@ class GetElementHeightOfComment{
 extension BoardViewController: DelegateEditBoard{
     func endEditBoard(model: BoardModel) {
         self.model = model
-        
         setData()
+        
         DispatchQueue.main.async {
             self.boardView.imageCollectionView.reloadData()
         }

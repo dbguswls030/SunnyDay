@@ -79,7 +79,6 @@ class ChatListViewController: UIViewController {
     private func initToolButtonItems(){
         searchChatRoomButtonAction()
         createChatRoomButtonAction()
-        
     }
     
     private func setChatTableView(){
@@ -88,26 +87,23 @@ class ChatListViewController: UIViewController {
         chatListView.participatedChatTableView.delegate = self
         chatViewModel.chatRooms
             .bind(to: chatListView.participatedChatTableView.rx.items(cellIdentifier: "chatCell", cellType: ChatTableViewCell.self)) { index, item, cell in
-                FirebaseFirestoreManager.shared.addListenerChatRoom(chatRoomId: item.roomId)
-                    .bind{ model in
-                        cell.setData(model: model)
-                    }.disposed(by: self.disposeBag)
+                cell.setData(model: item)
             }
             .disposed(by: disposeBag)
         
         
         chatListView.participatedChatTableView.rx.modelSelected(ChatRoomModel.self)
-            .subscribe(onNext: { chatRoomModel in
+            .bind{ [weak self] chatRoomModel in
                 let vc = ChatViewController(chatRoomId: chatRoomModel.roomId)
                 vc.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(vc, animated: true)
-            })
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
             .disposed(by: disposeBag)
         
         chatListView.participatedChatTableView.rx.itemSelected
-            .bind(onNext: { indexPath in
-                self.chatListView.participatedChatTableView.deselectRow(at: indexPath, animated: true)
-            })
+            .bind{ [weak self] indexPath in
+                self?.chatListView.participatedChatTableView.deselectRow(at: indexPath, animated: true)
+            }
             .disposed(by: disposeBag)
     }
     

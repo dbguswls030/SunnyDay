@@ -76,6 +76,7 @@ class EditBoardViewController: CreateBoardViewController {
             print("model is empty")
             return
         }
+        dismissKeyboard()
         self.navigationItem.rightBarButtonItem?.isEnabled = false
         showActivityIndicator(alpha: 0.0)
         if let uid = Auth.auth().currentUser?.uid{

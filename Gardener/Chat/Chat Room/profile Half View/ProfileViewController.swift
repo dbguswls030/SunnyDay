@@ -40,6 +40,14 @@ class ProfileViewController: UIViewController {
         addExpulsionButtonAction()
         addTapGestureDismiss()
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        disposeBag = DisposeBag()
+    }
+    
+    deinit{
+        print("deinit profile half view")
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)

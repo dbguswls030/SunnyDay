@@ -53,7 +53,9 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    deinit{
+        print("deinit")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         hideKeyboardWhenTouchUpBackground()
@@ -69,10 +71,11 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        FirebaseFirestoreManager.shared.updateVisitedDate(chatRoomId: chatViewModel.chatRoomId)
-            .bind{
-
-            }.disposed(by: self.disposeBag)
+        disposeBag = DisposeBag()
+//        FirebaseFirestoreManager.shared.updateVisitedDate(chatRoomId: chatViewModel.chatRoomId)
+//            .bind{
+//                
+//            }.disposed(by: self.disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -84,11 +87,8 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
   
     private func addListenerExpulsionChat(){
         FirebaseFirestoreManager.shared.addListenerExpulsionChat(chatRoomId: chatViewModel.chatRoomId)
-            .skip(1)
-            .flatMap{
-                
-                FirebaseFirestoreManager.shared.userExitedChatRoom(uid: Auth.auth().currentUser!.uid, chatRoomId: self.chatViewModel.chatRoomId)
-            }.bind{
+            .bind{
+                self.view.endEditing(true)
                 self.showPopUp(title: "\(self.title ?? "") 채팅방에서 추방당하셨습니다.") {
                     
                 }
@@ -103,9 +103,10 @@ class ChatViewController: UIViewController, UIContextMenuInteractionDelegate{
     private func menuButtonAction(){
         self.menuButton.rx
             .tap
-            .bind{
-                let vc = ChatMenuViewController(chatRoomModel: self.chatViewModel.chatRoomModel.asObservable(), vc: self)
-                vc.setData(model: self.chatViewModel.chatRoomModel)
+            .bind{ [weak self] in
+                guard let self = self else { return }
+                // TODO: RoomId 전달 하기
+                let vc = ChatMenuViewController(chatRoomId: self.chatViewModel.chatRoomId)
                 let menuVC = SideMenuNavigationController(rootViewController: vc)
                 menuVC.presentationStyle = .menuSlideIn
                 menuVC.menuWidth = self.view.frame.width * 0.8

@@ -14,7 +14,7 @@ import FirebaseAuth
 class ChatMenuViewController: UIViewController {
     
     var disposeBag = DisposeBag()
-    
+    var chatRoomId: String
     var chatRoomViewModel: ChatMenuViewModel
     
     private lazy var chatMenuView: ChatMenuView = {
@@ -63,17 +63,28 @@ class ChatMenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initUI()
+        setData()
         initChatMemberTableView()
+        chatMenuUpdateHeight()
         addExitButtonAction()
         initSettingButton()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        disposeBag = DisposeBag()
+    }
+    
+    deinit{
+        print("sideMenu deinit")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.isNavigationBarHidden = true
     }
     
-    init(chatRoomModel: Observable<ChatRoomModel>, vc: UIViewController){
-        chatRoomViewModel = ChatMenuViewModel(chatRoomModel: chatRoomModel)
+    init(chatRoomId: String){
+        chatRoomViewModel = ChatMenuViewModel(chatRoomId: chatRoomId)
+        self.chatRoomId = chatRoomId
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -90,18 +101,16 @@ class ChatMenuViewController: UIViewController {
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
             make.left.right.equalToSuperview()
+            make.width.equalToSuperview()
             make.bottom.equalTo(bottomSafeAreaView.snp.top)
         }
         
-        // TODO: size refactor
-        chatRoomViewModel.getMembersCount()
-            .bind{ count in
-                self.chatMenuView.snp.makeConstraints { make in
-                    make.edges.equalToSuperview()
-                    make.width.equalToSuperview()
-                    make.height.equalTo(225 + count * 60)
-                }
-            }.disposed(by: disposeBag)
+        chatMenuView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+            make.width.equalToSuperview()
+            make.bottom.equalToSuperview()
+            make.height.equalTo(160)
+        }
         
         bottomSafeAreaView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
@@ -123,6 +132,18 @@ class ChatMenuViewController: UIViewController {
             make.right.equalToSuperview().offset(-5)
             make.width.height.equalTo(45)
         }
+    }
+    
+    func chatMenuUpdateHeight(){
+        // TODO: Size Refactor
+        chatRoomViewModel.getMembersCount()
+            .filter{ $0 > 0}
+            .observe(on: MainScheduler.instance)
+            .bind{ [weak self] count in
+                self?.chatMenuView.snp.updateConstraints { make in
+                    make.height.equalTo(160 + (count * 50))
+                }
+            }.disposed(by: disposeBag)
     }
     
     func addExitButtonAction(){
@@ -157,6 +178,7 @@ class ChatMenuViewController: UIViewController {
                                 self.dismiss(animated: false)
                             }.disposed(by: self.disposeBag)
                     }
+                    self.dismiss(animated: false)
                 }.disposed(by: self.disposeBag)
         }
     }
@@ -188,41 +210,42 @@ class ChatMenuViewController: UIViewController {
     }
     
     
-    func setData(model: Observable<ChatRoomModel>){
-        chatMenuView.setData(model: model)
+    func setData(){
+        self.chatRoomViewModel.chatRoomModel
+            .bind{ [weak self] model in
+                self?.chatMenuView.setData(model: model)
+            }.disposed(by: self.disposeBag)
+        
     }
     
     private func initChatMemberTableView(){
         self.chatMenuView.chatMemberTableView.register(ChatMemberTableViewCell.self, forCellReuseIdentifier: "chatMemberCell")
-        chatMenuView.chatMemberTableView.rowHeight = 60
-        
+        chatMenuView.chatMemberTableView.rowHeight = 50
+
         chatRoomViewModel.chatMembers
             .bind(to: self.chatMenuView.chatMemberTableView.rx.items(cellIdentifier: "chatMemberCell", cellType: ChatMemberTableViewCell.self)){ index, model, cell in
-//                print(index)
                 cell.setData(model: model)
             }.disposed(by: disposeBag)
         
+        
         self.chatMenuView.chatMemberTableView.rx
             .itemSelected
-            .bind{ indexPath in
-                self.showProfileHalfView(index: indexPath.row)
+            .bind{ [weak self] indexPath in
+                self?.showProfileHalfView(index: indexPath.row)
             }.disposed(by: disposeBag)
     }
-    
-    
+
     private func showProfileHalfView(index: Int){
         let memberModel = self.chatRoomViewModel.getMember(index: index)
+        
         guard let uid = memberModel.uid else {
             print("ChatMemberTableViewCell showProfileHalfView not exist model.uid")
             return
         }
+        
         if uid == Auth.auth().currentUser!.uid{ return } // 나 자신은 하프뷰 X
-        chatRoomViewModel.getChatRoomId()
-            .bind{ [weak self] roomId in
-                guard let self = self else { return }
-                let vc = ProfileViewController(profileUid: uid, chatRoomId: roomId, myUid: Auth.auth().currentUser!.uid)
-                vc.modalPresentationStyle = .overFullScreen
-                self.present(vc, animated: false)
-            }.disposed(by: disposeBag)
+        let vc = ProfileViewController(profileUid: uid, chatRoomId: self.chatRoomId, myUid: Auth.auth().currentUser!.uid)
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: false)
     }
 }

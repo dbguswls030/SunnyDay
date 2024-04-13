@@ -517,6 +517,7 @@ class FirebaseFirestoreManager{
     // MARK: 채팅방 나가기 -> 채팅방 멤버 삭제
     func exitChatRoom(roomId: String, uid: String) -> Observable<Void>{
         return Observable.create{ emitter in
+            
             let docRef = self.db.collection("chat").document(roomId)
             docRef.collection("members").document(uid).delete { error in
                 if let error = error{
@@ -554,7 +555,7 @@ class FirebaseFirestoreManager{
                     if let error = error{
                         emitter.onError(error)
                     }
-                    guard let document = snapshot else {
+                    guard let document = snapshot, document.exists else {
                         emitter.onCompleted()
                         return
                     }
@@ -569,23 +570,41 @@ class FirebaseFirestoreManager{
             return Disposables.create()
         }
     }
-    
-    // MARK: 채팅방 인원 가져오기
-    func addListenerChatMembers(chatRoomId: String) -> Observable<[ChatMemberModel]>{
-        return Observable.create{ emitter in
+    // MARK: 채팅방 인원 수 리스너
+    func addListenerChatMemberCount(chatRoomId: String) -> Observable<Void>{
+        return Observable.create { emitter in
             self.db.collection("chat").document(chatRoomId).collection("members")
                 .addSnapshotListener { snapshot, error in
-                    if let error = error {
-                        emitter.onError(error)
-                    }
+                    if let error = error { emitter.onError(error) }
                     
-                    guard let documents = snapshot?.documents else{
+                    guard let changes = snapshot?.documentChanges else {
                         emitter.onCompleted()
                         return
                     }
                     
-                    let members = documents.compactMap { document in
-                        try? document.data(as: ChatMemberModel.self)
+                    if changes.contains(where: { $0.type == .added || $0.type == .removed }){
+                        emitter.onNext(())
+                    } 
+            }
+            return Disposables.create()
+        }
+    }
+    // MARK: 채팅방 인원 가져오기
+    func getChatMembers(chatRoomId: String) -> Observable<[ChatMemberModel]>{
+        return Observable.create{ emitter in
+            self.db.collection("chat").document(chatRoomId).collection("members")
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        emitter.onError(error)
+                    }
+                    
+                    guard let document = snapshot?.documents else{
+                        emitter.onCompleted()
+                        return
+                    }
+                    
+                    let members = document.compactMap { document in
+                        return try? document.data(as: ChatMemberModel.self)
                     }
                     emitter.onNext(members)
             }
@@ -611,27 +630,32 @@ class FirebaseFirestoreManager{
     
     // MARK: 채팅방Id로 채팅방 가져오기
     func getChatRoomWithChatRoomId(chatRoomIdList: [String]) -> Observable<[ChatRoomModel]>{
-        let observables = chatRoomIdList.map{ chatRoomId in
-            return Observable<ChatRoomModel>.create { emitter in
-                let docRef = self.db.collection("chat").document(chatRoomId)
-                docRef.getDocument { snapshot, error in
-                    if let error = error{
-                        emitter.onError(error)
-                    }
-                    guard let snapshot = snapshot else { return }
-                    
-                    do{
-                        let chatRoomModel = try snapshot.data(as: ChatRoomModel.self)
-                        emitter.onNext(chatRoomModel)
+        return Observable.create{ emitter in
+            if chatRoomIdList.isEmpty {
+                emitter.onNext([])
+                emitter.onCompleted()
+            }else{
+                self.db.collection("chat").whereField(FieldPath.documentID(), in: chatRoomIdList)
+                    .getDocuments { snapshot, error in
+                        if let error = error{
+                            emitter.onError(error)
+                        }
+                        guard let documents = snapshot?.documents else{
+                            emitter.onNext([])
+                            emitter.onCompleted()
+                            return
+                        }
+                        
+                        let chatRoomList = documents.compactMap{ document in
+                            return try? document.data(as: ChatRoomModel.self)
+                        }
+                        
+                        emitter.onNext(chatRoomList)
                         emitter.onCompleted()
-                    }catch let error{
-                        emitter.onError(error)
                     }
-                }
-                return Disposables.create()
             }
+            return Disposables.create()
         }
-        return Observable.zip(observables)
     }
     
     
@@ -811,14 +835,19 @@ class FirebaseFirestoreManager{
     // MARK: 채팅방 추방 리스너(채팅 멤버에 내가 없으면 방 나가짐)
     func addListenerExpulsionChat(chatRoomId: String) -> Observable<Void>{
         return Observable.create{ emitter in
-            self.db.collection("chat").document(chatRoomId).collection("members").document(Auth.auth().currentUser!.uid).addSnapshotListener { snapshot, error in
+             self.db.collection("chat").document(chatRoomId).collection("members").whereField(FieldPath.documentID(), in: [Auth.auth().currentUser!.uid]).addSnapshotListener { snapshot, error in
                 if let error = error{
                     emitter.onError(error)
                 }
-                guard let document = snapshot else{ return }
-                
-                if !document.exists{
-                    emitter.onNext(())
+                 
+                guard let documents = snapshot?.documentChanges else{
+                    return
+                }
+                documents.forEach { change in
+                    if change.type == .removed {
+                        emitter.onNext(())
+                        emitter.onCompleted()
+                    }
                 }
             }
             return Disposables.create()
@@ -856,7 +885,8 @@ class FirebaseFirestoreManager{
                     emitter.onError(error)
                 }
                 
-                guard let document = snapshot else{
+                guard let document = snapshot, document.exists else{
+                    emitter.onCompleted()
                     return
                 }
                 document.reference.updateData(["updateVisitedDate" : Date()]) { error in
@@ -970,11 +1000,15 @@ class FirebaseFirestoreManager{
     // MARK: 추방하고나서 하프뷰 다시 열리는 오류 수정 테스트용 멤버필드 재생성
     func reMakeMember() -> Observable<Void>{
         return Observable.create{ emitter in
-            self.db.collection("chat").document("EF5B506D-BE47-4CED-98CD-84252C308BFE1708180673.2582211").updateData(["memberCount" : FieldValue.increment(Int64(1))])
-            self.db.collection("chat").document("EF5B506D-BE47-4CED-98CD-84252C308BFE1708180673.2582211")
+            self.db.collection("user").document("7mHuOKIPBBSNeIIA3nPxOhyOkso1").collection("chat").document("57719431-4019-4E16-8C6B-D41070F34CA51712585064.94737").setData([:])
+            self.db.collection("chat").document("57719431-4019-4E16-8C6B-D41070F34CA51712585064.94737").updateData(["memberCount" : FieldValue.increment(Int64(1))])
+            self.db.collection("chat").document("57719431-4019-4E16-8C6B-D41070F34CA51712585064.94737")
                 .collection("members").document("7mHuOKIPBBSNeIIA3nPxOhyOkso1").setData(["level" : 2,
                                                                                          "firstVisitedDate" : Timestamp(),
                                                                                          "updateVisitedDate" : Timestamp()]) { error in
+                    if let error = error{
+                        emitter.onError(error)
+                    }
                     emitter.onNext(())
                     emitter.onCompleted()
                 }
