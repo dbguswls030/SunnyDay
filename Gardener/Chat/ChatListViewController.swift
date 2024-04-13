@@ -137,7 +137,6 @@ extension ChatListViewController: UITableViewDelegate{
                         }else{
                             Observable.zip(checkObservables)
                                 .bind{ _ in
-                                    print("나가기 성공띠")
                                     success(true)
                                     self.dismiss(animated: false)
                                 }.disposed(by: self.disposeBag)

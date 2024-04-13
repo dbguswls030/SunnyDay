@@ -14,7 +14,7 @@ import FirebaseAuth
 class ChatMenuViewController: UIViewController {
     
     var disposeBag = DisposeBag()
-    
+    var chatRoomId: String
     var chatRoomViewModel: ChatMenuViewModel
     
     private lazy var chatMenuView: ChatMenuView = {
@@ -84,6 +84,7 @@ class ChatMenuViewController: UIViewController {
     
     init(chatRoomId: String){
         chatRoomViewModel = ChatMenuViewModel(chatRoomId: chatRoomId)
+        self.chatRoomId = chatRoomId
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -226,15 +227,14 @@ class ChatMenuViewController: UIViewController {
                 cell.setData(model: model)
             }.disposed(by: disposeBag)
         
+        
         self.chatMenuView.chatMemberTableView.rx
             .itemSelected
             .bind{ [weak self] indexPath in
                 self?.showProfileHalfView(index: indexPath.row)
             }.disposed(by: disposeBag)
     }
-    
-    
-    
+
     private func showProfileHalfView(index: Int){
         let memberModel = self.chatRoomViewModel.getMember(index: index)
         
@@ -244,12 +244,8 @@ class ChatMenuViewController: UIViewController {
         }
         
         if uid == Auth.auth().currentUser!.uid{ return } // 나 자신은 하프뷰 X
-        chatRoomViewModel.getChatRoomId()
-            .bind{ [weak self] roomId in
-                guard let self = self else { return }
-                let vc = ProfileViewController(profileUid: uid, chatRoomId: roomId, myUid: Auth.auth().currentUser!.uid)
-                vc.modalPresentationStyle = .overFullScreen
-                self.present(vc, animated: false)
-            }.disposed(by: disposeBag)
+        let vc = ProfileViewController(profileUid: uid, chatRoomId: self.chatRoomId, myUid: Auth.auth().currentUser!.uid)
+        vc.modalPresentationStyle = .overFullScreen
+        self.present(vc, animated: false)
     }
 }
